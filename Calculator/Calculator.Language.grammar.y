@@ -73,7 +73,7 @@ ifStatement: IF expr THEN body END
            
 returnStatement: RETURN expr;
 
-expr    : expr DOT methodCall             { 	 }
+expr    : expr DOT methodCall           { 	 }
        | primary                        { 	 }
        ;
        

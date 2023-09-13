@@ -51,6 +51,21 @@ class ConsolePrintableText extends Printable, Text is
 end
 ```
 
+### `Animal` class inheritance implementation
+```
+class Shape extends Class is
+    method draw(p: Integer) : Void is
+        // Implementation for drawing a shape
+    end
+end
+
+class Circle extends Shape is
+    method draw(p: Integer) : Void is
+        // Implementation specific to drawing a circle
+    end
+end
+```
+ 
 ### Eratosthenes sieve algorithm
 ```
 class PrimeNumbers is

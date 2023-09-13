@@ -51,17 +51,19 @@ class ConsolePrintableText extends Printable, Text is
 end
 ```
 
-### `Animal` class inheritance implementation
+### `Shape` class inheritance implementation
 ```
-class Shape extends Class is
-    method draw(p: Integer) : Void is
-        // Implementation for drawing a shape
+class Shape extends Class is 
+    method area() : Real is
+        return 0.0
     end
 end
 
-class Circle extends Shape is
-    method draw(p: Integer) : Void is
-        // Implementation specific to drawing a circle
+class Rectangle extends Shape is
+    var height: Integer
+    var width: Integer
+    method area() : Real is
+        return height.Mult(width) // Returns Real
     end
 end
 ```

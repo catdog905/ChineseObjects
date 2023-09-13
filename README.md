@@ -19,7 +19,7 @@ end
 ### `Text` class implementation
 ```
 class Text extends AnyValue is 
-    this symbols: Array[Symbol]
+    this(symbols: Array[Symbol])
     method symbols() is
         return symbols
     end
@@ -60,8 +60,8 @@ class Shape extends Class is
 end
 
 class Rectangle extends Shape is
-    var height: Integer
-    var width: Integer
+    this(height: Integer) 
+    this(width: Integer)
     method area() : Real is
         return height.Mult(width) // Returns Real
     end
@@ -71,9 +71,9 @@ end
 ### Eratosthenes sieve algorithm
 ```
 class PrimeNumbers is
-    this n
+    this (n: Integer)
     method value() : List[Integer] is
-        var prime : FilledArray[Boolean](n+1, true)
+        var prime : FilledArray[Boolean](n.Plus(1), true)
         prime.set(0, false)
         prime.set(1, false)
         var i : Integer(2)

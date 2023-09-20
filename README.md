@@ -1,15 +1,11 @@
-# Chinese Objects
+# Introduction to Chinese Objects
 
 ## Code snippets
 ### *HelloWorld* example
 ```
 class HelloWorldProgram extends Class is
-    this is ConsolePrintableText(
-                Text(
-                    Array[Symbol](
-                        "H", "e", "l", "l", "o", " ", "W", "o", "r", "l", "d")
-                    )
-                ),
+    this () is ConsolePrintableText(
+                "Hello world!",
                 Console()
             ).print()
     end
@@ -19,12 +15,19 @@ end
 ### `Text` class implementation
 ```
 class Text extends AnyValue is 
-    this(symbols: Array[Symbol])
-    method symbols() is
+    this (symbols: Array[Symbol])
+    this (text: Text) is
+        this(text.symbols())
+    end
+    this (number: Number) is
+        this(new TextFromNumber())
+    end
+    method symbols() : Array[Symbol] is
         return symbols
     end
 end
 ```
+All expressions enclosed with double quotes (") converts to Text implicitly during compilation
 
 ### `Printable` class implementation
 ```
@@ -44,9 +47,16 @@ end
 ### `ConsolePrintableText` class implementation
 ```
 class ConsolePrintableText extends Printable, Text is
-    super symbols: Array[Symbol] this console: Console
-    method print() is
+    var text: Text
+    var console: Console
+    this (symbols: Array[Symbol], console: Console) is
+        this.text = Text(text)
+    end
+    method print() : Void is
         console.write(this)
+    end
+    method symbols() : Array[Symbols]
+        return text.symbols()
     end
 end
 ```
@@ -54,9 +64,7 @@ end
 ### `Shape` class inheritance implementation
 ```
 class Shape extends Class is 
-    method area() : Real is
-        return 0.0
-    end
+    method area() : Real
 end
 
 class Rectangle extends Shape is
@@ -71,6 +79,7 @@ end
 ### Eratosthenes sieve algorithm
 ```
 class PrimeNumbers is
+    var n: Integer
     this (n: Integer)
     method value() : List[Integer] is
         var prime : FilledArray[Boolean](n.Plus(1), true)
@@ -102,31 +111,77 @@ end
 
 ```
 class FilledArray[T] extends Array[T] is
-    super l: Integer this fill: T is
-        var i : Integer(0)
+    var array: Array[T]
+    this (l: Integer, fill: T) is
+        var array: Array[T]
+        var i: Integer(0)
         while i.Less(l) loop
-            set(i, fill)
+            array.set(i, fill)
             i.Plus(1)
         end
+        this.array = array
+    end
+    method ToList() : List is
+        return array.ToList()
+    end
+    method Length() : Integer is
+        return array.Integer()
+    end
+    method get(i: Integer) : T is
+        array.Get(i)
+    end
+    method put(i: Integer, v: T) is
+        array.Set(i, v)
     end
 end
 ```
 
-
-## Questions
-
-- Is every class inherited from `Class`?
-- Does Chinese Objects language have multiple inheritance?
-- Does Chinese Objects language have virtual methods? Will there any way to make abstractions?
-- Can we instantiate the object of class with abstract methods (methods without body), such as provided `Integer` class 
-in the documentation?
-- What is the way to implement encapsulation in Chinese Objects? Does this language have any analogies to final keyword
-in Java
-- How to call constructor of the base class in the constructor of derived class?
-Suggestion:
+## Basic Object-oriented features
+### Object instantiation
 ```
-class Derived extends Base is
-    super { BaseConstructorParameters }
-    this  { ThisConstructorParameters } [ is Body end ]
+class Employee is
+    var name: Text
+    var salary: Integer
+    this(name: Text, salary: Integer) throwing TooBigSalary Exception is
+        if salary.Greater(200000)
+            throw new class TooBigSalaryException extends Exception
+        end
+        this.name = name
+        this.salary = salary
+    end 
+    
+    method work() : Text is
+        return new FormattedText(
+            "%s works, earning %d",
+            name,
+            salary
+        )
+    end
 end
+```
+
+Class above can be instantiated this way 
+```
+new Employee("Alice", 32).work() // -> returns "Alice works, earning 32"
+new Employee("Alice", 320000).work() // -> throws TooBigSalaryException
+```
+
+### Inheritance and Polymorphism
+```
+class Programmer extends Employee
+    var employee: Employee
+    this (employee)
+    
+    method work() : Text is
+        return new FormattedText(
+            "Programmer %s",
+            employee.work()
+        )
+    end
+end
+```
+
+Example of usage:
+```
+new Programmer(new Employee("Harry", 10000)).work()
 ```

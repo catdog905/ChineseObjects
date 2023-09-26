@@ -1,3 +1,12 @@
+
+// ==========================================================================
+//  GPPG error listing for yacc source file <Calculator/Calculator.Language.grammar.y - 9/26/2023 5:09:01PM>
+// ==========================================================================
+//  Version:  1.5.2
+//  DateTime: 9/26/2023 5:09:03PM
+// ==========================================================================
+
+
 %namespace ChineseObjects.Calculator
 %partial
 %parsertype CalculatorParser
@@ -16,6 +25,12 @@
 %token CLASS, EXTENDS
 
 %%
+// Warning: NonTerminal symbol "line" is unreachable
+// Warning: NonTerminal symbol "exp" is unreachable
+// Warning: NonTerminal symbol "term" is unreachable
+// Warning: NonTerminal symbol "factor" is unreachable
+// Warning: NonTerminal symbol "number" is unreachable
+// ---------------------------------------------------
 
 program: classDeclaration               { }
        | classDeclaration program       { }
@@ -56,4 +71,5 @@ number :
        | NUMBER				{  }
        ;
 
-%%
+%%// ==========================================================================
+

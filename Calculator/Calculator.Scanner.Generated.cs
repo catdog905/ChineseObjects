@@ -5,8 +5,8 @@
 //  See accompanying file GPLEXcopyright.rtf.
 //
 //  GPLEX Version:  1.2.2
-//  DateTime: 9/26/2023 3:50:40PM
-//  GPLEX input file <Calculator/Calculator.Language.analyzer.lex - 9/26/2023 3:44:45PM>
+//  DateTime: 9/26/2023 5:09:03PM
+//  GPLEX input file <Calculator/Calculator.Language.analyzer.lex - 9/26/2023 5:08:04PM>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: verbose, parser, stack, minimize
@@ -123,8 +123,8 @@ namespace ChineseObjects.Calculator
         
         enum Result {accept, noMatch, contextFound};
 
-        const int maxAccept = 8;
-        const int initial = 9;
+        const int maxAccept = 25;
+        const int initial = 26;
         const int eofNum = 0;
         const int goStart = -1;
         const int INITIAL = 0;
@@ -161,9 +161,9 @@ namespace ChineseObjects.Calculator
         }
     };
 
-    static int[] startState = new int[] {9, 0};
+    static int[] startState = new int[] {26, 0};
 
-    static Table[] NxS = new Table[10] {
+    static Table[] NxS = new Table[27] {
 /* NxS[   0] */ new Table(0, 0, 0, null), // Shortest string ""
 /* NxS[   1] */ // Shortest string "\t"
       new Table(9, 24, -1, new sbyte[] {1, -1, -1, -1, -1, -1, 
@@ -176,13 +176,140 @@ namespace ChineseObjects.Calculator
 /* NxS[   6] */ new Table(0, 0, -1, null), // Shortest string "-"
 /* NxS[   7] */ new Table(0, 0, -1, null), // Shortest string "/"
 /* NxS[   8] */ // Shortest string "0"
-      new Table(48, 10, -1, new sbyte[] {8, 8, 8, 8, 8, 8, 
-          8, 8, 8, 8}),
-/* NxS[   9] */ // Shortest string ""
-      new Table(9, 49, -1, new sbyte[] {1, -1, -1, -1, -1, -1, 
+      new Table(48, 75, -1, new sbyte[] {8, 8, 8, 8, 8, 8, 
+          8, 8, 8, 8, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[   9] */ // Shortest string "A"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  10] */ // Shortest string "c"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 22, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  11] */ // Shortest string "e"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 14, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 15, 9, 9}),
+/* NxS[  12] */ // Shortest string "i"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 13, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  13] */ // Shortest string "is"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  14] */ // Shortest string "en"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 21, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  15] */ // Shortest string "ex"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 16, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  16] */ // Shortest string "ext"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 17, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  17] */ // Shortest string "exte"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 18, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  18] */ // Shortest string "exten"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 19, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  19] */ // Shortest string "extend"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 20, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  20] */ // Shortest string "extends"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  21] */ // Shortest string "end"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  22] */ // Shortest string "cl"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 23, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  23] */ // Shortest string "cla"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 24, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  24] */ // Shortest string "clas"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 25, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  25] */ // Shortest string "class"
+      new Table(48, 75, -1, new sbyte[] {9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, -1, -1, -1, -1, -1, -1, -1, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9}),
+/* NxS[  26] */ // Shortest string ""
+      new Table(9, 114, -1, new sbyte[] {1, -1, -1, -1, -1, -1, 
           -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 
           -1, 1, -1, -1, -1, -1, -1, -1, -1, 2, 3, 4, 5, -1, 6, -1, 
-          7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8}),
+          7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, -1, -1, -1, -1, -1, 
+          -1, -1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 10, 9, 11, 9, 9, 9, 12, 9, 9, 9, 9, 9, 
+          9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9}),
     };
 
 int NextState() {
@@ -633,6 +760,33 @@ Console.WriteLine("token: {0}", yytext);		return (int)Token.OP_DIV;
             break;
         case 8: // Recognized '{Number}',	Shortest string "0"
 Console.WriteLine("token: {0}", yytext);		GetNumber(); return (int)Token.NUMBER;
+            break;
+        case 9: // Recognized '{Identifier}',	Shortest string "A"
+        case 10: // Recognized '{Identifier}',	Shortest string "c"
+        case 11: // Recognized '{Identifier}',	Shortest string "e"
+        case 12: // Recognized '{Identifier}',	Shortest string "i"
+        case 14: // Recognized '{Identifier}',	Shortest string "en"
+        case 15: // Recognized '{Identifier}',	Shortest string "ex"
+        case 16: // Recognized '{Identifier}',	Shortest string "ext"
+        case 17: // Recognized '{Identifier}',	Shortest string "exte"
+        case 18: // Recognized '{Identifier}',	Shortest string "exten"
+        case 19: // Recognized '{Identifier}',	Shortest string "extend"
+        case 22: // Recognized '{Identifier}',	Shortest string "cl"
+        case 23: // Recognized '{Identifier}',	Shortest string "cla"
+        case 24: // Recognized '{Identifier}',	Shortest string "clas"
+Console.WriteLine("token: {0}", yytext);		return (int)Token.IDENTIFIER;
+            break;
+        case 13: // Recognized '{Is}',	Shortest string "is"
+Console.WriteLine("token: {0}", yytext);		return (int)Token.IS;
+            break;
+        case 20: // Recognized '{Extends}',	Shortest string "extends"
+Console.WriteLine("token: {0}", yytext);		return (int)Token.EXTENDS;
+            break;
+        case 21: // Recognized '{End}',	Shortest string "end"
+Console.WriteLine("token: {0}", yytext);		return (int)Token.END;
+            break;
+        case 25: // Recognized '{Class}',	Shortest string "class"
+Console.WriteLine("token: {0}", yytext);		return (int)Token.CLASS;
             break;
         default:
             break;

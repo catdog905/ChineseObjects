@@ -3,8 +3,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.5.2
-// DateTime: 9/26/2023 3:50:40PM
-// Input file <Calculator/Calculator.Language.grammar.y - 9/26/2023 3:44:45PM>
+// DateTime: 9/26/2023 5:09:03PM
+// Input file <Calculator/Calculator.Language.grammar.y - 9/26/2023 5:09:01PM>
 
 // options: no-lines gplex
 
@@ -17,8 +17,9 @@ using QUT.Gppg;
 
 namespace ChineseObjects.Calculator
 {
-internal enum Token {error=2,EOF=3,NUMBER=4,OP_PLUS=5,OP_MINUS=6,
-    OP_MULT=7,OP_DIV=8,P_OPEN=9,P_CLOSE=10};
+internal enum Token {error=95,EOF=96,
+    NUMBER=97,IDENTIFIER=98,OP_PLUS=99,OP_MINUS=100,OP_MULT=101,OP_DIV=102,
+    P_OPEN=103,P_CLOSE=104,IS=105,END=106,CLASS=107,EXTENDS=108};
 
 internal partial struct ValueType
 { 
@@ -50,46 +51,60 @@ internal partial class CalculatorParser: ShiftReduceParser<ValueType, LexLocatio
 #pragma warning disable 649
   private static Dictionary<int, string> aliases;
 #pragma warning restore 649
-  private static Rule[] rules = new Rule[13];
-  private static State[] states = new State[19];
+  private static Rule[] rules = new Rule[22];
+  private static State[] states = new State[23];
   private static string[] nonTerms = new string[] {
-      "line", "$accept", "exp", "term", "factor", "number", };
+      "program", "$accept", "classDeclaration", "memberDeclarations", "identifiers", 
+      "memberDeclaration", "line", "exp", "term", "factor", "number", };
 
   static CalculatorParser() {
-    states[0] = new State(new int[]{4,9,9,10,7,-11,8,-11,5,-11,6,-11,3,-11},new int[]{-1,1,-3,3,-4,18,-5,17,-6,8});
-    states[1] = new State(new int[]{3,2});
+    states[0] = new State(new int[]{107,5},new int[]{-1,1,-3,3});
+    states[1] = new State(new int[]{96,2});
     states[2] = new State(-1);
-    states[3] = new State(new int[]{5,4,6,13,3,-2});
-    states[4] = new State(new int[]{4,9,9,10,7,-11,8,-11,5,-11,6,-11,3,-11,10,-11},new int[]{-4,5,-5,17,-6,8});
-    states[5] = new State(new int[]{7,6,8,15,5,-4,6,-4,3,-4,10,-4});
-    states[6] = new State(new int[]{4,9,9,10,7,-11,8,-11,5,-11,6,-11,3,-11,10,-11},new int[]{-5,7,-6,8});
-    states[7] = new State(-7);
-    states[8] = new State(-9);
-    states[9] = new State(-12);
-    states[10] = new State(new int[]{4,9,9,10,7,-11,8,-11,10,-11,5,-11,6,-11},new int[]{-3,11,-4,18,-5,17,-6,8});
-    states[11] = new State(new int[]{10,12,5,4,6,13});
+    states[3] = new State(new int[]{107,5,96,-2},new int[]{-1,4,-3,3});
+    states[4] = new State(-3);
+    states[5] = new State(new int[]{98,6});
+    states[6] = new State(new int[]{105,7,91,13});
+    states[7] = new State(new int[]{98,12},new int[]{-4,8,-6,10});
+    states[8] = new State(new int[]{106,9});
+    states[9] = new State(-4);
+    states[10] = new State(new int[]{98,12,106,-9},new int[]{-4,11,-6,10});
+    states[11] = new State(-8);
     states[12] = new State(-10);
-    states[13] = new State(new int[]{4,9,9,10,7,-11,8,-11,5,-11,6,-11,3,-11,10,-11},new int[]{-4,14,-5,17,-6,8});
-    states[14] = new State(new int[]{7,6,8,15,5,-5,6,-5,3,-5,10,-5});
-    states[15] = new State(new int[]{4,9,9,10,7,-11,8,-11,5,-11,6,-11,3,-11,10,-11},new int[]{-5,16,-6,8});
-    states[16] = new State(-8);
-    states[17] = new State(-6);
-    states[18] = new State(new int[]{7,6,8,15,5,-3,6,-3,3,-3,10,-3});
+    states[13] = new State(new int[]{108,14});
+    states[14] = new State(new int[]{98,20},new int[]{-5,15});
+    states[15] = new State(new int[]{93,16});
+    states[16] = new State(new int[]{105,17});
+    states[17] = new State(new int[]{98,12},new int[]{-4,18,-6,10});
+    states[18] = new State(new int[]{106,19});
+    states[19] = new State(-5);
+    states[20] = new State(new int[]{44,21,93,-7});
+    states[21] = new State(new int[]{98,20},new int[]{-5,22});
+    states[22] = new State(-6);
 
     for (int sNo = 0; sNo < states.Length; sNo++) states[sNo].number = sNo;
 
-    rules[1] = new Rule(-2, new int[]{-1,3});
+    rules[1] = new Rule(-2, new int[]{-1,96});
     rules[2] = new Rule(-1, new int[]{-3});
-    rules[3] = new Rule(-3, new int[]{-4});
-    rules[4] = new Rule(-3, new int[]{-3,5,-4});
-    rules[5] = new Rule(-3, new int[]{-3,6,-4});
-    rules[6] = new Rule(-4, new int[]{-5});
-    rules[7] = new Rule(-4, new int[]{-4,7,-5});
-    rules[8] = new Rule(-4, new int[]{-4,8,-5});
-    rules[9] = new Rule(-5, new int[]{-6});
-    rules[10] = new Rule(-5, new int[]{9,-3,10});
-    rules[11] = new Rule(-6, new int[]{});
-    rules[12] = new Rule(-6, new int[]{4});
+    rules[3] = new Rule(-1, new int[]{-3,-1});
+    rules[4] = new Rule(-3, new int[]{107,98,105,-4,106});
+    rules[5] = new Rule(-3, new int[]{107,98,91,108,-5,93,105,-4,106});
+    rules[6] = new Rule(-5, new int[]{98,44,-5});
+    rules[7] = new Rule(-5, new int[]{98});
+    rules[8] = new Rule(-4, new int[]{-6,-4});
+    rules[9] = new Rule(-4, new int[]{-6});
+    rules[10] = new Rule(-6, new int[]{98});
+    rules[11] = new Rule(-7, new int[]{-8});
+    rules[12] = new Rule(-8, new int[]{-9});
+    rules[13] = new Rule(-8, new int[]{-8,99,-9});
+    rules[14] = new Rule(-8, new int[]{-8,100,-9});
+    rules[15] = new Rule(-9, new int[]{-10});
+    rules[16] = new Rule(-9, new int[]{-9,101,-10});
+    rules[17] = new Rule(-9, new int[]{-9,102,-10});
+    rules[18] = new Rule(-10, new int[]{-11});
+    rules[19] = new Rule(-10, new int[]{103,-8,104});
+    rules[20] = new Rule(-11, new int[]{});
+    rules[21] = new Rule(-11, new int[]{97});
   }
 
   protected override void Initialize() {
@@ -104,35 +119,63 @@ internal partial class CalculatorParser: ShiftReduceParser<ValueType, LexLocatio
 #pragma warning disable 162, 1522
     switch (action)
     {
-      case 2: // line -> exp
-{ Console.WriteLine("result is {0}\n", ValueStack[ValueStack.Depth-1].n);}
+      case 2: // program -> classDeclaration
+{ }
         break;
-      case 3: // exp -> term
-{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;			Console.WriteLine("Rule -> exp: {0}", ValueStack[ValueStack.Depth-1].n); }
+      case 3: // program -> classDeclaration, program
+{ }
         break;
-      case 4: // exp -> exp, OP_PLUS, term
-{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n + ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> exp: {0} + {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
+      case 4: // classDeclaration -> CLASS, IDENTIFIER, IS, memberDeclarations, END
+{}
         break;
-      case 5: // exp -> exp, OP_MINUS, term
-{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n - ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> exp: {0} - {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
+      case 5: // classDeclaration -> CLASS, IDENTIFIER, '[', EXTENDS, identifiers, ']', IS, 
+              //                     memberDeclarations, END
+{}
         break;
-      case 6: // term -> factor
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;			Console.WriteLine("Rule -> term: {0}", ValueStack[ValueStack.Depth-1].n); }
+      case 6: // identifiers -> IDENTIFIER, ',', identifiers
+{}
         break;
-      case 7: // term -> term, OP_MULT, factor
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n * ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> term: {0} * {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
+      case 7: // identifiers -> IDENTIFIER
+{}
         break;
-      case 8: // term -> term, OP_DIV, factor
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n / ValueStack[ValueStack.Depth-1].n;	Console.WriteLine("Rule -> term: {0} / {1}", ValueStack[ValueStack.Depth-3].n, ValueStack[ValueStack.Depth-1].n); }
+      case 8: // memberDeclarations -> memberDeclaration, memberDeclarations
+{}
         break;
-      case 9: // factor -> number
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;			Console.WriteLine("Rule -> factor: {0}", ValueStack[ValueStack.Depth-1].n); }
+      case 9: // memberDeclarations -> memberDeclaration
+{}
         break;
-      case 10: // factor -> P_OPEN, exp, P_CLOSE
-{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-2].n;			Console.WriteLine("Rule -> factor: ( {0} )", ValueStack[ValueStack.Depth-1].n);}
+      case 10: // memberDeclaration -> IDENTIFIER
+{}
         break;
-      case 12: // number -> NUMBER
-{ Console.WriteLine("Rule -> number: {0}", ValueStack[ValueStack.Depth-1].n); }
+      case 11: // line -> exp
+{ }
+        break;
+      case 12: // exp -> term
+{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;		 }
+        break;
+      case 13: // exp -> exp, OP_PLUS, term
+{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n + ValueStack[ValueStack.Depth-1].n;	 }
+        break;
+      case 14: // exp -> exp, OP_MINUS, term
+{ CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n - ValueStack[ValueStack.Depth-1].n;	 }
+        break;
+      case 15: // term -> factor
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;		 }
+        break;
+      case 16: // term -> term, OP_MULT, factor
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n * ValueStack[ValueStack.Depth-1].n;	 }
+        break;
+      case 17: // term -> term, OP_DIV, factor
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-3].n / ValueStack[ValueStack.Depth-1].n;	 }
+        break;
+      case 18: // factor -> number
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-1].n;		 }
+        break;
+      case 19: // factor -> P_OPEN, exp, P_CLOSE
+{CurrentSemanticValue.n = ValueStack[ValueStack.Depth-2].n;		 }
+        break;
+      case 21: // number -> NUMBER
+{  }
         break;
     }
 #pragma warning restore 162, 1522

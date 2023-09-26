@@ -1,0 +1,55 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v7.0": {
+      "ChineseObjects/1.0.0": {
+        "dependencies": {
+          "YaccLexTools": "1.2.0"
+        },
+        "runtime": {
+          "ChineseObjects.dll": {}
+        }
+      },
+      "YaccLexTools/1.2.0": {
+        "dependencies": {
+          "YaccLexTools.Gplex": "1.2.2.2",
+          "YaccLexTools.Gppg": "1.5.2.2"
+        }
+      },
+      "YaccLexTools.Gplex/1.2.2.2": {},
+      "YaccLexTools.Gppg/1.5.2.2": {}
+    }
+  },
+  "libraries": {
+    "ChineseObjects/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "YaccLexTools/1.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LUOmCDqNENOUio38J9fyvBverdoser4P34aRe3FoJvujBobgPb59MGmkVEU7R9yJ88vlB/5EH8qdXUnqcy2xQw==",
+      "path": "yacclextools/1.2.0",
+      "hashPath": "yacclextools.1.2.0.nupkg.sha512"
+    },
+    "YaccLexTools.Gplex/1.2.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+f6seDnNJJTjRc8tC54d6Mrx21EBMF26r276H99F1bqyEhL6KTTx8KhEY2457ngorajN1n2DAYU/RrCRGWvibg==",
+      "path": "yacclextools.gplex/1.2.2.2",
+      "hashPath": "yacclextools.gplex.1.2.2.2.nupkg.sha512"
+    },
+    "YaccLexTools.Gppg/1.5.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q9nyp9qGpyFETlWlxGqfX6Ch0IK6yDrp25tr45JpnWoRcbG8ERsKmWqZBlxmAHWKBQKlznM/herMoJKbtj/Frg==",
+      "path": "yacclextools.gppg/1.5.2.2",
+      "hashPath": "yacclextools.gppg.1.5.2.2.nupkg.sha512"
+    }
+  }
+}

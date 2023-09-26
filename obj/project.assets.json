@@ -1,0 +1,297 @@
+{
+  "version": 3,
+  "targets": {
+    "net7.0": {
+      "YaccLexTools/1.2.0": {
+        "type": "package",
+        "dependencies": {
+          "YaccLexTools.Gplex": "[1.2.2.2, 1.3.0)",
+          "YaccLexTools.Gppg": "[1.5.2.2, 1.6.0)"
+        }
+      },
+      "YaccLexTools.Gplex/1.2.2.2": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/_._": {}
+        },
+        "runtime": {
+          "lib/net7.0/_._": {}
+        },
+        "build": {
+          "build/net7.0/YaccLexTools.Gplex.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildCrossTargeting/YaccLexTools.Gplex.targets": {}
+        }
+      },
+      "YaccLexTools.Gppg/1.5.2.2": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/_._": {}
+        },
+        "runtime": {
+          "lib/net7.0/_._": {}
+        },
+        "build": {
+          "build/net7.0/YaccLexTools.Gppg.targets": {}
+        },
+        "buildMultiTargeting": {
+          "buildCrossTargeting/YaccLexTools.Gppg.targets": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "YaccLexTools/1.2.0": {
+      "sha512": "LUOmCDqNENOUio38J9fyvBverdoser4P34aRe3FoJvujBobgPb59MGmkVEU7R9yJ88vlB/5EH8qdXUnqcy2xQw==",
+      "type": "package",
+      "path": "yacclextools/1.2.0",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "docs/README.md",
+        "images/Icon.png",
+        "tools/Init.ps1",
+        "tools/Install.ps1",
+        "tools/YaccLexTools.PowerShell.Utility.dll",
+        "tools/YaccLexTools.PowerShell.Utility.pdb",
+        "tools/YaccLexTools.PowerShell.dll",
+        "tools/YaccLexTools.PowerShell.pdb",
+        "tools/YaccLexTools.Templates.dll",
+        "tools/YaccLexTools.Templates.pdb",
+        "tools/YaccLexTools.psd1",
+        "tools/YaccLexTools.psm1",
+        "tools/about_YaccLexTools.help.txt",
+        "yacclextools.1.2.0.nupkg.sha512",
+        "yacclextools.nuspec"
+      ]
+    },
+    "YaccLexTools.Gplex/1.2.2.2": {
+      "sha512": "+f6seDnNJJTjRc8tC54d6Mrx21EBMF26r276H99F1bqyEhL6KTTx8KhEY2457ngorajN1n2DAYU/RrCRGWvibg==",
+      "type": "package",
+      "path": "yacclextools.gplex/1.2.2.2",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "build/net20/YaccLexTools.Gplex.targets",
+        "build/net5.0/YaccLexTools.Gplex.targets",
+        "build/net6.0/YaccLexTools.Gplex.targets",
+        "build/net7.0/YaccLexTools.Gplex.targets",
+        "build/netcoreapp2.2/YaccLexTools.Gplex.targets",
+        "build/netcoreapp3.1/YaccLexTools.Gplex.targets",
+        "build/netstandard2.0/YaccLexTools.Gplex.targets",
+        "buildCrossTargeting/YaccLexTools.Gplex.targets",
+        "docs/README.md",
+        "images/Icon.png",
+        "lib/net20/_._",
+        "lib/net5.0/_._",
+        "lib/net6.0/_._",
+        "lib/net7.0/_._",
+        "lib/netcoreapp2.2/_._",
+        "lib/netcoreapp3.1/_._",
+        "lib/netstandard2.0/_._",
+        "tools/RunGplex.targets",
+        "tools/net20/GPLEXcopyright.rtf",
+        "tools/net20/Gplex.exe",
+        "tools/net20/Gplex.exe.config",
+        "tools/net20/Gplex.pdb",
+        "tools/net20/big5.nlp",
+        "tools/net20/bopomofo.nlp",
+        "tools/net20/it/mscorlib.resources.dll",
+        "tools/net20/ksc.nlp",
+        "tools/net20/mscorlib.dll",
+        "tools/net20/normidna.nlp",
+        "tools/net20/normnfc.nlp",
+        "tools/net20/normnfd.nlp",
+        "tools/net20/normnfkc.nlp",
+        "tools/net20/normnfkd.nlp",
+        "tools/net20/prc.nlp",
+        "tools/net20/prcp.nlp",
+        "tools/net20/sortkey.nlp",
+        "tools/net20/sorttbls.nlp",
+        "tools/net20/xjis.nlp",
+        "tools/net5.0/GPLEXcopyright.rtf",
+        "tools/net5.0/Gplex.deps.json",
+        "tools/net5.0/Gplex.dll",
+        "tools/net5.0/Gplex.exe",
+        "tools/net5.0/Gplex.pdb",
+        "tools/net5.0/Gplex.runtimeconfig.json",
+        "tools/net6.0/GPLEXcopyright.rtf",
+        "tools/net6.0/Gplex.deps.json",
+        "tools/net6.0/Gplex.dll",
+        "tools/net6.0/Gplex.exe",
+        "tools/net6.0/Gplex.pdb",
+        "tools/net6.0/Gplex.runtimeconfig.json",
+        "tools/net7.0/GPLEXcopyright.rtf",
+        "tools/net7.0/Gplex.deps.json",
+        "tools/net7.0/Gplex.dll",
+        "tools/net7.0/Gplex.exe",
+        "tools/net7.0/Gplex.pdb",
+        "tools/net7.0/Gplex.runtimeconfig.json",
+        "tools/netcoreapp2.2/GPLEXcopyright.rtf",
+        "tools/netcoreapp2.2/Gplex.deps.json",
+        "tools/netcoreapp2.2/Gplex.dll",
+        "tools/netcoreapp2.2/Gplex.pdb",
+        "tools/netcoreapp2.2/Gplex.runtimeconfig.json",
+        "tools/netcoreapp3.1/GPLEXcopyright.rtf",
+        "tools/netcoreapp3.1/Gplex.deps.json",
+        "tools/netcoreapp3.1/Gplex.dll",
+        "tools/netcoreapp3.1/Gplex.exe",
+        "tools/netcoreapp3.1/Gplex.pdb",
+        "tools/netcoreapp3.1/Gplex.runtimeconfig.json",
+        "yacclextools.gplex.1.2.2.2.nupkg.sha512",
+        "yacclextools.gplex.nuspec"
+      ]
+    },
+    "YaccLexTools.Gppg/1.5.2.2": {
+      "sha512": "q9nyp9qGpyFETlWlxGqfX6Ch0IK6yDrp25tr45JpnWoRcbG8ERsKmWqZBlxmAHWKBQKlznM/herMoJKbtj/Frg==",
+      "type": "package",
+      "path": "yacclextools.gppg/1.5.2.2",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "build/net20/YaccLexTools.Gppg.targets",
+        "build/net5.0/YaccLexTools.Gppg.targets",
+        "build/net6.0/YaccLexTools.Gppg.targets",
+        "build/net7.0/YaccLexTools.Gppg.targets",
+        "build/netcoreapp2.2/YaccLexTools.Gppg.targets",
+        "build/netcoreapp3.1/YaccLexTools.Gppg.targets",
+        "build/netstandard2.0/YaccLexTools.Gppg.targets",
+        "buildCrossTargeting/YaccLexTools.Gppg.targets",
+        "docs/README.md",
+        "images/Icon.png",
+        "lib/net20/_._",
+        "lib/net5.0/_._",
+        "lib/net6.0/_._",
+        "lib/net7.0/_._",
+        "lib/netcoreapp2.2/_._",
+        "lib/netcoreapp3.1/_._",
+        "lib/netstandard2.0/_._",
+        "tools/RunGppg.targets",
+        "tools/net20/GPPGcopyright.rtf",
+        "tools/net20/Gppg.exe",
+        "tools/net20/Gppg.exe.config",
+        "tools/net20/Gppg.pdb",
+        "tools/net20/big5.nlp",
+        "tools/net20/bopomofo.nlp",
+        "tools/net20/it/mscorlib.resources.dll",
+        "tools/net20/ksc.nlp",
+        "tools/net20/mscorlib.dll",
+        "tools/net20/normidna.nlp",
+        "tools/net20/normnfc.nlp",
+        "tools/net20/normnfd.nlp",
+        "tools/net20/normnfkc.nlp",
+        "tools/net20/normnfkd.nlp",
+        "tools/net20/prc.nlp",
+        "tools/net20/prcp.nlp",
+        "tools/net20/sortkey.nlp",
+        "tools/net20/sorttbls.nlp",
+        "tools/net20/xjis.nlp",
+        "tools/net5.0/GPPGcopyright.rtf",
+        "tools/net5.0/Gppg.deps.json",
+        "tools/net5.0/Gppg.dll",
+        "tools/net5.0/Gppg.exe",
+        "tools/net5.0/Gppg.pdb",
+        "tools/net5.0/Gppg.runtimeconfig.json",
+        "tools/net6.0/GPPGcopyright.rtf",
+        "tools/net6.0/Gppg.deps.json",
+        "tools/net6.0/Gppg.dll",
+        "tools/net6.0/Gppg.exe",
+        "tools/net6.0/Gppg.pdb",
+        "tools/net6.0/Gppg.runtimeconfig.json",
+        "tools/net7.0/GPPGcopyright.rtf",
+        "tools/net7.0/Gppg.deps.json",
+        "tools/net7.0/Gppg.dll",
+        "tools/net7.0/Gppg.exe",
+        "tools/net7.0/Gppg.pdb",
+        "tools/net7.0/Gppg.runtimeconfig.json",
+        "tools/netcoreapp2.2/GPPGcopyright.rtf",
+        "tools/netcoreapp2.2/Gppg.deps.json",
+        "tools/netcoreapp2.2/Gppg.dll",
+        "tools/netcoreapp2.2/Gppg.pdb",
+        "tools/netcoreapp2.2/Gppg.runtimeconfig.json",
+        "tools/netcoreapp3.1/GPPGcopyright.rtf",
+        "tools/netcoreapp3.1/Gppg.deps.json",
+        "tools/netcoreapp3.1/Gppg.dll",
+        "tools/netcoreapp3.1/Gppg.exe",
+        "tools/netcoreapp3.1/Gppg.pdb",
+        "tools/netcoreapp3.1/Gppg.runtimeconfig.json",
+        "yacclextools.gppg.1.5.2.2.nupkg.sha512",
+        "yacclextools.gppg.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net7.0": [
+      "YaccLexTools >= 1.2.0"
+    ]
+  },
+  "packageFolders": {
+    "/home/yaroslav/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/home/yaroslav/RiderProjects/ChineseObjects/ChineseObjects.csproj",
+      "projectName": "ChineseObjects",
+      "projectPath": "/home/yaroslav/RiderProjects/ChineseObjects/ChineseObjects.csproj",
+      "packagesPath": "/home/yaroslav/.nuget/packages/",
+      "outputPath": "/home/yaroslav/RiderProjects/ChineseObjects/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/yaroslav/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net7.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net7.0": {
+        "targetAlias": "net7.0",
+        "dependencies": {
+          "YaccLexTools": {
+            "target": "Package",
+            "version": "[1.2.0, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.401/RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

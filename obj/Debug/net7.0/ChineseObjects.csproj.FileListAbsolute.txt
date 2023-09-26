@@ -1,0 +1,14 @@
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.GeneratedMSBuildEditorConfig.editorconfig
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.AssemblyInfoInputs.cache
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.AssemblyInfo.cs
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.csproj.CoreCompileInputs.cache
+/home/yaroslav/RiderProjects/ChineseObjects/bin/Debug/net7.0/ChineseObjects
+/home/yaroslav/RiderProjects/ChineseObjects/bin/Debug/net7.0/ChineseObjects.deps.json
+/home/yaroslav/RiderProjects/ChineseObjects/bin/Debug/net7.0/ChineseObjects.runtimeconfig.json
+/home/yaroslav/RiderProjects/ChineseObjects/bin/Debug/net7.0/ChineseObjects.dll
+/home/yaroslav/RiderProjects/ChineseObjects/bin/Debug/net7.0/ChineseObjects.pdb
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.dll
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/refint/ChineseObjects.dll
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.pdb
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ChineseObjects.genruntimeconfig.cache
+/home/yaroslav/RiderProjects/ChineseObjects/obj/Debug/net7.0/ref/ChineseObjects.dll

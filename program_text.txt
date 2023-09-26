@@ -1,3 +1,8 @@
-class MyClass3 is 
-    m
-end
+class Console is
+    method write(text : Text) : Void is 
+        a := 1 + 2
+    end
+    method read() : TextStream is
+        b := 2 + 3 
+    end
+end 

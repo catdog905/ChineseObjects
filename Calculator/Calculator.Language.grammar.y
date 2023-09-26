@@ -11,9 +11,10 @@
 
 %start program
 
-%token NUMBER, IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE
-%token IS, END
-%token CLASS, EXTENDS
+%token NUMBER, IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON
+%token IS, END, LOOP, THEN, RETURN, ELSE, WHILE, ASSIGN, IF
+%token VAR, METHOD
+%token CLASS, EXTENDS, THIS
 
 %%
 
@@ -22,7 +23,7 @@ program: classDeclaration               { }
        ;
 
 classDeclaration: CLASS IDENTIFIER IS memberDeclarations END {}
-       | CLASS IDENTIFIER '[' EXTENDS identifiers ']' IS memberDeclarations END {}
+       | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
        ;
        
 identifiers: IDENTIFIER ',' identifiers          {}
@@ -33,7 +34,43 @@ memberDeclarations: memberDeclaration memberDeclarations {}
        | memberDeclaration {}
        ;
 
-memberDeclaration: IDENTIFIER {};
+memberDeclaration: variableDeclaration    {}
+ 		 | methodDeclaration      {}
+ 		 | constructorDeclaration {}
+ 		 ;
+ 		 
+variableDeclaration: VAR IDENTIFIER COLON exp;
+
+methodDeclaration: METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END;
+
+constructorDeclaration: THIS P_OPEN parameters P_CLOSE IS body END;
+
+parameters: 
+          | parameter ',' parameters
+	  | parameter
+	  ;
+	 
+parameter: IDENTIFIER COLON IDENTIFIER;
+
+body: statement body
+    | statement
+    ;
+    
+statement: assignment
+         | whileLoop
+         | ifStatement
+         | returnStatement
+         ;
+         
+assignment: IDENTIFIER ASSIGN exp;
+
+whileLoop: WHILE exp LOOP body END;
+
+ifStatement: IF exp THEN body END
+           | IF exp THEN body ELSE body END
+           ;
+           
+returnStatement: RETURN exp;
 
 line   : exp				{ }
        ;

@@ -1,9 +1,9 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <Calculator/Calculator.Language.grammar.y - 9/26/2023 5:09:01PM>
+//  GPPG error listing for yacc source file <Calculator/Calculator.Language.grammar.y - 9/26/2023 10:31:58PM>
 // ==========================================================================
 //  Version:  1.5.2
-//  DateTime: 9/26/2023 5:09:03PM
+//  DateTime: 9/26/2023 10:32:01PM
 // ==========================================================================
 
 
@@ -20,24 +20,21 @@
 
 %start program
 
-%token NUMBER, IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE
-%token IS, END
-%token CLASS, EXTENDS
+%token NUMBER, IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON
+%token IS, END, LOOP, THEN, RETURN, ELSE, WHILE, ASSIGN, IF
+%token VAR, METHOD
+%token CLASS, EXTENDS, THIS
 
 %%
 // Warning: NonTerminal symbol "line" is unreachable
-// Warning: NonTerminal symbol "exp" is unreachable
-// Warning: NonTerminal symbol "term" is unreachable
-// Warning: NonTerminal symbol "factor" is unreachable
-// Warning: NonTerminal symbol "number" is unreachable
-// ---------------------------------------------------
+// -------------------------------------------------
 
 program: classDeclaration               { }
        | classDeclaration program       { }
        ;
 
 classDeclaration: CLASS IDENTIFIER IS memberDeclarations END {}
-       | CLASS IDENTIFIER '[' EXTENDS identifiers ']' IS memberDeclarations END {}
+       | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
        ;
        
 identifiers: IDENTIFIER ',' identifiers          {}
@@ -48,7 +45,43 @@ memberDeclarations: memberDeclaration memberDeclarations {}
        | memberDeclaration {}
        ;
 
-memberDeclaration: IDENTIFIER {};
+memberDeclaration: variableDeclaration    {}
+ 		 | methodDeclaration      {}
+ 		 | constructorDeclaration {}
+ 		 ;
+ 		 
+variableDeclaration: VAR IDENTIFIER COLON exp;
+
+methodDeclaration: METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END;
+
+constructorDeclaration: THIS P_OPEN parameters P_CLOSE IS body END;
+
+parameters: 
+          | parameter ',' parameters
+	  | parameter
+	  ;
+	 
+parameter: IDENTIFIER COLON IDENTIFIER;
+
+body: statement body
+    | statement
+    ;
+    
+statement: assignment
+         | whileLoop
+         | ifStatement
+         | returnStatement
+         ;
+         
+assignment: IDENTIFIER ASSIGN exp;
+
+whileLoop: WHILE exp LOOP body END;
+
+ifStatement: IF exp THEN body END
+           | IF exp THEN body ELSE body END
+           ;
+           
+returnStatement: RETURN exp;
 
 line   : exp				{ }
        ;

@@ -8,7 +8,9 @@
 Eol             (\r\n?|\n)
 NotWh           [^ \t\r\n]
 Space           [ \t]
-Number          [0-9]+
+IntegerLiteral  [0-9]+
+RealLiteral     [0-9]+\.[0-9]
+BooleanLiteral  (true|false)
 OpPlus			\+
 OpMinus			\-
 OpMult			\*
@@ -30,6 +32,8 @@ Method          method
 While           while
 If              if
 This            this
+New             new
+Dot             \.
 Identifier      [a-zA-z0-9]+
 
 %{
@@ -37,8 +41,6 @@ Identifier      [a-zA-z0-9]+
 %}
 
 %%
-
-{Number}		{ Console.WriteLine("token: {0}", yytext);		GetNumber(); return (int)Token.NUMBER; }
 
 {Space}+		/* skip */
 
@@ -63,6 +65,11 @@ Identifier      [a-zA-z0-9]+
 {Assign}        { Console.WriteLine("token: {0}", yytext);		return (int)Token.ASSIGN; }
 {If}            { Console.WriteLine("token: {0}", yytext);		return (int)Token.IF; }
 {This}          { Console.WriteLine("token: {0}", yytext);		return (int)Token.THIS; }
+{IntegerLiteral} { Console.WriteLine("token: {0}", yytext);		return (int)Token.INTEGER_LITERAL; }
+{RealLiteral}   { Console.WriteLine("token: {0}", yytext);		return (int)Token.REAL_LITERAL; }
+{BooleanLiteral} { Console.WriteLine("token: {0}", yytext);		return (int)Token.BOOLEAN_LITERAL; }
+{New}           { Console.WriteLine("token: {0}", yytext);		return (int)Token.NEW; }
+{Dot}           { Console.WriteLine("token: {0}", yytext);		return (int)Token.DOT; }
 {Identifier}    { Console.WriteLine("token: {0}", yytext);		return (int)Token.IDENTIFIER; }
 
 %%

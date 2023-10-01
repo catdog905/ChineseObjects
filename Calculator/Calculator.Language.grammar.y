@@ -11,10 +11,11 @@
 
 %start program
 
-%token NUMBER, IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON
+%token IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON, DOT
 %token IS, END, LOOP, THEN, RETURN, ELSE, WHILE, ASSIGN, IF
 %token VAR, METHOD
-%token CLASS, EXTENDS, THIS
+%token CLASS, EXTENDS, THIS, NEW
+%token INTEGER_LITERAL, REAL_LITERAL, BOOLEAN_LITERAL
 
 %%
 
@@ -26,7 +27,7 @@ classDeclaration: CLASS IDENTIFIER IS memberDeclarations END {}
        | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
        ;
        
-identifiers: IDENTIFIER ',' identifiers          {}
+identifiers: IDENTIFIER ',' identifiers        {}
        | IDENTIFIER                            {}
        ;
 
@@ -39,7 +40,7 @@ memberDeclaration: variableDeclaration    {}
  		 | constructorDeclaration {}
  		 ;
  		 
-variableDeclaration: VAR IDENTIFIER COLON exp;
+variableDeclaration: VAR IDENTIFIER COLON expr;
 
 methodDeclaration: METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END;
 
@@ -62,35 +63,36 @@ statement: assignment
          | returnStatement
          ;
          
-assignment: IDENTIFIER ASSIGN exp;
+assignment: IDENTIFIER ASSIGN expr;
 
-whileLoop: WHILE exp LOOP body END;
+whileLoop: WHILE expr LOOP body END;
 
-ifStatement: IF exp THEN body END
-           | IF exp THEN body ELSE body END
+ifStatement: IF expr THEN body END
+           | IF expr THEN body ELSE body END
            ;
            
-returnStatement: RETURN exp;
+returnStatement: RETURN expr;
 
-line   : exp				{ }
+expr    : expr DOT methodCall             { 	 }
+       | primary                        { 	 }
        ;
+       
+methodCall: IDENTIFIER P_OPEN arguments P_CLOSE;
 
-exp    : term                           { $$.n = $1.n;		 }
-       | exp OP_PLUS term               { $$.n = $1.n + $3.n;	 }
-       | exp OP_MINUS term              { $$.n = $1.n - $3.n;	 }
+arguments: 
+          | argument ',' arguments
+	  | argument
+	  ;
+	 
+argument: expr;
+       
+primary: classInstantiation             {}
+       | INTEGER_LITERAL                {}
+       | REAL_LITERAL                   {}
+       | BOOLEAN_LITERAL                {}
+       | THIS                           {}
        ;
-
-term   : factor				{$$.n = $1.n;		 }
-       | term OP_MULT factor            {$$.n = $1.n * $3.n;	 }
-       | term OP_DIV factor             {$$.n = $1.n / $3.n;	 }
-       ; 
-
-factor : number                         {$$.n = $1.n;		 }
-       | P_OPEN exp P_CLOSE             {$$.n = $2.n;		 }
-       ;
-
-number : 
-       | NUMBER				{  }
-       ;
+       
+classInstantiation: NEW IDENTIFIER P_OPEN parameters P_CLOSE;
 
 %%

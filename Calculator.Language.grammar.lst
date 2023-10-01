@@ -1,9 +1,9 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <Calculator/Calculator.Language.grammar.y - 9/26/2023 10:31:58PM>
+//  GPPG error listing for yacc source file <Calculator/Calculator.Language.grammar.y - 10/1/2023 11:38:10PM>
 // ==========================================================================
 //  Version:  1.5.2
-//  DateTime: 9/26/2023 10:32:01PM
+//  DateTime: 10/1/2023 11:38:12PM
 // ==========================================================================
 
 
@@ -20,14 +20,17 @@
 
 %start program
 
-%token NUMBER, IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON
+%tokenIDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON, DOT
+//^^^^^^^^^^^^^^^
+// Error: Unknown %keyword in this context
+// Error: Syntax error, unexpected ','
+// ---------------------------------------
 %token IS, END, LOOP, THEN, RETURN, ELSE, WHILE, ASSIGN, IF
 %token VAR, METHOD
-%token CLASS, EXTENDS, THIS
+%token CLASS, EXTENDS, THIS, NEW
+%token INTEGER_LITERAL, REAL_LITERAL, BOOLEAN_LITERAL
 
 %%
-// Warning: NonTerminal symbol "line" is unreachable
-// -------------------------------------------------
 
 program: classDeclaration               { }
        | classDeclaration program       { }
@@ -83,26 +86,20 @@ ifStatement: IF exp THEN body END
            
 returnStatement: RETURN exp;
 
-line   : exp				{ }
+exp    : exp DOT methodCall            { 	 }
+       | primary                        { 	 }
        ;
-
-exp    : term                           { $$.n = $1.n;		 }
-       | exp OP_PLUS term               { $$.n = $1.n + $3.n;	 }
-       | exp OP_MINUS term              { $$.n = $1.n - $3.n;	 }
+       
+methodCall: IDENTIFIER P_OPEN parameters P_CLOSE;
+       
+primary: classInstantiation             {}
+       | INTEGER_LITERAL                {}
+       | REAL_LITERAL                   {}
+       | BOOLEAN_LITERAL                {}
+       | THIS                           {}
        ;
-
-term   : factor				{$$.n = $1.n;		 }
-       | term OP_MULT factor            {$$.n = $1.n * $3.n;	 }
-       | term OP_DIV factor             {$$.n = $1.n / $3.n;	 }
-       ; 
-
-factor : number                         {$$.n = $1.n;		 }
-       | P_OPEN exp P_CLOSE             {$$.n = $2.n;		 }
-       ;
-
-number : 
-       | NUMBER				{  }
-       ;
+       
+classInstantiation: NEW IDENTIFIER P_OPEN parameters P_CLOSE;
 
 %%// ==========================================================================
 

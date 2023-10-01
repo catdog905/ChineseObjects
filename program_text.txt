@@ -1,8 +1,8 @@
 class Console is
     method write(text : Text) : Void is 
-        a := 1 + 2
+        a := 1.Plus(2.0)
     end
     method read() : TextStream is
-        b := 2 + 3 
+        b := 2.Plus(3) 
     end
 end 

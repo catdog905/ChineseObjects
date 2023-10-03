@@ -1,5 +1,5 @@
-%namespace ChineseObjects.Calculator
-%scannertype CalculatorScanner
+%namespace ChineseObjects.Lang
+%scannertype LangScanner
 %visibility internal
 %tokentype Token
 

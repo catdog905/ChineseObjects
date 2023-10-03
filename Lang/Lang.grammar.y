@@ -1,6 +1,6 @@
-%namespace ChineseObjects.Calculator
+%namespace ChineseObjects.Lang
 %partial
-%parsertype CalculatorParser
+%parsertype LangParser
 %visibility internal
 %tokentype Token
 

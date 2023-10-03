@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ChineseObjects.Calculator
+namespace ChineseObjects.Lang
 {
-    internal partial class CalculatorScanner
+    internal partial class LangScanner
     {
 
         void GetNumber()

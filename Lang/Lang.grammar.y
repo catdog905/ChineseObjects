@@ -4,10 +4,10 @@
 %visibility internal
 %tokentype Token
 
-%union { 
-			public int n; 
-			public string s; 
-	   }
+%union {
+            public int n;
+            public string s;
+       }
 
 %start program
 
@@ -19,80 +19,80 @@
 
 %%
 
-program: classDeclaration               { }
-       | classDeclaration program       { }
-       ;
+program : classDeclaration               { }
+        | classDeclaration program       { }
+        ;
 
-classDeclaration: CLASS IDENTIFIER IS memberDeclarations END {}
-       | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
-       ;
-       
-identifiers: IDENTIFIER ',' identifiers        {}
-       | IDENTIFIER                            {}
-       ;
+classDeclaration : CLASS IDENTIFIER IS memberDeclarations END {}
+		 | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
+       		 ;
 
-memberDeclarations: memberDeclaration memberDeclarations {}
-       | memberDeclaration {}
-       ;
+identifiers : IDENTIFIER ',' identifiers        {}
+            | IDENTIFIER                            {}
+            ;
 
-memberDeclaration: variableDeclaration    {}
- 		 | methodDeclaration      {}
- 		 | constructorDeclaration {}
- 		 ;
- 		 
-variableDeclaration: VAR IDENTIFIER COLON expr;
+memberDeclarations : memberDeclaration memberDeclarations {}
+                   | memberDeclaration {}
+                   ;
 
-methodDeclaration: METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END;
+memberDeclaration : variableDeclaration    {}
+                  | methodDeclaration      {}
+                  | constructorDeclaration {}
+                  ;
 
-constructorDeclaration: THIS P_OPEN parameters P_CLOSE IS body END;
+variableDeclaration : VAR IDENTIFIER COLON expr;
 
-parameters: 
-          | parameter ',' parameters
-	  | parameter
-	  ;
-	 
-parameter: IDENTIFIER COLON IDENTIFIER;
+methodDeclaration : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END;
 
-body: statement body
-    | statement
-    ;
-    
-statement: assignment
-         | whileLoop
-         | ifStatement
-         | returnStatement
-         ;
-         
-assignment: IDENTIFIER ASSIGN expr;
+constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END;
 
-whileLoop: WHILE expr LOOP body END;
-
-ifStatement: IF expr THEN body END
-           | IF expr THEN body ELSE body END
+parameters :
+           | parameter ',' parameters
+           | parameter
            ;
-           
-returnStatement: RETURN expr;
 
-expr    : expr DOT methodCall           { 	 }
-       | primary                        { 	 }
+parameter : IDENTIFIER COLON IDENTIFIER;
+
+body : statement body
+     | statement
+     ;
+
+statement : assignment
+          | whileLoop
+          | ifStatement
+          | returnStatement
+          ;
+
+assignment : IDENTIFIER ASSIGN expr;
+
+whileLoop : WHILE expr LOOP body END;
+
+ifStatement : IF expr THEN body END
+            | IF expr THEN body ELSE body END
+            ;
+
+returnStatement : RETURN expr;
+
+expr   : expr DOT methodCall            {      }
+       | primary                        {      }
        ;
-       
-methodCall: IDENTIFIER P_OPEN arguments P_CLOSE;
 
-arguments: 
+methodCall : IDENTIFIER P_OPEN arguments P_CLOSE;
+
+arguments :
           | argument ',' arguments
-	  | argument
-	  ;
-	 
-argument: expr;
-       
-primary: classInstantiation             {}
-       | INTEGER_LITERAL                {}
-       | REAL_LITERAL                   {}
-       | BOOLEAN_LITERAL                {}
-       | THIS                           {}
-       ;
-       
-classInstantiation: NEW IDENTIFIER P_OPEN parameters P_CLOSE;
+          | argument
+          ;
+
+argument : expr;
+
+primary : classInstantiation             {}
+        | INTEGER_LITERAL                {}
+        | REAL_LITERAL                   {}
+        | BOOLEAN_LITERAL                {}
+        | THIS                           {}
+        ;
+
+classInstantiation : NEW IDENTIFIER P_OPEN parameters P_CLOSE;
 
 %%

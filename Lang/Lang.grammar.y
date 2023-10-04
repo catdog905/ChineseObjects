@@ -12,6 +12,7 @@
 %start program
 
 %token IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON, DOT
+%token OP_MOD, OP_EQUAL, OP_LESS, OP_GREATER, OP_LESS_EQUAL, OP_GREATER_EQUAL
 %token IS, END, LOOP, THEN, RETURN, ELSE, WHILE, ASSIGN, IF
 %token VAR, METHOD
 %token CLASS, EXTENDS, THIS, NEW
@@ -53,7 +54,8 @@ parameters :
 
 parameter : IDENTIFIER COLON IDENTIFIER;
 
-body : statement body
+body : variableDeclaration body
+     | statement body
      | statement
      ;
 
@@ -91,6 +93,7 @@ primary : classInstantiation             {}
         | REAL_LITERAL                   {}
         | BOOLEAN_LITERAL                {}
         | THIS                           {}
+        | IDENTIFIER  /* To be changed */
         ;
 
 classInstantiation : NEW IDENTIFIER P_OPEN parameters P_CLOSE;

@@ -35,6 +35,12 @@ This            this
 New             new
 Dot             \.
 Identifier      [a-zA-z0-9]+
+OpMod            %
+OpEqual          ==
+OpLess           <
+OpGreater        >
+OpLessEqual      <=
+OpGreaterEqual   >=
 
 %{
 
@@ -44,7 +50,7 @@ Identifier      [a-zA-z0-9]+
 
 {Space}+        /* skip */
 
-{OpPlus} 		{ Console.WriteLine("PlusToken: '{0}'", yytext);    return (int)Token.OP_PLUS; }
+{OpPlus} 		    { Console.WriteLine("PlusToken: '{0}'", yytext);    return (int)Token.OP_PLUS; }
 {OpMinus}       	{ Console.WriteLine("MinusToken: '{0}'", yytext);    return (int)Token.OP_MINUS; }
 {OpMult}        	{ Console.WriteLine("MultiplicationToken: '{0}'", yytext);    return (int)Token.OP_MULT; }
 {OpDiv}         	{ Console.WriteLine("DivisionToken: '{0}'", yytext);    return (int)Token.OP_DIV; }
@@ -71,5 +77,11 @@ Identifier      [a-zA-z0-9]+
 {New}           	{ Console.WriteLine("newKeywordToken: '{0}'", yytext);    return (int)Token.NEW; }
 {Dot}           	{ Console.WriteLine("DotToken: '{0}'", yytext);    return (int)Token.DOT; }
 {Identifier}    	{ Console.WriteLine("IdentifierToken: '{0}'", yytext);    return (int)Token.IDENTIFIER; }
+{OpMod} 		    { Console.WriteLine("ModuloToken: '{0}'", yytext);    return (int)Token.OP_MOD; }
+{OpEqual} 		    { Console.WriteLine("EqualToken: '{0}'", yytext);    return (int)Token.OP_EQUAL; }
+{OpLess} 		    { Console.WriteLine("LessToken: '{0}'", yytext);    return (int)Token.OP_LESS; }
+{OpGreater} 		{ Console.WriteLine("GreaterToken: '{0}'", yytext);    return (int)Token.OP_GREATER; }
+{OpLessEqual} 		{ Console.WriteLine("LessEqualToken: '{0}'", yytext);    return (int)Token.OP_LESS_EQUAL; }
+{OpGreaterEqual} 	{ Console.WriteLine("GreaterEqualToken: '{0}'", yytext);    return (int)Token.OP_GREATER_EQUAL; }
 
 %%

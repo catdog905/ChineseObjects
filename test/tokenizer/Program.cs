@@ -2,4 +2,4 @@
 //Console.WriteLine("Hello, World!");
 
 var calculator = new ChineseObjects.Lang.LangParser();
-calculator.Parse(File.ReadAllText("program_text.txt"));
+calculator.Parse(File.ReadAllText("test/tokenizer/Fibonacci.txt"));

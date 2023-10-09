@@ -5,18 +5,16 @@
 
 %option stack, minimize, parser, verbose, persistbuffer, noembedbuffers
 
-Eol             (\r\n?|\n)
-NotWh           [^ \t\r\n]
 Space           [ \t]
 IntegerLiteral  [0-9]+
 RealLiteral     [0-9]+\.[0-9]
 BooleanLiteral  (true|false)
-OpPlus            \+
-OpMinus            \-
-OpMult            \*
-OpDiv            \/
-POpen            \(
-PClose            \)
+OpPlus          \+
+OpMinus         \-
+OpMult          \*
+OpDiv           \/
+POpen           \(
+PClose          \)
 Colon           \:
 Assign          :=
 Is              is
@@ -35,12 +33,12 @@ This            this
 New             new
 Dot             \.
 Identifier      [a-zA-z0-9]+
-OpMod            %
-OpEqual          ==
-OpLess           <
-OpGreater        >
-OpLessEqual      <=
-OpGreaterEqual   >=
+OpMod           %
+OpEqual         ==
+OpLess          <
+OpGreater       >
+OpLessEqual     <=
+OpGreaterEqual  >=
 
 %{
 

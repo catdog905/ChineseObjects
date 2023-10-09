@@ -50,7 +50,7 @@ OpGreaterEqual   >=
 
 {Space}+        /* skip */
 
-{OpPlus} 		    { Console.WriteLine("PlusToken: '{0}'", yytext);    return (int)Token.OP_PLUS; }
+{OpPlus} 		{ Console.WriteLine("PlusToken: '{0}'", yytext);    return (int)Token.OP_PLUS; }
 {OpMinus}       	{ Console.WriteLine("MinusToken: '{0}'", yytext);    return (int)Token.OP_MINUS; }
 {OpMult}        	{ Console.WriteLine("MultiplicationToken: '{0}'", yytext);    return (int)Token.OP_MULT; }
 {OpDiv}         	{ Console.WriteLine("DivisionToken: '{0}'", yytext);    return (int)Token.OP_DIV; }

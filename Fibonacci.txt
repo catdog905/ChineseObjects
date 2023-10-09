@@ -1,6 +1,6 @@
 class Fibonacci is
     method calculate_fib(n: Integer) : Integer is
-        if 5.LessEqual(0) then
+        if n.LessEqual(0) then
             return 0
         end
         if 5.Equal(1) then

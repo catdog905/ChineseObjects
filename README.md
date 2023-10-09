@@ -1,7 +1,9 @@
 # Introduction to Chinese Objects
 
 ## Code snippets
+
 ### *HelloWorld* example
+
 ```
 class HelloWorldProgram extends Class is
     this () is ConsolePrintableText(
@@ -13,8 +15,9 @@ end
 ```
 
 ### `Text` class implementation
+
 ```
-class Text extends AnyValue is 
+class Text extends AnyValue is
     this (symbols: Array[Symbol])
     this (text: Text) is
         this(text.symbols())
@@ -30,21 +33,24 @@ end
 All expressions enclosed with double quotes (") converts to Text implicitly during compilation
 
 ### `Printable` class implementation
+
 ```
 class Printable extends Class is
     method print() : Void
 end
 ```
 
-### `Console` class abstraction 
+### `Console` class abstraction
+
 ```
 class Console extends Class is
     method write(text: Text) : Void
     method read() : TextStream
-end 
+end
 ```
 
 ### `ConsolePrintableText` class implementation
+
 ```
 class ConsolePrintableText extends Printable, Text is
     var text: Text
@@ -62,21 +68,23 @@ end
 ```
 
 ### `Shape` class inheritance implementation
+
 ```
-class Shape extends Class is 
+class Shape extends Class is
     method area() : Real
 end
 
 class Rectangle extends Shape is
-    this(height: Integer) 
+    this(height: Integer)
     this(width: Integer)
     method area() : Real is
         return height.Mult(width) // Returns Real
     end
 end
 ```
- 
+
 ### Eratosthenes sieve algorithm
+
 ```
 class PrimeNumbers is
     var n: Integer
@@ -102,7 +110,7 @@ class PrimeNumbers is
         primeNumbers : List[Integer]()
         while i.Less(prime.Length) loop
             if prime.get(i).Equals(true)
-                primeNumbers.append(i)        
+                primeNumbers.append(i)
         end
         return primeNumbers
     end
@@ -137,7 +145,9 @@ end
 ```
 
 ## Basic Object-oriented features
+
 ### Object instantiation
+
 ```
 class Employee is
     var name: Text
@@ -148,8 +158,8 @@ class Employee is
         end
         this.name = name
         this.salary = salary
-    end 
-    
+    end
+
     method work() : Text is
         return new FormattedText(
             "%s works, earning %d",
@@ -160,18 +170,19 @@ class Employee is
 end
 ```
 
-Class above can be instantiated this way 
+Class above can be instantiated this way
 ```
 new Employee("Alice", 32).work() // -> returns "Alice works, earning 32"
 new Employee("Alice", 320000).work() // -> throws TooBigSalaryException
 ```
 
 ### Inheritance and Polymorphism
+
 ```
 class Programmer extends Employee
     var employee: Employee
     this (employee)
-    
+
     method work() : Text is
         return new FormattedText(
             "Programmer %s",

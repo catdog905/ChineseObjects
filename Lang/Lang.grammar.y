@@ -5,9 +5,10 @@
 %tokentype Token
 
 %union {
-            public int n;
-            public string s;
-       }
+    public NumLiteral num_literal;
+    public BoolLiteral bool_literal;
+    public Identifier identifier;
+}
 
 %start program
 

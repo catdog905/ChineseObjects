@@ -8,6 +8,16 @@
     public NumLiteral num_literal;
     public BoolLiteral bool_literal;
     public Identifier identifier;
+
+    /* More specific methods shall use more specific fields,
+     * such as `.num_literal`, `.identifier`, etc. On a higher
+     * level, the resulting expression is then assigned to
+     * `.expr` for higher `AST` nodes which don't care about
+     * the concrete type of expression.
+     */
+    public Expression expr;
+
+    public Return ret;
 }
 
 %start program
@@ -26,8 +36,8 @@ program : classDeclaration               { }
         ;
 
 classDeclaration : CLASS IDENTIFIER IS memberDeclarations END {}
-		 | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
-       		 ;
+                 | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
+           	     ;
 
 identifiers : IDENTIFIER ',' identifiers        {}
             | IDENTIFIER                            {}
@@ -60,6 +70,7 @@ body : variableDeclaration body
      | statement
      ;
 
+// TODO: do we want to convert these to expressions?
 statement : assignment
           | whileLoop
           | ifStatement
@@ -74,10 +85,11 @@ ifStatement : IF expr THEN body END
             | IF expr THEN body ELSE body END
             ;
 
-returnStatement : RETURN expr;
-
-expr   : expr DOT methodCall            {      }
-       | primary                        {      }
+returnStatement : RETURN expr			{ $$.ret = new Return($1.expr); }
+                ;
+    
+expr   : expr DOT methodCall            { /* TODO */ }
+       | primary                        { $$.expr = $1.expr; }
        ;
 
 methodCall : IDENTIFIER P_OPEN arguments P_CLOSE;
@@ -89,12 +101,12 @@ arguments :
 
 argument : expr;
 
-primary : classInstantiation             {}
-        | INTEGER_LITERAL                {}
-        | REAL_LITERAL                   {}
-        | BOOLEAN_LITERAL                {}
-        | THIS                           {}
-        | IDENTIFIER  /* To be changed */
+primary : classInstantiation            { /* TODO. Is it a separate kind of expression? I think yes. */ }
+        | INTEGER_LITERAL               { $$.expr = $1.num_literal; }
+        | REAL_LITERAL                  { $$.expr = $1.num_literal; }
+        | BOOLEAN_LITERAL               { $$.expr = $1.bool_literal; }
+        | THIS                          { /* TODO. Should it be a special kind of identifier? */ }
+        | IDENTIFIER                    { $$.expr = $1.identifier; }
         ;
 
 classInstantiation : NEW IDENTIFIER P_OPEN parameters P_CLOSE;

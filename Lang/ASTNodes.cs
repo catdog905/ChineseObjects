@@ -31,4 +31,14 @@ namespace ChineseObjects.Lang {
             this.name = name;
         }
     }
+
+
+    // A return statement. Only stores the expression that is returned.
+    public class Return : Expression {
+        public readonly Expression retval;
+
+        public Return(Expression retval) {
+            this.retval = retval;
+        }
+    }
 }

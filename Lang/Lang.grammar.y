@@ -18,6 +18,17 @@
     public Expression expr;
 
     public Return ret;
+    public Assignment assign;
+    public IfElse ifelse;
+    public While while_;
+    public StatementsBlock body;
+
+    public Statement stmt;
+
+    public VariableDeclaration vardecl;
+    // public MethodDeclaration methdecl;
+    public Parameter param;
+    public Parameters parames;
 }
 
 %start program
@@ -40,7 +51,7 @@ classDeclaration : CLASS IDENTIFIER IS memberDeclarations END {}
            	     ;
 
 identifiers : IDENTIFIER ',' identifiers        {}
-            | IDENTIFIER                            {}
+            | IDENTIFIER                        {}
             ;
 
 memberDeclarations : memberDeclaration memberDeclarations {}
@@ -52,37 +63,45 @@ memberDeclaration : variableDeclaration    {}
                   | constructorDeclaration {}
                   ;
 
-variableDeclaration : VAR IDENTIFIER COLON expr;
+variableDeclaration : VAR IDENTIFIER COLON expr     { $$.vardecl = new VariableDeclaration($2.identifier.name, $4.expr); }
+                    ;
 
-methodDeclaration : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END;
+methodDeclaration   : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON expr IS body END
+                                                    {  }
+                    ;
 
 constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END;
 
-parameters :
-           | parameter ',' parameters
-           | parameter
-           ;
+parameter   : IDENTIFIER COLON expr        { $$.param = new Parameter($1.identifier.name, $3.expr); }
+            ;
 
-parameter : IDENTIFIER COLON IDENTIFIER;
+parameters  :
+            | parameter ',' parameters       { $$.parames = $3.parames.Append($1.param); }
+            |                                { $$.parames = new Parameters(); }
+            ;
 
-body : variableDeclaration body
-     | statement body
-     | statement
+body : body statement    { $$.body = $1.body.Append($2.stmt); }
+     |                   { $$.body = new StatementsBlock(); }
      ;
 
 // TODO: do we want to convert these to expressions?
-statement : assignment
-          | whileLoop
-          | ifStatement
-          | returnStatement
+statement : assignment          { $$.stmt = $1.assign; }
+          | whileLoop           { $$.stmt = $1.while_; }
+          | ifStatement         { $$.stmt = $1.ifelse; }
+          | returnStatement     { $$.stmt = $1.ret; }
           ;
 
-assignment : IDENTIFIER ASSIGN expr;
 
-whileLoop : WHILE expr LOOP body END;
+// TODO: The below grammar does not cover the case of array element assignment or object field assignment
+assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier.name, $3.expr); }
+            ;
 
-ifStatement : IF expr THEN body END
-            | IF expr THEN body ELSE body END
+whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.stmt); }
+            ;
+
+// TODO: this may be a trap of if-else described in one of the lectures, isn't it?..
+ifStatement : IF expr THEN body END             { $$.ifelse = new IfElse($2.expr, $4.body, null); }
+            | IF expr THEN body ELSE body END   { $$.ifelse = new IfElse($2.expr, $4.body, $6.body); }
             ;
 
 returnStatement : RETURN expr			{ $$.ret = new Return($1.expr); }

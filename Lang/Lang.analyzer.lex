@@ -7,7 +7,7 @@
 
 Space           [ \t]
 IntegerLiteral  [0-9]+
-RealLiteral     [0-9]+\.[0-9]
+RealLiteral     ([0-9]+\.[0-9]*|\.[0-9]+)
 BooleanLiteral  (true|false)
 POpen           \(
 PClose          \)
@@ -35,8 +35,6 @@ Identifier      [a-zA-z0-9]+
 %}
 
 %%
-
-{Space}+        /* skip */
 
 /* Special characters */
 {POpen}              { return (int)Token.P_OPEN; }

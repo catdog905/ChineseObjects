@@ -1,8 +1,10 @@
 class Console is
+    var a: Integer
+    var b: Float
     method write(text : Text) : Void is
         a := 1
     end
     method read() : TextStream is
-        b := 2
+        b := 2.22
     end
 end

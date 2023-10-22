@@ -8,6 +8,7 @@
     public NumLiteral num_literal;
     public BoolLiteral bool_literal;
     public Identifier identifier;
+    public Identifiers identifiers;
 
     /* More specific methods shall use more specific fields,
      * such as `.num_literal`, `.identifier`, etc. On a higher
@@ -25,12 +26,16 @@
 
     public Statement stmt;
 
-    public VariableDeclaration vardecl;
-    // public MethodDeclaration methdecl;
     public Parameter param;
     public Parameters parames;
     
-    public Program program; 
+    public Program program;
+    public ClassDeclaration classDeclaration;
+    public MemberDeclaration memberDeclaration;
+    public MemberDeclarations memberDeclarations;
+    public VariableDeclaration variableDeclaration;
+    public MethodDeclaration methodDeclaration;
+    public ConstructorDeclaration constructorDeclaration;
 }
 
 %start program
@@ -44,32 +49,32 @@
 
 %%
 
-program : classDeclaration               { $$.program = new Program( new ClassDeclaration("New Class") ); }
-        | classDeclaration program       { $$.program = new Program( new ClassDeclaration("New Class") ); }
+program : classDeclaration               { $$.program = new Program( $1.classDeclaration ); }
+        | classDeclaration program       { $$.program = new Program( $1.classDeclaration, $2.program ); }
         ;
 
-classDeclaration : CLASS IDENTIFIER IS memberDeclarations END {}
-                 | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END {}
+classDeclaration : CLASS IDENTIFIER IS memberDeclarations END { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.memberDeclarations); }
+                 | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.identifiers, $6.memberDeclarations); }
            	     ;
 
-identifiers : IDENTIFIER ',' identifiers        {}
-            | IDENTIFIER                        {}
+identifiers : IDENTIFIER ',' identifiers        { $$.identifiers = new Identifiers( $1.identifier, $3.identifiers ); }
+            | IDENTIFIER                        { $$.identifiers = new Identifiers( $1.identifier ); }
             ;
 
-memberDeclarations : memberDeclaration memberDeclarations {}
-                   | memberDeclaration {}
+memberDeclarations : memberDeclaration memberDeclarations { $$.memberDeclarations = new MemberDeclarations( $1.memberDeclaration, $2.memberDeclarations ); }
+                   | memberDeclaration { $$.memberDeclarations = new MemberDeclarations( $1.memberDeclaration ); }
                    ;
 
-memberDeclaration : variableDeclaration    {}
-                  | methodDeclaration      {}
-                  | constructorDeclaration {}
+memberDeclaration : variableDeclaration    { $$.memberDeclaration = $1.variableDeclaration; }
+                  | methodDeclaration      { $$.memberDeclaration = $1.methodDeclaration; }
+                  | constructorDeclaration { $$.memberDeclaration = $1.constructorDeclaration; }
                   ;
 
-variableDeclaration : VAR IDENTIFIER COLON expr     { $$.vardecl = new VariableDeclaration($2.identifier.name, $4.expr); }
+variableDeclaration : VAR IDENTIFIER COLON IDENTIFIER     { $$.variableDeclaration = new VariableDeclaration( $2.identifier, $4.identifier ); }
                     ;
 
-methodDeclaration   : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON expr IS body END
-                                                    {  }
+methodDeclaration   : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFIER IS body END
+                                                    { $$.methodDeclaration = new MethodDeclaration( $2.identifier, $4.parames, $7.identifier, $9.body ); }
                     ;
 
 constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END;
@@ -123,11 +128,12 @@ arguments :
 argument : expr;
 
 primary : classInstantiation            { /* TODO. Is it a separate kind of expression? I think yes. */ }
+	| methodCall
         | INTEGER_LITERAL               { $$.expr = $1.num_literal; }
         | REAL_LITERAL                  { $$.expr = $1.num_literal; }
         | BOOLEAN_LITERAL               { $$.expr = $1.bool_literal; }
         | THIS                          { /* TODO. Should it be a special kind of identifier? */ }
-        | IDENTIFIER                    { $$.expr = $1.identifier; }
+        | IDENTIFIER                    { /* TODO */ }
         ;
 
 classInstantiation : NEW IDENTIFIER P_OPEN parameters P_CLOSE;

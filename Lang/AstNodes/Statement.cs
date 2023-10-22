@@ -82,18 +82,5 @@ namespace ChineseObjects.Lang
     }
 
 
-    // A variable declaration (is not an expression)
-    // TODO: should declarations of initialized and uninitialized variable
-    // be the same or different types of nodes?
-    public class VariableDeclaration : Statement
-    {
-        public readonly string name;
-        public readonly Expression initializer;
-
-        public VariableDeclaration(string name, Expression initializer)
-        {
-            this.name = name;
-            this.initializer = initializer;
-        }
-    }
+    
 }

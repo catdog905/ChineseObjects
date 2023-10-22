@@ -9,12 +9,14 @@ namespace ChineseObjects.Lang
     {
         public LangParser() : base(null) { }
 
-        public void Parse(string s)
+        public Program Parse(string s)
         {
             byte[] inputBuffer = System.Text.Encoding.Default.GetBytes(s);
             MemoryStream stream = new MemoryStream(inputBuffer);
             this.Scanner = new LangScanner(stream);
-            this.Parse();
+            Console.WriteLine(this.Parse());
+            Console.WriteLine(CurrentSemanticValue.expr);
+            return CurrentSemanticValue.program;
         }
     }
 }

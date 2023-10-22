@@ -29,6 +29,8 @@
     // public MethodDeclaration methdecl;
     public Parameter param;
     public Parameters parames;
+    
+    public Program program; 
 }
 
 %start program
@@ -42,8 +44,8 @@
 
 %%
 
-program : classDeclaration               { }
-        | classDeclaration program       { }
+program : classDeclaration               { $$.program = new Program( new ClassDeclaration("New Class") ); }
+        | classDeclaration program       { $$.program = new Program( new ClassDeclaration("New Class") ); }
         ;
 
 classDeclaration : CLASS IDENTIFIER IS memberDeclarations END {}
@@ -77,7 +79,7 @@ parameter   : IDENTIFIER COLON expr        { $$.param = new Parameter($1.identif
 
 parameters  :
             | parameter ',' parameters       { $$.parames = $3.parames.Append($1.param); }
-            |                                { $$.parames = new Parameters(); }
+            | parameter                      { $$.parames = new Parameters(); }
             ;
 
 body : body statement    { $$.body = $1.body.Append($2.stmt); }

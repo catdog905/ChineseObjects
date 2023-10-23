@@ -56,7 +56,7 @@ Identifier      [a-zA-z0-9]+
 {Return}             { return (int)Token.RETURN; }
 {Var}                { return (int)Token.VAR; }
 {Method}             { return (int)Token.METHOD; }
-{This}               { return (int)Token.THIS; }
+{This}               { yylval.thisRef = new This(); return (int)Token.THIS; }
 {New}                { return (int)Token.NEW; }
 
 /* Other */

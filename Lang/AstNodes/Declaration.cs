@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang
 {
-    public abstract class Declaration {}
-    
-    public class Program
+    public interface Declaration : IAstNode {}
+
+    public class Program : IAstNode
     {
         public readonly List<ClassDeclaration> ClassDeclarations;
 
@@ -28,6 +28,16 @@ namespace ChineseObjects.Lang
         public override string ToString()
         {
             return "Program(" + String.Join(", ", ClassDeclarations) + ")";
+        }
+
+        public List<IAstNode> Children()
+        {
+            return ClassDeclarations.Cast<IAstNode>().ToList();
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
     
@@ -67,9 +77,26 @@ namespace ChineseObjects.Lang
         {
             return ClassName + "(vars="+String.Join(", ", VariableDeclarations) + "; methods=" + String.Join(", ", MethodDeclarations) + ")";
         }
+
+        public List<IAstNode> Children()
+        {
+            List<IAstNode> temp = new List<IAstNode>();
+            temp.AddRange(VariableDeclarations.Cast<IAstNode>());
+            temp.AddRange(MethodDeclarations.Cast<IAstNode>());
+            return temp;
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
+        }
     }
 
-    public abstract class MemberDeclaration {}
+    public abstract class MemberDeclaration : IAstNode
+    {
+        public abstract List<IAstNode> Children();
+        public abstract IAstNode CurrentNode();
+    }
 
     public class MemberDeclarations
     {
@@ -90,6 +117,11 @@ namespace ChineseObjects.Lang
             MemberDeclarationsList = new List<MemberDeclaration> { memberDeclaration };
             MemberDeclarationsList.AddRange(memberDeclarations.MemberDeclarationsList);
         }
+
+        public override string ToString()
+        {
+            return String.Join(",", MemberDeclarationsList);
+        }
     }
     
     public class MethodDeclaration : MemberDeclaration
@@ -97,7 +129,7 @@ namespace ChineseObjects.Lang
         public readonly string MethodName;
         public readonly Parameters Parameters;
         public readonly string ReturnTypeName;
-        public readonly StatementsBlock body;
+        public readonly StatementsBlock Body;
 
 
         public MethodDeclaration(
@@ -109,12 +141,25 @@ namespace ChineseObjects.Lang
             MethodName = methodName.name;
             Parameters = parameters;
             ReturnTypeName = returnType.name;
-            this.body = body;
+            Body = body;
         }
 
         public override string ToString()
         {
-            return MethodName + "(" + Parameters + "):" + ReturnTypeName;
+            return MethodName + "(" + Parameters + "):" + ReturnTypeName + "{" + Body + "}";
+        }
+
+        public override List<IAstNode> Children()
+        {
+            List<IAstNode> temp = new List<IAstNode>();
+            temp.Add(Parameters);
+            temp.Add(Body);
+            return temp;
+        }
+
+        public override IAstNode CurrentNode()
+        {
+            return this;
         }
     }
     
@@ -136,53 +181,107 @@ namespace ChineseObjects.Lang
         {
             return name + ":" + Type;
         }
+
+        public override List<IAstNode> Children()
+        {
+            return new List<IAstNode>();
+        }
+
+        public override IAstNode CurrentNode()
+        {
+            return this;
+        }
     }
 
 
     public class ConstructorDeclaration : MemberDeclaration
     {
-        //TODO
+        public readonly Parameters Parameters;
+        public readonly StatementsBlock Body;
+
+        public ConstructorDeclaration(Parameters parameters, StatementsBlock statementsBlock)
+        {
+            Parameters = parameters;
+            Body = statementsBlock;
+        }
+
+        public override string ToString()
+        {
+            return "This(" + Parameters + ") {" + Body + "}";
+        }
+
+        public override List<IAstNode> Children()
+        {
+            List<IAstNode> temp = new List<IAstNode>();
+            temp.Add(Parameters);
+            temp.Add(Body);
+            throw new NotImplementedException();
+        }
+
+        public override IAstNode CurrentNode()
+        {
+            throw new NotImplementedException();
+        }
     }
     
-    //abs public class MethodDeclaration : Declaration {
-    //     public readonly string name;
-    //     public readonly Parameters parames;
-    //     public readonly ... body;
-    // }
     
     // A parameter (is not an expression)
-    public class Parameter {
+    public class Parameter : IAstNode {
         public readonly string name;
-        public readonly Expression type;
+        public readonly Identifier type;
 
-        public Parameter(string name, Expression type) {
+        public Parameter(string name, Identifier type) {
             this.name = name;
             this.type = type;
         }
 
         public override string ToString()
         {
-            return name;
+            return name + ": " + type;
+        }
+
+        public List<IAstNode> Children()
+        {
+            return new List<IAstNode>();
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
 
     // A list of parameters (is not an expression)
-    public class Parameters {
-        public readonly ImmutableList<Parameter> parames;
+    public class Parameters : IAstNode {
+        public readonly List<Parameter> parames;
 
-        public Parameters(ImmutableList<Parameter> parames) {
+        public Parameters(List<Parameter> parames) {
             this.parames = parames;
         }
 
-        public Parameters() : this(ImmutableList<Parameter>.Empty) {}
+        public Parameters(Parameter parameter, Parameters parameters)
+        {
+            parames = new List<Parameter> { parameter };
+            parames.AddRange(parameters.parames);
 
-        public Parameters Append(Parameter param) {
-            return new Parameters(parames.Add(param));
         }
+
+        public Parameters(params Parameter[] parameters) : this(parameters.ToList()) {}
+    
 
         public override string ToString()
         {
             return String.Join(",", parames);
+        }
+
+        public List<IAstNode> Children()
+        {
+            return parames.Cast<IAstNode>().ToList();
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
 }

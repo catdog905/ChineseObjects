@@ -5,18 +5,31 @@ namespace ChineseObjects.Lang
 {
 
     // Base class for all statements
-    public abstract class Statement
-    {
-    }
+    public interface Statement : IAstNode { }
 
     // A return statement. Only stores the expression that is returned.
     public class Return : Statement
     {
-        public readonly Expression retval;
+        public readonly Object retval;
 
-        public Return(Expression retval)
+        public Return(Object retval)
         {
             this.retval = retval;
+        }
+
+        public override string ToString()
+        {
+            return retval.ToString();
+        }
+
+        public List<IAstNode> Children()
+        {
+            return new List<IAstNode> { retval };
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
 
@@ -24,63 +37,131 @@ namespace ChineseObjects.Lang
     public class Assignment : Statement
     {
         public readonly string varname;
-        public readonly Expression expr;
+        public readonly Object expr;
 
-        public Assignment(string varname, Expression expr)
+        public Assignment(string varname, Object expr)
         {
             this.varname = varname;
             this.expr = expr;
+        }
+
+        public override string ToString()
+        {
+            return varname + ":=" + expr;
+        }
+
+        public List<IAstNode> Children()
+        {
+            return new List<IAstNode> { expr };
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
 
     // If-then[-else] statement
     public class IfElse : Statement
     {
-        public readonly Expression cond;
+        public readonly Object cond;
         public readonly Statement then;
         public readonly Statement? else_;
 
-        public IfElse(Expression cond, Statement then, Statement? else_)
+        public IfElse(Object cond, Statement then, Statement? else_)
         {
             this.cond = cond;
             this.then = then;
             this.else_ = else_;
+            
+        }
+        
+        public IfElse(Object cond, Statement then)
+        {
+            this.cond = cond;
+            this.then = then;
+        }
+
+        public override string ToString()
+        {
+            return "IfElse(" + cond + "){" + then + "}{" + else_ + "}";
+        }
+
+        public List<IAstNode> Children()
+        {
+            if (else_ == null)
+                return new List<IAstNode> {cond, then};
+            else
+                return new List<IAstNode> {cond, then, else_};
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
 
     // While statement
     public class While : Statement
     {
-        public readonly Expression cond;
+        public readonly Object cond;
         public readonly Statement body;
 
-        public While(Expression cond, Statement body)
+        public While(Object cond, Statement body)
         {
             this.cond = cond;
             this.body = body;
+        }
+
+        public override string ToString()
+        {
+            return "While(" + cond + "){" + body + "}";
+        }
+
+        public List<IAstNode> Children()
+        {
+            return new List<IAstNode> { cond, body };
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
 
     // A combination of statements
     public class StatementsBlock : Statement
     {
-        public ImmutableList<Statement> stmts;
+        public List<Statement> stmts;
 
-        public StatementsBlock(ImmutableList<Statement> stmts)
+        public StatementsBlock(List<Statement> stmts)
         {
             this.stmts = stmts;
         }
 
-        public StatementsBlock() : this(ImmutableList<Statement>.Empty)
+        public StatementsBlock(Statement statement, StatementsBlock statementsBlock)
         {
+            stmts = new List<Statement> { statement };
+            stmts.AddRange(statementsBlock.stmts);
         }
 
-        public StatementsBlock Append(Statement stmt)
+        public StatementsBlock(params Statement[] statements) : this(statements.ToList()) { }
+
+        public override string ToString()
         {
-            return new StatementsBlock(stmts.Add(stmt));
+            return String.Join(";", stmts);
+        }
+
+        public List<IAstNode> Children()
+        {
+            return stmts.Cast<IAstNode>().ToList();
+        }
+
+        public IAstNode CurrentNode()
+        {
+            return this;
         }
     }
-
 
     
 }

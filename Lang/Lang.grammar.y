@@ -9,25 +9,31 @@
     public BoolLiteral bool_literal;
     public Identifier identifier;
     public Identifiers identifiers;
+    public This thisRef;
 
     /* More specific methods shall use more specific fields,
      * such as `.num_literal`, `.identifier`, etc. On a higher
      * level, the resulting expression is then assigned to
-     * `.expr` for higher `AST` nodes which don't care about
+     * `.obj` for higher `AST` nodes which don't care about
      * the concrete type of expression.
      */
-    public Expression expr;
+    public Object obj;
 
     public Return ret;
     public Assignment assign;
     public IfElse ifelse;
     public While while_;
     public StatementsBlock body;
+    public MethodCall methodCall;
+    public ClassInstantiation classInstantiation;
 
     public Statement stmt;
 
     public Parameter param;
     public Parameters parames;
+    
+    public Argument argument;
+    public Arguments arguments;
     
     public Program program;
     public ClassDeclaration classDeclaration;
@@ -53,9 +59,9 @@ program : classDeclaration               { $$.program = new Program( $1.classDec
         | classDeclaration program       { $$.program = new Program( $1.classDeclaration, $2.program ); }
         ;
 
-classDeclaration : CLASS IDENTIFIER IS memberDeclarations END { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.memberDeclarations); }
+classDeclaration : CLASS IDENTIFIER IS memberDeclarations END                     { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.memberDeclarations); }
                  | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.identifiers, $6.memberDeclarations); }
-           	     ;
+           	 ;
 
 identifiers : IDENTIFIER ',' identifiers        { $$.identifiers = new Identifiers( $1.identifier, $3.identifiers ); }
             | IDENTIFIER                        { $$.identifiers = new Identifiers( $1.identifier ); }
@@ -77,65 +83,65 @@ methodDeclaration   : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFI
                                                     { $$.methodDeclaration = new MethodDeclaration( $2.identifier, $4.parames, $7.identifier, $9.body ); }
                     ;
 
-constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END;
+constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END  { $$.constructorDeclaration = new ConstructorDeclaration( $3.parames, $6.body ); }
+                       ;
 
-parameter   : IDENTIFIER COLON expr        { $$.param = new Parameter($1.identifier.name, $3.expr); }
+parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.identifier.name, $3.identifier ); }
             ;
 
-parameters  :
-            | parameter ',' parameters       { $$.parames = $3.parames.Append($1.param); }
-            | parameter                      { $$.parames = new Parameters(); }
+parameters  :				     { $$.parames = new Parameters(); }
+            | parameter ',' parameters       { $$.parames = new Parameters( $1.param, $3.parames ); }
+            | parameter                      { $$.parames = new Parameters( $1.param ); }
             ;
 
-body : body statement    { $$.body = $1.body.Append($2.stmt); }
-     |                   { $$.body = new StatementsBlock(); }
+body : statement body             { $$.body = new StatementsBlock( $1.stmt, $2.body); }
+     | statement                  { $$.body = new StatementsBlock( $1.stmt ); }
      ;
 
 // TODO: do we want to convert these to expressions?
 statement : assignment          { $$.stmt = $1.assign; }
           | whileLoop           { $$.stmt = $1.while_; }
           | ifStatement         { $$.stmt = $1.ifelse; }
-          | returnStatement     { $$.stmt = $1.ret; }
+          | returnStatement     { $$.stmt = $1.ret; } 
+          | methodCall          { $$.stmt = $1.methodCall; }
           ;
 
 
-// TODO: The below grammar does not cover the case of array element assignment or object field assignment
-assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier.name, $3.expr); }
+assignment  : IDENTIFIER ASSIGN obj    { $$.assign = new Assignment($1.identifier.name, $3.obj); }
             ;
 
-whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.stmt); }
+whileLoop   : WHILE obj LOOP body END      { $$.while_ = new While($2.obj, $4.stmt); }
             ;
 
-// TODO: this may be a trap of if-else described in one of the lectures, isn't it?..
-ifStatement : IF expr THEN body END             { $$.ifelse = new IfElse($2.expr, $4.body, null); }
-            | IF expr THEN body ELSE body END   { $$.ifelse = new IfElse($2.expr, $4.body, $6.body); }
+// TODO: thisRef may be a trap of if-else described in one of the lectures, isn't it?..
+ifStatement : IF obj THEN body END             { $$.ifelse = new IfElse($2.obj, $4.body); }
+            | IF obj THEN body ELSE body END   { $$.ifelse = new IfElse($2.obj, $4.body, $6.body); }
             ;
 
-returnStatement : RETURN expr			{ $$.ret = new Return($1.expr); }
+returnStatement : RETURN obj			{ $$.ret = new Return($1.obj); }
                 ;
     
-expr   : expr DOT methodCall            { /* TODO */ }
-       | primary                        { $$.expr = $1.expr; }
+obj : methodCall            { $$.obj = $1.methodCall; }
+       | classInstantiation    { $$.obj = $1.classInstantiation; }
+       | INTEGER_LITERAL       { $$.obj = $1.num_literal; }
+       | REAL_LITERAL          { $$.obj = $1.num_literal; }
+       | BOOLEAN_LITERAL       { $$.obj = $1.bool_literal; }
+       | THIS                  { $$.obj = $1.thisRef; }
+       | IDENTIFIER            { $$.obj = $1.identifier; }
        ;
 
-methodCall : IDENTIFIER P_OPEN arguments P_CLOSE;
+methodCall : obj DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new MethodCall( $1.obj, $3.identifier, $5.arguments ); }
+           ;
 
-arguments :
-          | argument ',' arguments
-          | argument
+arguments :                           { $$.arguments = new Arguments(); }
+          | argument ',' arguments    { $$.arguments = new Arguments( $1.argument, $3.arguments ); }
+          | argument                  { $$.arguments = new Arguments( $1.argument ); }
           ;
 
-argument : expr;
+argument : obj  { $$.argument = new Argument( $1.obj ); }
+         ;
 
-primary : classInstantiation            { /* TODO. Is it a separate kind of expression? I think yes. */ }
-	| methodCall
-        | INTEGER_LITERAL               { $$.expr = $1.num_literal; }
-        | REAL_LITERAL                  { $$.expr = $1.num_literal; }
-        | BOOLEAN_LITERAL               { $$.expr = $1.bool_literal; }
-        | THIS                          { /* TODO. Should it be a special kind of identifier? */ }
-        | IDENTIFIER                    { /* TODO */ }
-        ;
-
-classInstantiation : NEW IDENTIFIER P_OPEN parameters P_CLOSE;
+classInstantiation : NEW IDENTIFIER P_OPEN arguments P_CLOSE    { $$.classInstantiation = new ClassInstantiation( $2.identifier, $4.arguments ); }
+                   ;
 
 %%

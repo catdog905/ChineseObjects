@@ -17,7 +17,7 @@
      * `.obj` for higher `AST` nodes which don't care about
      * the concrete type of expression.
      */
-    public Object obj;
+    public Expression expr;
 
     public Return ret;
     public Assignment assign;
@@ -107,37 +107,37 @@ statement : assignment          { $$.stmt = $1.assign; }
           ;
 
 
-assignment  : IDENTIFIER ASSIGN obj    { $$.assign = new Assignment($1.identifier.Name, $3.obj); }
+assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier.Name, $3.expr); }
             ;
 
-whileLoop   : WHILE obj LOOP body END      { $$.while_ = new While($2.obj, $4.stmt); }
+whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.stmt); }
             ;
 
 // TODO: thisRef may be a trap of if-else described in one of the lectures, isn't it?..
-ifStatement : IF obj THEN body END             { $$.ifelse = new IfElse($2.obj, $4.body); }
-            | IF obj THEN body ELSE body END   { $$.ifelse = new IfElse($2.obj, $4.body, $6.body); }
+ifStatement : IF expr THEN body END             { $$.ifelse = new IfElse($2.expr, $4.body); }
+            | IF expr THEN body ELSE body END   { $$.ifelse = new IfElse($2.expr, $4.body, $6.body); }
             ;
 
-returnStatement : RETURN obj			{ $$.ret = new Return($1.obj); }
+returnStatement : RETURN expr			{ $$.ret = new Return($1.expr); }
                 ;
     
-obj : methodCall            { $$.obj = $1.methodCall; }
-    | classInstantiation    { $$.obj = $1.classInstantiation; }
-    | INTEGER_LITERAL       { $$.obj = $1.num_literal; }
-    | REAL_LITERAL          { $$.obj = $1.num_literal; }
-    | BOOLEAN_LITERAL       { $$.obj = $1.bool_literal; }
-    | THIS                  { $$.obj = $1.thisRef; }
-    | IDENTIFIER            { $$.obj = $1.identifier; }
+expr : methodCall            { $$.expr = $1.methodCall; }
+    | classInstantiation    { $$.expr = $1.classInstantiation; }
+    | INTEGER_LITERAL       { $$.expr = $1.num_literal; }
+    | REAL_LITERAL          { $$.expr = $1.num_literal; }
+    | BOOLEAN_LITERAL       { $$.expr = $1.bool_literal; }
+    | THIS                  { $$.expr = $1.thisRef; }
+    | IDENTIFIER            { $$.expr = $1.identifier; }
     ;
 
-methodCall : obj DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new MethodCall( $1.obj, $3.identifier, $5.arguments ); }
+methodCall : expr DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new MethodCall( $1.expr, $3.identifier, $5.arguments ); }
            ;
 
 arguments :                           { $$.arguments = new Arguments(); }
           | arguments ',' argument    { $$.arguments = new Arguments( $1.arguments, $3.argument ); }
           ;
 
-argument : obj  { $$.argument = new Argument( $1.obj ); }
+argument : expr  { $$.argument = new Argument( $1.expr ); }
          ;
 
 classInstantiation : NEW IDENTIFIER P_OPEN arguments P_CLOSE    { $$.classInstantiation = new ClassInstantiation( $2.identifier, $4.arguments ); }

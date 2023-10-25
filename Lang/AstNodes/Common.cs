@@ -6,7 +6,7 @@ namespace ChineseObjects.Lang;
 // is an `Expression`. In more complex expressions that include identifiers
 // (such as variable/method/class declaration, etc) identifier is stored
 // as a mere `string` rather than the `Identifier` object.
-public class Identifier : Statement, Object{
+public class Identifier : Expression {
     public readonly string Name;
 
     public Identifier(string name) {

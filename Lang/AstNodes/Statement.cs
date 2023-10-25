@@ -10,9 +10,9 @@ namespace ChineseObjects.Lang
     // A return statement. Only stores the expression that is returned.
     public class Return : Statement
     {
-        public readonly Object retval;
+        public readonly Expression retval;
 
-        public Return(Object retval)
+        public Return(Expression retval)
         {
             this.retval = retval;
         }
@@ -29,7 +29,7 @@ namespace ChineseObjects.Lang
         public readonly string Varname;
         public readonly Expression Expr;
 
-        public Assignment(string varname, Object expr)
+        public Assignment(string varname, Expression expr)
         {
             Varname = varname;
             Expr = expr;
@@ -44,11 +44,11 @@ namespace ChineseObjects.Lang
     // If-then[-else] statement
     public class IfElse : Statement
     {
-        public readonly Object cond;
+        public readonly Expression cond;
         public readonly Statement then;
         public readonly Statement? else_;
 
-        public IfElse(Object cond, Statement then, Statement? else_)
+        public IfElse(Expression cond, Statement then, Statement? else_)
         {
             this.cond = cond;
             this.then = then;
@@ -56,7 +56,7 @@ namespace ChineseObjects.Lang
             
         }
         
-        public IfElse(Object cond, Statement then)
+        public IfElse(Expression cond, Statement then)
         {
             this.cond = cond;
             this.then = then;
@@ -71,10 +71,10 @@ namespace ChineseObjects.Lang
     // While statement
     public class While : Statement
     {
-        public readonly Object cond;
+        public readonly Expression cond;
         public readonly Statement body;
 
-        public While(Object cond, Statement body)
+        public While(Expression cond, Statement body)
         {
             this.cond = cond;
             this.body = body;

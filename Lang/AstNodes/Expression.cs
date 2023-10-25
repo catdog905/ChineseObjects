@@ -2,15 +2,15 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang {
     // The base class for all expressions
-    public interface Object : IAstNode {}
+    public interface Expression : Statement {}
 
-    public class MethodCall : Object, Statement
+    public class MethodCall : Expression
     {
-        public readonly Object Caller;
+        public readonly Expression Caller;
         public readonly string MethodName;
         public readonly Arguments Arguments;
 
-        public MethodCall(Object caller, Identifier identifier, Arguments arguments)
+        public MethodCall(Expression caller, Identifier identifier, Arguments arguments)
         {
             Caller = caller;
             MethodName = identifier.Name;
@@ -45,9 +45,9 @@ namespace ChineseObjects.Lang {
 
     public class Argument
     {
-        public readonly Object Value;
+        public readonly Expression Value;
 
-        public Argument(Object value)
+        public Argument(Expression value)
         {
             Value = value;
         }
@@ -60,7 +60,7 @@ namespace ChineseObjects.Lang {
     
     // The literal number expression (both for integers and floats)
     // TODO: separate integers and floats? Leave as is?
-    public class NumLiteral : Object {
+    public class NumLiteral : Expression {
         public readonly double value;
 
         public NumLiteral(double value) {
@@ -75,7 +75,7 @@ namespace ChineseObjects.Lang {
 
     // The boolean literal expression
     // TODO: merge with `NumLiteral`?
-    public class BoolLiteral : Object {
+    public class BoolLiteral : Expression {
         public readonly bool value;
 
         public BoolLiteral(bool value) {
@@ -88,7 +88,7 @@ namespace ChineseObjects.Lang {
         }
     }
 
-    public class ClassInstantiation : Object
+    public class ClassInstantiation : Expression
     {
         public readonly string ClassName;
         public readonly Arguments Arguments;
@@ -105,7 +105,7 @@ namespace ChineseObjects.Lang {
         }
     }
 
-    public class This : Object
+    public class This : Expression
     {
         public override string ToString()
         {

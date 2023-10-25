@@ -31,10 +31,10 @@
 
     public Parameter param;
     public Parameters parames;
-    
+
     public Argument argument;
     public Arguments arguments;
-    
+
     public Program program;
     public ClassDeclaration classDeclaration;
     public MemberDeclaration memberDeclaration;
@@ -56,19 +56,19 @@
 %%
 
 program : classDeclaration               { $$.program = new Program( $1.classDeclaration ); }
-        | classDeclaration program       { $$.program = new Program( $1.classDeclaration, $2.program ); }
+        | program classDeclaration       { $$.program = new Program( $1.program, $2.classDeclaration ); }
         ;
 
 classDeclaration : CLASS IDENTIFIER IS memberDeclarations END                     { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.memberDeclarations); }
                  | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.identifiers, $6.memberDeclarations); }
            	 ;
 
-identifiers : IDENTIFIER ',' identifiers        { $$.identifiers = new Identifiers( $1.identifier, $3.identifiers ); }
+identifiers : identifiers ',' IDENTIFIER        { $$.identifiers = new Identifiers( $1.identifiers, $3.identifier ); }
             | IDENTIFIER                        { $$.identifiers = new Identifiers( $1.identifier ); }
             ;
 
-memberDeclarations : memberDeclaration memberDeclarations { $$.memberDeclarations = new MemberDeclarations( $1.memberDeclaration, $2.memberDeclarations ); }
-                   | memberDeclaration { $$.memberDeclarations = new MemberDeclarations( $1.memberDeclaration ); }
+memberDeclarations :                                      { $$.memberDeclarations = new MemberDeclarations(); }
+                   | memberDeclarations memberDeclaration { $$.memberDeclarations = new MemberDeclarations( $1.memberDeclarations, $2.memberDeclaration ); }
                    ;
 
 memberDeclaration : variableDeclaration    { $$.memberDeclaration = $1.variableDeclaration; }
@@ -89,12 +89,12 @@ constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END  { $$.constr
 parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.identifier.Name, $3.identifier ); }
             ;
 
-parameters  :				     { $$.parames = new Parameters(); }
-            | parameter ',' parameters       { $$.parames = new Parameters( $1.param, $3.parames ); }
+parameters  :                                { $$.parames = new Parameters(); }
+            | parameters ',' parameter       { $$.parames = new Parameters( $1.parames, $3.param ); }
             | parameter                      { $$.parames = new Parameters( $1.param ); }
             ;
 
-body : statement body             { $$.body = new StatementsBlock( $1.stmt, $2.body); }
+body : body statement             { $$.body = new StatementsBlock( $1.body, $2.stmt); }
      | statement                  { $$.body = new StatementsBlock( $1.stmt ); }
      ;
 
@@ -122,20 +122,19 @@ returnStatement : RETURN obj			{ $$.ret = new Return($1.obj); }
                 ;
     
 obj : methodCall            { $$.obj = $1.methodCall; }
-       | classInstantiation    { $$.obj = $1.classInstantiation; }
-       | INTEGER_LITERAL       { $$.obj = $1.num_literal; }
-       | REAL_LITERAL          { $$.obj = $1.num_literal; }
-       | BOOLEAN_LITERAL       { $$.obj = $1.bool_literal; }
-       | THIS                  { $$.obj = $1.thisRef; }
-       | IDENTIFIER            { $$.obj = $1.identifier; }
-       ;
+    | classInstantiation    { $$.obj = $1.classInstantiation; }
+    | INTEGER_LITERAL       { $$.obj = $1.num_literal; }
+    | REAL_LITERAL          { $$.obj = $1.num_literal; }
+    | BOOLEAN_LITERAL       { $$.obj = $1.bool_literal; }
+    | THIS                  { $$.obj = $1.thisRef; }
+    | IDENTIFIER            { $$.obj = $1.identifier; }
+    ;
 
 methodCall : obj DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new MethodCall( $1.obj, $3.identifier, $5.arguments ); }
            ;
 
 arguments :                           { $$.arguments = new Arguments(); }
-          | argument ',' arguments    { $$.arguments = new Arguments( $1.argument, $3.arguments ); }
-          | argument                  { $$.arguments = new Arguments( $1.argument ); }
+          | arguments ',' argument    { $$.arguments = new Arguments( $1.arguments, $3.argument ); }
           ;
 
 argument : obj  { $$.argument = new Argument( $1.obj ); }

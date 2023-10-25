@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace ChineseObjects.Lang;
 
 // An identifier. Note that it is used to express that an `Identifier`
@@ -5,65 +7,50 @@ namespace ChineseObjects.Lang;
 // (such as variable/method/class declaration, etc) identifier is stored
 // as a mere `string` rather than the `Identifier` object.
 public class Identifier : Statement, Object{
-    public readonly string name;
+    public readonly string Name;
 
     public Identifier(string name) {
-        this.name = name;
+        Name = name;
     }
 
     public override string ToString()
     {
-        return name;
-    }
-
-    public List<IAstNode> Children()
-    {
-        return new List<IAstNode>();
-    }
-
-    public IAstNode CurrentNode()
-    {
-        return this;
+        return Name;
     }
 }
 
 public class Identifiers : IAstNode
 {
-    public readonly List<Identifier> IdentifiersList;
-    public readonly List<string> Names = new List<string>();
+    public readonly ImmutableList<string> Names;
 
-    public Identifiers(List<Identifier> identifiersList)
+    public Identifiers(IEnumerable<string> names)
     {
-        IdentifiersList = identifiersList;
-        foreach (Identifier identifier in identifiersList)
-        {
-            Names.Add(identifier.name);
-        }
-    }
-    
-    public Identifiers(params Identifier[] identifiers)
-    {
-        IdentifiersList = identifiers.ToList();
-    }
-    
-    public Identifiers(Identifier identifier, Identifiers identifiers)
-    {
-        IdentifiersList = new List<Identifier> { identifier };
-        IdentifiersList.AddRange(identifiers.IdentifiersList);
+        Names = names.ToImmutableList();
     }
 
-    public override string ToString()
-    {
+    public Identifiers(
+        IEnumerable<Identifier> identifiers
+    ) : this(identifiers.Select(i => i.Name)) {}
+
+    // Have to declare the empty constructor separately to remove the ambiguity between
+    // `Identifiers(params Identifier[])` and `Identifiers(params string[])`
+    public Identifiers() : this (ImmutableList<string>.Empty) {}
+
+    public Identifiers(params Identifier[] identifiers) : this(identifiers.ToList()) {}
+
+    public Identifiers(params string[] names) : this(names.ToImmutableList()) {}
+
+    public Identifiers(
+        Identifiers identifiers,
+        Identifier identifier
+    ) : this(identifiers.Names.Add(identifier.Name)) {}
+
+    public Identifiers(
+        Identifier identifier,
+        Identifiers identifiers
+    ) : this(new[] {identifier.Name}.Concat(identifiers.Names)) {}
+
+    public override string ToString() {
         return String.Join(",", Names);
-    }
-
-    public List<IAstNode> Children()
-    {
-        return IdentifiersList.Cast<IAstNode>().ToList();
-    }
-
-    public IAstNode CurrentNode()
-    {
-        return this;
     }
 }

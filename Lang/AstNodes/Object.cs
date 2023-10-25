@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace ChineseObjects.Lang {
     // The base class for all expressions
     public interface Object : IAstNode {}
@@ -11,7 +13,7 @@ namespace ChineseObjects.Lang {
         public MethodCall(Object caller, Identifier identifier, Arguments arguments)
         {
             Caller = caller;
-            MethodName = identifier.name;
+            MethodName = identifier.Name;
             Arguments = arguments;
         }
 
@@ -19,55 +21,29 @@ namespace ChineseObjects.Lang {
         {
             return "MethodCall(" + Caller + "." + MethodName + "(" + Arguments + "))";
         }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode> { Caller, Arguments };
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
-        }
     }
 
-    public class Arguments : Object
+    public class Arguments
     {
-        public readonly List<Argument> Values;
+        public readonly ImmutableList<Argument> Values;
 
-        public Arguments(params Argument[] arguments)
-        {
-            Values = arguments.ToList();
-        } 
-        
-        public Arguments(Argument argument)
-        {
-            Values = new List<Argument> { argument };
+        public Arguments(IEnumerable<Argument> values) {
+            Values = values.ToImmutableList();
         }
 
-        public Arguments(Argument argument, Arguments arguments)
-        {
-            Values = new List<Argument> { argument };
-            Values.AddRange(arguments.Values);
-        }
+        public Arguments(params Argument[] arguments) : this(arguments.ToImmutableList()) {}
+
+        public Arguments(Arguments arguments, Argument argument) : this(arguments.Values.Add(argument)) {}
+
+        public Arguments(Argument argument, Arguments arguments) : this(new[] {argument}.Concat(arguments.Values)) {}
 
         public override string ToString()
         {
             return String.Join(",", Values);
         }
-
-        public List<IAstNode> Children()
-        {
-            return Values.Cast<IAstNode>().ToList();
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
-        }
     }
 
-    public class Argument : Object
+    public class Argument
     {
         public readonly Object Value;
 
@@ -79,16 +55,6 @@ namespace ChineseObjects.Lang {
         public override string ToString()
         {
             return Value.ToString();
-        }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode> { Value };
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
         }
     }
     
@@ -105,17 +71,7 @@ namespace ChineseObjects.Lang {
         {
             return value.ToString();
         }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode>();
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
-        }
-    }
+}
 
     // The boolean literal expression
     // TODO: merge with `NumLiteral`?
@@ -130,16 +86,6 @@ namespace ChineseObjects.Lang {
         {
             return value.ToString();
         }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode>();
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
-        }
     }
 
     public class ClassInstantiation : Object
@@ -149,23 +95,13 @@ namespace ChineseObjects.Lang {
 
         public ClassInstantiation(Identifier identifier, Arguments arguments)
         {
-            ClassName = identifier.name;
+            ClassName = identifier.Name;
             Arguments = arguments;
         }
 
         public override string ToString()
         {
             return "new " + ClassName + "(" + Arguments + ")";
-        }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode> { Arguments };
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
         }
     }
 
@@ -174,16 +110,6 @@ namespace ChineseObjects.Lang {
         public override string ToString()
         {
             return "This";
-        }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode>();
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
         }
     }
     

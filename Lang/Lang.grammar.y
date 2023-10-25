@@ -86,7 +86,7 @@ methodDeclaration   : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFI
 constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END  { $$.constructorDeclaration = new ConstructorDeclaration( $3.parames, $6.body ); }
                        ;
 
-parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.identifier.name, $3.identifier ); }
+parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.identifier.Name, $3.identifier ); }
             ;
 
 parameters  :				     { $$.parames = new Parameters(); }
@@ -107,7 +107,7 @@ statement : assignment          { $$.stmt = $1.assign; }
           ;
 
 
-assignment  : IDENTIFIER ASSIGN obj    { $$.assign = new Assignment($1.identifier.name, $3.obj); }
+assignment  : IDENTIFIER ASSIGN obj    { $$.assign = new Assignment($1.identifier.Name, $3.obj); }
             ;
 
 whileLoop   : WHILE obj LOOP body END      { $$.while_ = new While($2.obj, $4.stmt); }

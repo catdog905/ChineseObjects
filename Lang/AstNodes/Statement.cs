@@ -21,43 +21,23 @@ namespace ChineseObjects.Lang
         {
             return retval.ToString();
         }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode> { retval };
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
-        }
     }
 
     // Assignment statement
     public class Assignment : Statement
     {
-        public readonly string varname;
-        public readonly Object expr;
+        public readonly string Varname;
+        public readonly Expression Expr;
 
         public Assignment(string varname, Object expr)
         {
-            this.varname = varname;
-            this.expr = expr;
+            Varname = varname;
+            Expr = expr;
         }
 
         public override string ToString()
         {
-            return varname + ":=" + expr;
-        }
-
-        public List<IAstNode> Children()
-        {
-            return new List<IAstNode> { expr };
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
+            return Varname + ":=" + Expr;
         }
     }
 
@@ -86,19 +66,6 @@ namespace ChineseObjects.Lang
         {
             return "IfElse(" + cond + "){" + then + "}{" + else_ + "}";
         }
-
-        public List<IAstNode> Children()
-        {
-            if (else_ == null)
-                return new List<IAstNode> {cond, then};
-            else
-                return new List<IAstNode> {cond, then, else_};
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
-        }
     }
 
     // While statement
@@ -118,50 +85,41 @@ namespace ChineseObjects.Lang
             return "While(" + cond + "){" + body + "}";
         }
 
-        public List<IAstNode> Children()
+        public IList<string> GetRepr()
         {
-            return new List<IAstNode> { cond, body };
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
+            var ans = new List<string> {"WHILE:"};
+            ans.AddRange(cond.GetRepr().Select(s => "| " + s));
+            ans.Add("DO:");
+            ans.AddRange(body.GetRepr().Select(s => "| " + s));
+            return ans;
         }
     }
 
     // A combination of statements
     public class StatementsBlock : Statement
     {
-        public List<Statement> stmts;
+        public ImmutableList<Statement> Stmts;
 
-        public StatementsBlock(List<Statement> stmts)
+        public StatementsBlock(IEnumerable<Statement> stmts)
         {
-            this.stmts = stmts;
+            Stmts = stmts.ToImmutableList();
         }
 
-        public StatementsBlock(Statement statement, StatementsBlock statementsBlock)
-        {
-            stmts = new List<Statement> { statement };
-            stmts.AddRange(statementsBlock.stmts);
-        }
+        public StatementsBlock(
+            StatementsBlock statementsBlock,
+            Statement statement
+        ) : this(statementsBlock.Stmts.Add(statement)) {}
+
+        public StatementsBlock(
+            Statement statement,
+            StatementsBlock statementsBlock
+        ) : this(new[] {statement}.Concat(statementsBlock.Stmts)) {}
 
         public StatementsBlock(params Statement[] statements) : this(statements.ToList()) { }
 
         public override string ToString()
         {
-            return String.Join(";", stmts);
-        }
-
-        public List<IAstNode> Children()
-        {
-            return stmts.Cast<IAstNode>().ToList();
-        }
-
-        public IAstNode CurrentNode()
-        {
-            return this;
+            return String.Join(";", Stmts);
         }
     }
-
-    
 }

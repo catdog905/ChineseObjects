@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang {
     // The base class for all expressions
-    public interface Expression : Statement {}
+    public interface Expression : Statement, HumanReadable {}
 
-    public class MethodCall : Expression
+    public class MethodCall : Expression, HumanReadable
     {
         public readonly Expression Caller;
         public readonly string MethodName;
@@ -20,6 +20,19 @@ namespace ChineseObjects.Lang {
         public override string ToString()
         {
             return "MethodCall(" + Caller + "." + MethodName + "(" + Arguments + "))";
+        }
+
+        public IList<string> GetRepr()
+        {
+            var ans = new List<string> {"CALL METHOD OF:"};
+            ans.AddRange(Caller.GetRepr().Select(s => "| " + s));
+            ans.Add("NAMED " + MethodName);
+            ans.Add("WITH ARGS:");
+            foreach(Argument arg in Arguments.Values)
+            {
+                ans.AddRange(arg.Value.GetRepr().Select(s => "| " + s));
+            }
+            return ans;
         }
     }
 
@@ -71,7 +84,12 @@ namespace ChineseObjects.Lang {
         {
             return value.ToString();
         }
-}
+
+        public IList<string> GetRepr()
+        {
+            return new List<string> {"LITERAL " + value.ToString()};
+        }
+    }
 
     // The boolean literal expression
     // TODO: merge with `NumLiteral`?
@@ -85,6 +103,11 @@ namespace ChineseObjects.Lang {
         public override string ToString()
         {
             return value.ToString();
+        }
+
+        public IList<string> GetRepr()
+        {
+            return new List<string> {"LITERAL " + value.ToString()};
         }
     }
 
@@ -103,6 +126,16 @@ namespace ChineseObjects.Lang {
         {
             return "new " + ClassName + "(" + Arguments + ")";
         }
+
+        public IList<string> GetRepr()
+        {
+            var ans = new List<string> {"NEW " + ClassName};
+            foreach(Argument arg in Arguments.Values)
+            {
+                ans.AddRange(arg.Value.GetRepr().Select(s => "| " + s));
+            }
+            return ans;
+        }
     }
 
     public class This : Expression
@@ -110,6 +143,11 @@ namespace ChineseObjects.Lang {
         public override string ToString()
         {
             return "This";
+        }
+
+        public IList<string> GetRepr()
+        {
+            return new List<string> {"THIS"};
         }
     }
     

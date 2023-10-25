@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public class Program : IAstNode
+public class Program : IAstNode, HumanReadable
 {
     public readonly ImmutableList<ClassDeclaration> ClassDeclarations;
 
@@ -27,15 +27,25 @@ public class Program : IAstNode
     {
         return "Program(" + String.Join(", ", ClassDeclarations) + ")";
     }
+
+    public IList<string> GetRepr()
+    {
+        var ans = new List<string>{"PROGRAM"};
+        foreach(ClassDeclaration class_ in ClassDeclarations)
+        {
+            ans.AddRange(class_.GetRepr().Select(s => "| " + s));
+        }
+        return ans;
+    }
 }
 
-public class ClassDeclaration : IAstNode
+public class ClassDeclaration : IAstNode, HumanReadable
 {
     public readonly string ClassName;
     public readonly ImmutableList<string> ParentClassNames;
+    public readonly ImmutableList<ConstructorDeclaration> ConstructorDeclarations;
     public readonly ImmutableList<VariableDeclaration> VariableDeclarations;
     public readonly ImmutableList<MethodDeclaration> MethodDeclarations;
-    public readonly ImmutableList<ConstructorDeclaration> ConstructorDeclarations;
 
     public ClassDeclaration(
         Identifier className, 
@@ -44,27 +54,27 @@ public class ClassDeclaration : IAstNode
     {
         ClassName = className.Name;
         ParentClassNames = parentClassNames.Names;
+        var constructors = new List<ConstructorDeclaration> ();
         var vars = new List<VariableDeclaration> ();
         var methods = new List<MethodDeclaration> ();
-        var constructors = new List<ConstructorDeclaration> ();
         foreach (MemberDeclaration memberDeclaration in memberDeclarations.MemberDeclarations_)
         {
             switch (memberDeclaration)
             {
+                case ConstructorDeclaration constructorDeclaration:
+                    constructors.Add(constructorDeclaration);
+                    break;
                 case VariableDeclaration varDeclaration:
                     vars.Add(varDeclaration);
                     break;
                 case MethodDeclaration methodDeclaration:
                     methods.Add(methodDeclaration);
                     break;
-                case ConstructorDeclaration constructorDeclaration:
-                    constructors.Add(constructorDeclaration);
-                    break;
             }
         }
+        ConstructorDeclarations = constructors.ToImmutableList();
         VariableDeclarations = vars.ToImmutableList();
         MethodDeclarations = methods.ToImmutableList();
-        ConstructorDeclarations = constructors.ToImmutableList();
     }
     
     public ClassDeclaration(
@@ -74,7 +84,27 @@ public class ClassDeclaration : IAstNode
 
     public override string ToString()
     {
-        return ClassName + "(vars="+String.Join(", ", VariableDeclarations) + "; methods=" + String.Join(", ", MethodDeclarations) + ")";
+        return ClassName + "(vars="+String.Join(", ", VariableDeclarations) + "; methods=" + String.Join(", ", MethodDeclarations) + "), also constructors but we forgot them.";
+    }
+
+    public IList<string> GetRepr()
+    {
+        var ans = new List<string>{"CLASS " + ClassName};
+        foreach(ConstructorDeclaration ctor in ConstructorDeclarations)
+        {
+            ans.AddRange(ctor.GetRepr().Select(s => "| " + s));
+        }
+        ans.Add("|--");
+        foreach(VariableDeclaration var in VariableDeclarations)
+        {
+            ans.AddRange(var.GetRepr().Select(s => "| " + s));
+        }
+        ans.Add("|--");
+        foreach(MethodDeclaration method in MethodDeclarations)
+        {
+            ans.AddRange(method.GetRepr().Select(s => "| " + s));
+        }
+        return ans;
     }
 }
 
@@ -106,7 +136,7 @@ public class MemberDeclarations
     }
 }
 
-public class MethodDeclaration : MemberDeclaration
+public class MethodDeclaration : MemberDeclaration, HumanReadable
 {
     public readonly string MethodName;
     public readonly Parameters Parameters;
@@ -130,12 +160,27 @@ public class MethodDeclaration : MemberDeclaration
     {
         return MethodName + "(" + Parameters + "):" + ReturnTypeName + "{" + Body + "}";
     }
+
+    public IList<string> GetRepr()
+    {
+        var ans = new List<string>{"METHOD " + MethodName + ": " + ReturnTypeName};
+        foreach(Parameter param in Parameters.Parames)
+        {
+            ans.AddRange(param.GetRepr().Select(s => "| " + s));
+        }
+        ans.Add("|--");
+        foreach(Statement stmt in Body.Stmts)
+        {
+            ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
+        }
+        return ans;
+    }
 }
 
 // A variable declaration (is not an expression)
 // TODO: should declarations of initialized and uninitialized variable
 // be the same or different types of nodes?
-public class VariableDeclaration : MemberDeclaration
+public class VariableDeclaration : MemberDeclaration, HumanReadable
 {
     public readonly string Name;
     public readonly string Type;
@@ -150,10 +195,15 @@ public class VariableDeclaration : MemberDeclaration
     {
         return Name + ":" + Type;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new List<string>{"VARIABLE " + Name + ": " + Type};
+    }
 }
 
 
-public class ConstructorDeclaration : MemberDeclaration
+public class ConstructorDeclaration : MemberDeclaration, HumanReadable
 {
     public readonly Parameters Parameters;
     public readonly StatementsBlock Body;
@@ -168,11 +218,25 @@ public class ConstructorDeclaration : MemberDeclaration
     {
         return "This(" + Parameters + ") {" + Body + "}";
     }
+
+    public IList<string> GetRepr()
+    {
+        var ans = new List<string> {"CONSTRUCTOR"};
+        foreach(Parameter param in Parameters.Parames)
+        {
+            ans.AddRange(param.GetRepr().Select(s => "| " + s));
+        }
+        ans.Add("|--");
+        foreach(Statement stmt in Body.Stmts) {
+            ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
+        }
+        return ans;
+    }
 }
 
 
 // A parameter (is not an expression)
-public class Parameter : IAstNode {
+public class Parameter : IAstNode, HumanReadable {
     public readonly string Name;
     public readonly string Type;
 
@@ -184,6 +248,11 @@ public class Parameter : IAstNode {
     public override string ToString()
     {
         return Name + ": " + Type;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new List<string> {"PARAMETER " + Name + ": " + Type};
     }
 }
 

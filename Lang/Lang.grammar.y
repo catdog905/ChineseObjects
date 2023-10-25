@@ -118,10 +118,10 @@ ifStatement : IF expr THEN body END             { $$.ifelse = new IfElse($2.expr
             | IF expr THEN body ELSE body END   { $$.ifelse = new IfElse($2.expr, $4.body, $6.body); }
             ;
 
-returnStatement : RETURN expr			{ $$.ret = new Return($1.expr); }
+returnStatement : RETURN expr			{ $$.ret = new Return($2.expr); }
                 ;
     
-expr : methodCall            { $$.expr = $1.methodCall; }
+expr : methodCall           { $$.expr = $1.methodCall; }
     | classInstantiation    { $$.expr = $1.classInstantiation; }
     | INTEGER_LITERAL       { $$.expr = $1.num_literal; }
     | REAL_LITERAL          { $$.expr = $1.num_literal; }
@@ -135,6 +135,7 @@ methodCall : expr DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new
 
 arguments :                           { $$.arguments = new Arguments(); }
           | arguments ',' argument    { $$.arguments = new Arguments( $1.arguments, $3.argument ); }
+          | argument                  { $$.arguments = new Arguments( $1.argument ); }
           ;
 
 argument : expr  { $$.argument = new Argument( $1.expr ); }

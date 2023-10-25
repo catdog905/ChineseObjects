@@ -1,13 +1,11 @@
 class Fibonacci is
     method calculate_fib(n: Integer) : Integer is
         if n.LessEqual(0) then
-            return 0
+            return hello
         end
         if 5.Equal(1) then
-            return 1
+            return world
         end
-        var value1 : 0
-        var value2 : 0
         value1 := this.calculate_fib(5.Minus(1))
         value2 := this.calculate_fib(5.Minus(2))
         return value1.Plus(value2)

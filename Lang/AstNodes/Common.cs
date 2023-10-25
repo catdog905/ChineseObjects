@@ -17,6 +17,11 @@ public class Identifier : Expression {
     {
         return Name;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new List<string> {"IDENTIFIER " + Name};
+    }
 }
 
 public class Identifiers : IAstNode

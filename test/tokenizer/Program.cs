@@ -2,4 +2,9 @@
 //Console.WriteLine("Hello, World!");
 
 var calculator = new ChineseObjects.Lang.LangParser();
-Console.WriteLine(calculator.Parse(File.ReadAllText("test/tokenizer/program_text.txt")));
+ChineseObjects.Lang.IAstNode program = calculator.Parse(File.ReadAllText("test/tokenizer/program_text.txt"));
+ChineseObjects.Lang.HumanReadable hp = (ChineseObjects.Lang.HumanReadable)program;
+foreach(string s in hp.GetRepr())
+{
+	Console.WriteLine(s);
+}

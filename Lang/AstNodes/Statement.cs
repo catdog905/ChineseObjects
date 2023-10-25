@@ -5,7 +5,7 @@ namespace ChineseObjects.Lang
 {
 
     // Base class for all statements
-    public interface Statement : IAstNode { }
+    public interface Statement : IAstNode, HumanReadable { }
 
     // A return statement. Only stores the expression that is returned.
     public class Return : Statement
@@ -20,6 +20,13 @@ namespace ChineseObjects.Lang
         public override string ToString()
         {
             return retval.ToString();
+        }
+
+        public IList<string> GetRepr()
+        {
+            var ans = new List<string> {"RETURN"};
+            ans.AddRange(retval.GetRepr().Select(s => "| " + s));
+            return ans;
         }
     }
 
@@ -38,6 +45,13 @@ namespace ChineseObjects.Lang
         public override string ToString()
         {
             return Varname + ":=" + Expr;
+        }
+
+        public IList<string> GetRepr()
+        {
+            var ans = new List<string> {"ASSIGN TO " + Varname + ":"};
+            ans.AddRange(Expr.GetRepr().Select(s => "| " + s));
+            return ans;
         }
     }
 
@@ -65,6 +79,20 @@ namespace ChineseObjects.Lang
         public override string ToString()
         {
             return "IfElse(" + cond + "){" + then + "}{" + else_ + "}";
+        }
+
+        public IList<string> GetRepr()
+        {
+            var ans = new List<string> {"IF:"};
+            ans.AddRange(cond.GetRepr().Select(s => "| " + s));
+            ans.Add("THEN:");
+            ans.AddRange(then.GetRepr().Select(s => "| " + s));
+            if (else_ is not null)
+            {
+                ans.Add("ELSE:");
+                ans.AddRange(else_.GetRepr().Select(s => "| " + s));
+            }
+            return ans;
         }
     }
 
@@ -120,6 +148,16 @@ namespace ChineseObjects.Lang
         public override string ToString()
         {
             return String.Join(";", Stmts);
+        }
+
+        public IList<string> GetRepr()
+        {
+            var ans = new List<string> {};
+            foreach(Statement stmt in Stmts)
+            {
+                ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
+            }
+            return ans;
         }
     }
 }

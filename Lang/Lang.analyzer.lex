@@ -7,7 +7,7 @@
 
 Space           [ \t]
 IntegerLiteral  [0-9]+
-RealLiteral     ([0-9]+\.[0-9]*|\.[0-9]+)
+RealLiteral     ([0-9]+\.[0-9]+|\.[0-9]+)
 BooleanLiteral  (true|false)
 POpen           \(
 PClose          \)

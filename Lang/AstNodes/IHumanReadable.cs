@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface HumanReadable {
+public interface IHumanReadable {
     /*
      * Return a list of strings that comprise a human-readable
      * representation of the node (with its children).

@@ -50,3 +50,8 @@ public class Parameters : IAstNode {
         return String.Join(",", Parames);
     }
 }
+
+public class ScopeAwareParameter
+{
+    
+}

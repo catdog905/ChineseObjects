@@ -1,8 +1,6 @@
-using System.Collections.Immutable;
-
 namespace ChineseObjects.Lang;
 
-public class MethodCall : Expression, IHumanReadable
+public class MethodCall : Expression
 {
     public readonly Expression Caller;
     public readonly string MethodName;

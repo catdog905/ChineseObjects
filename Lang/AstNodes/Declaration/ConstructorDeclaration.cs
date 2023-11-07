@@ -30,3 +30,15 @@ public class ConstructorDeclaration : MemberDeclaration, IHumanReadable
         return ans;
     }
 }
+//
+// public class ScopeConstructorDeclaration : ConstructorDeclaration
+// {
+//     public readonly IScope Scope;
+//     public readonly ConstructorDeclaration ConstructorDeclaration;
+//
+//     public ScopeConstructorDeclaration(IScope scope, ConstructorDeclaration constructorDeclaration) 
+//         : base(constructorDeclaration.Parameters, constructorDeclaration.Body)
+//     {
+//         var parametersScope = 
+//     }
+// }

@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using System.Formats.Asn1;
+using ChineseObjects.Lang.Entities;
 
 namespace ChineseObjects.Lang;
 
@@ -36,5 +38,21 @@ public class Program : IAstNode, IHumanReadable
             ans.AddRange(class_.GetRepr().Select(s => "| " + s));
         }
         return ans;
+    }
+}
+
+
+class ScopeAwareProgram : Program
+{
+    public readonly Program Program;
+    public readonly IScope Scope;
+    
+    public ScopeAwareProgram(Program program) : base(program.ClassDeclarations)
+    {
+        Program = program;
+        Scope = new ClassScope(
+            program.ClassDeclarations.ToDictionary(
+                    classDeclaration => classDeclaration.ClassName, 
+                    classDeclaration => new Class(classDeclaration)));
     }
 }

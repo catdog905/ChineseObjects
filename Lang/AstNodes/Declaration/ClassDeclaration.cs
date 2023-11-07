@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using ChineseObjects.Lang.Entities;
 
 namespace ChineseObjects.Lang;
 
@@ -11,33 +12,69 @@ public class ClassDeclaration : IAstNode, IHumanReadable
     public readonly ImmutableList<MethodDeclaration> MethodDeclarations;
 
     public ClassDeclaration(
+        string className, 
+        ImmutableList<string> parentClassNames, 
+        ImmutableList<ConstructorDeclaration> constructorDeclarations, 
+        ImmutableList<VariableDeclaration> variableDeclarations, 
+        ImmutableList<MethodDeclaration> methodDeclarations)
+    {
+        ClassName = className;
+        ParentClassNames = parentClassNames;
+        ConstructorDeclarations = constructorDeclarations;
+        VariableDeclarations = variableDeclarations;
+        MethodDeclarations = methodDeclarations;
+    }
+    
+    public ClassDeclaration(
+        string className, 
+        List<string> parentClassNames, 
+        List<ConstructorDeclaration> constructorDeclarations, 
+        List<VariableDeclaration> variableDeclarations, 
+        List<MethodDeclaration> methodDeclarations)
+        : this(
+            className,
+            parentClassNames.ToImmutableList(),
+            constructorDeclarations.ToImmutableList(),
+            variableDeclarations.ToImmutableList(),
+            methodDeclarations.ToImmutableList()) {}
+
+    public ClassDeclaration(
         Identifier className, 
         Identifiers parentClassNames, 
         MemberDeclarations memberDeclarations)
+        : this(
+            className.Name, 
+            parentClassNames.Names,
+            ExtractConstructors(memberDeclarations),
+            ExtractVariables(memberDeclarations),
+            ExtractMethods(memberDeclarations)) {}
+
+    private static ImmutableList<ConstructorDeclaration> ExtractConstructors(MemberDeclarations memberDeclarations)
     {
-        ClassName = className.Name;
-        ParentClassNames = parentClassNames.Names;
-        var constructors = new List<ConstructorDeclaration> ();
-        var vars = new List<VariableDeclaration> ();
-        var methods = new List<MethodDeclaration> ();
-        foreach (MemberDeclaration memberDeclaration in memberDeclarations.MemberDeclarations_)
-        {
-            switch (memberDeclaration)
-            {
-                case ConstructorDeclaration constructorDeclaration:
-                    constructors.Add(constructorDeclaration);
-                    break;
-                case VariableDeclaration varDeclaration:
-                    vars.Add(varDeclaration);
-                    break;
-                case MethodDeclaration methodDeclaration:
-                    methods.Add(methodDeclaration);
-                    break;
-            }
-        }
-        ConstructorDeclarations = constructors.ToImmutableList();
-        VariableDeclarations = vars.ToImmutableList();
-        MethodDeclarations = methods.ToImmutableList();
+        var constructors = memberDeclarations.MemberDeclarations_
+            .OfType<ConstructorDeclaration>()
+            .ToList();
+
+        
+        return constructors.ToImmutableList();
+    }
+
+    private static ImmutableList<VariableDeclaration> ExtractVariables(MemberDeclarations memberDeclarations)
+    {
+        var vars = memberDeclarations.MemberDeclarations_
+            .OfType<VariableDeclaration>()
+            .ToList();
+        
+        return vars.ToImmutableList();
+    }
+
+    private static ImmutableList<MethodDeclaration> ExtractMethods(MemberDeclarations memberDeclarations)
+    {
+        var methods = memberDeclarations.MemberDeclarations_
+            .OfType<MethodDeclaration>()
+            .ToList();
+        
+        return methods.ToImmutableList();
     }
     
     public ClassDeclaration(
@@ -69,4 +106,24 @@ public class ClassDeclaration : IAstNode, IHumanReadable
         }
         return ans;
     }
+}
+
+public class ScopeAwareClassDeclaration : ClassDeclaration
+{
+    public readonly IScope Scope;
+    public ScopeAwareClassDeclaration(ClassScope scope, ClassDeclaration classDeclaration) : base(
+        classDeclaration.ClassName,
+        classDeclaration.ParentClassNames,
+        classDeclaration.ConstructorDeclarations,
+        classDeclaration.VariableDeclarations,
+        classDeclaration.MethodDeclarations)
+    {
+        Scope = new MethodScope(
+            scope, 
+            classDeclaration.MethodDeclarations.ToDictionary(
+                methodDeclaration => methodDeclaration.MethodName,
+                methodDeclaration => new Method(scope, methodDeclaration)));
+
+    }
+    
 }

@@ -13,12 +13,12 @@ public class Return : Statement
 
     public override string ToString()
     {
-        return retval.ToString();
+        return retval?.ToString() ?? "NULL";
     }
 
     public IList<string> GetRepr()
     {
-        var ans = new List<string> {"RETURN"};
+        var ans = new List<string> { "RETURN" };
         ans.AddRange(retval.GetRepr().Select(s => "| " + s));
         return ans;
     }

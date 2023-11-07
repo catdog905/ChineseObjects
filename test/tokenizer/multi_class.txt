@@ -1,0 +1,19 @@
+class Shape is
+    method area() : Integer is
+        return 0
+    end
+    method perimeter() : Integer is
+        return 0
+    end
+end
+
+class Rectangle extends Shape is
+    var height: Integer
+    var width: Integer
+    method area() : Integer is
+        return height.Mult(width)
+    end
+    method perimeter() : Integer is
+        return height.Plus(width)
+    end
+end

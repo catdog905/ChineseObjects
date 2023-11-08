@@ -107,23 +107,3 @@ public class ClassDeclaration : IAstNode, IHumanReadable
         return ans;
     }
 }
-
-public class ScopeAwareClassDeclaration : ClassDeclaration
-{
-    public readonly IScope Scope;
-    public ScopeAwareClassDeclaration(ClassScope scope, ClassDeclaration classDeclaration) : base(
-        classDeclaration.ClassName,
-        classDeclaration.ParentClassNames,
-        classDeclaration.ConstructorDeclarations,
-        classDeclaration.VariableDeclarations,
-        classDeclaration.MethodDeclarations)
-    {
-        Scope = new MethodScope(
-            scope, 
-            classDeclaration.MethodDeclarations.ToDictionary(
-                methodDeclaration => methodDeclaration.MethodName,
-                methodDeclaration => new Method(scope, methodDeclaration)));
-
-    }
-    
-}

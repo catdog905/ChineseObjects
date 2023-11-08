@@ -50,7 +50,7 @@ class ScopeAwareProgram : Program
     public ScopeAwareProgram(Program program) : base(program.ClassDeclarations)
     {
         Program = program;
-        Scope = new ClassScope(
+        Scope = new Scope<Class>(
             program.ClassDeclarations.ToDictionary(
                     classDeclaration => classDeclaration.ClassName, 
                     classDeclaration => new Class(classDeclaration)));

@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using ChineseObjects.Lang.Entities;
 
 namespace ChineseObjects.Lang;
 
@@ -106,4 +105,9 @@ public class ClassDeclaration : IAstNode, IHumanReadable
         }
         return ans;
     }
+}
+
+public class ScopeAwareClassDeclaration
+{
+    Scope
 }

@@ -1,6 +1,4 @@
 using System.Collections.Immutable;
-using System.Formats.Asn1;
-using ChineseObjects.Lang.Entities;
 
 namespace ChineseObjects.Lang;
 
@@ -44,15 +42,29 @@ public class Program : IAstNode, IHumanReadable
 
 class ScopeAwareProgram : Program
 {
-    public readonly Program Program;
-    public readonly IScope Scope;
-    
-    public ScopeAwareProgram(Program program) : base(program.ClassDeclarations)
+    private readonly Program Origin;
+    private readonly Scope Scope;
+
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, Program program) :
+        base(program.ClassDeclarations.Select(
+            decl
+                =>
+                new ScopeAwareClassDeclaration(scope, decl)))
     {
-        Program = program;
-        Scope = new Scope<Class>(
-            program.ClassDeclarations.ToDictionary(
-                    classDeclaration => classDeclaration.ClassName, 
-                    classDeclaration => new Class(classDeclaration)));
+        Origin = program;
+        Scope = scope;
+    }
+    
+    public ScopeAwareProgram(Scope scope, Program program) : 
+        this(new ScopeWithClassDeclarations(scope, program.ClassDeclarations), program) {}
+
+    class ScopeWithClassDeclarations : Scope
+    {
+        public ScopeWithClassDeclarations(Scope scope, IEnumerable<ClassDeclaration> classDeclarations) :
+            base(
+                scope, 
+                classDeclarations.ToDictionary(
+                    classDeclaration => classDeclaration.ClassName,
+                    classDeclaration => new Type(classDeclaration))) {}
     }
 }

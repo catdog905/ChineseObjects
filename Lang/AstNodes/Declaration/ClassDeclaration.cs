@@ -107,7 +107,34 @@ public class ClassDeclaration : IAstNode, IHumanReadable
     }
 }
 
-public class ScopeAwareClassDeclaration
+public class ScopeAwareClassDeclaration : ClassDeclaration
 {
-    Scope
+    private readonly ClassDeclaration Origin;
+    private readonly Scope Scope;
+
+    private ScopeAwareClassDeclaration(ScopeWithFields scope, ClassDeclaration classDeclaration) :
+        base(classDeclaration.ClassName,
+            classDeclaration.ParentClassNames,
+            classDeclaration.ConstructorDeclarations
+                .Select(decl => new ScopeAwareConstructorDeclaration(scope, decl)),
+            classDeclaration.VariableDeclarations
+                .Select(decl => new ScopeAwareVariableDeclaration(scope, decl)),
+            classDeclaration.MethodDeclarations
+                .Select(decl => new ScopeAwareMethodDeclaration(scope, decl)))
+    {
+        Origin = classDeclaration;
+        Scope = scope;
+    }
+    
+    public ScopeAwareClassDeclaration(Scope scope, ClassDeclaration classDeclaration) :
+        this(new ScopeWithFields(scope, classDeclaration.VariableDeclarations), classDeclaration) {}
+
+    class ScopeWithFields : Scope
+    {
+        public ScopeWithFields(Scope scope, IEnumerable<VariableDeclaration> variableDeclarations) :
+            base(scope, 
+                variableDeclarations.ToDictionary(
+                    decl => decl.Name,
+                    decl => new Value(/*TODO*/))) {}
+    }
 }

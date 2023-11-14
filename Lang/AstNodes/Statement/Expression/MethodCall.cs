@@ -15,6 +15,16 @@ public class MethodCall : Expression, IHumanReadable
         Arguments = arguments;
     }
 
+    public ClassDeclaration? EvaluatedType(Scope scope) {
+        ClassDeclaration? calledType = Caller.EvaluatedType(scope);
+        if (calledType is null) {
+            return null;
+        }
+
+        // TODO: make sure there is an appropriate method in `calledType` to call `this`
+        throw new NotImplementedException();
+    }
+
     public override string ToString()
     {
         return "MethodCall(" + Caller + "." + MethodName + "(" + Arguments + "))";

@@ -9,6 +9,10 @@ public class BoolLiteral : Expression {
         this.value = value;
     }
 
+    public ClassDeclaration? EvaluatedType(Scope scope) {
+        throw new NotImplementedException();
+    }
+
     public override string ToString()
     {
         return value.ToString();

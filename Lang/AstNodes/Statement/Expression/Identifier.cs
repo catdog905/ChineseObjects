@@ -22,6 +22,16 @@ public class Identifier : Expression {
     {
         return new List<string> {"IDENTIFIER " + Name};
     }
+
+    public ClassDeclaration? EvaluatedType(Scope scope) {
+        // Identifier merely evaluates to itself. It means, a field or
+        // a local variable should have been defined earlier with this name.
+        VariableDeclaration? self = scope.GetVariable(Name);
+        if (self is not null) {
+            return scope.GetClass(self.Type);
+        }
+        return null;
+    }
 }
 
 public class Identifiers : IAstNode

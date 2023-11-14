@@ -11,6 +11,10 @@ public class ClassInstantiation : Expression
         Arguments = arguments;
     }
 
+    public ClassDeclaration? EvaluatedType(Scope scope) {
+        throw new NotImplementedException();
+    }
+
     public override string ToString()
     {
         return "new " + ClassName + "(" + Arguments + ")";
@@ -29,6 +33,10 @@ public class ClassInstantiation : Expression
 
 public class This : Expression
 {
+    public ClassDeclaration? EvaluatedType(Scope scope) {
+        throw new NotImplementedException();
+    }
+    
     public override string ToString()
     {
         return "This";

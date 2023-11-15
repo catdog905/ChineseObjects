@@ -83,7 +83,7 @@ public class ScopeAwareConstructorDeclaration : IScopeAwareConstructorDeclaratio
             base(scope, 
                 parameters.ToDictionary(
                     parameter => parameter.Name(),
-                    parameter => new Value(parameter.Name(), new Type(scope, parameter.Type())))
+                    parameter => new Reference(parameter.Name(), new Type(scope, parameter.Type())))
                 ) {}
     }
 

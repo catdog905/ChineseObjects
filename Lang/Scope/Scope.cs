@@ -5,9 +5,9 @@ namespace ChineseObjects.Lang;
 public class Scope
 {
     private readonly ImmutableDictionary<String, Type> _typeCollection;
-    private readonly ImmutableDictionary<String, Value> _valueCollection;
+    private readonly ImmutableDictionary<String, Reference> _valueCollection;
     
-    public Scope(ImmutableDictionary<string, Type> typeCollection, ImmutableDictionary<string, Value> valueCollection)
+    public Scope(ImmutableDictionary<string, Type> typeCollection, ImmutableDictionary<string, Reference> valueCollection)
     {
         _typeCollection = typeCollection;
         _valueCollection = valueCollection;
@@ -16,31 +16,31 @@ public class Scope
     public Scope(
         Scope scope,
         ImmutableDictionary<string, Type> typeCollection,
-        ImmutableDictionary<string, Value> valueCollection) :
+        ImmutableDictionary<string, Reference> valueCollection) :
         this(scope._typeCollection.AddRange(typeCollection), scope._valueCollection.AddRange(valueCollection)) {}
     
     public Scope(
         Scope scope,
         Dictionary<string, Type> typeCollection) :
-        this(scope._typeCollection.AddRange(typeCollection), ImmutableDictionary<string, Value>.Empty) {}
+        this(scope._typeCollection.AddRange(typeCollection), ImmutableDictionary<string, Reference>.Empty) {}
     
     public Scope(
         Scope scope,
-        Dictionary<string, Value> valueCollection) :
+        Dictionary<string, Reference> valueCollection) :
         this(ImmutableDictionary<string, Type>.Empty, scope._valueCollection.AddRange(valueCollection)) {}
     
-    public Scope(Dictionary<string, Type> typeCollection, Dictionary<string, Value> valueCollection) : 
+    public Scope(Dictionary<string, Type> typeCollection, Dictionary<string, Reference> valueCollection) : 
         this(typeCollection.ToImmutableDictionary(), valueCollection.ToImmutableDictionary()) {}
 
     public Scope(Dictionary<string, Type> typeCollection) : 
-        this(typeCollection, new Dictionary<string, Value>()) {}
+        this(typeCollection, new Dictionary<string, Reference>()) {}
 
-    public Scope(Dictionary<string, Value> valueCollection) :
+    public Scope(Dictionary<string, Reference> valueCollection) :
         this(new Dictionary<string, Type>(), valueCollection) {}
     
     public Scope() : this(
         ImmutableDictionary<string, Type>.Empty, 
-        ImmutableDictionary<string, Value>.Empty) {}
+        ImmutableDictionary<string, Reference>.Empty) {}
 
     public Type GetType(String typeName)
     {
@@ -51,9 +51,9 @@ public class Scope
         throw new NoSuchValueInScope();
     }
 
-    public Value GetValue(String valueName)
+    public Reference GetValue(String valueName)
     {
-        if (_valueCollection.TryGetValue(valueName, out Value value))
+        if (_valueCollection.TryGetValue(valueName, out Reference value))
         {
             return value;
         }

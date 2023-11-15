@@ -1,17 +1,17 @@
 namespace ChineseObjects.Lang;
 
-public class Value
+public class Reference
 {
     public readonly string Name;
     public readonly Type Type;
 
-    public Value(string name, Type type)
+    public Reference(string name, Type type)
     {
         Name = name;
         Type = type;
     }
 
-    protected bool Equals(Value other)
+    protected bool Equals(Reference other)
     {
         return Name == other.Name && Type.Equals(other.Type);
     }
@@ -21,7 +21,7 @@ public class Value
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((Value)obj);
+        return Equals((Reference)obj);
     }
 
     public override int GetHashCode()
@@ -29,12 +29,12 @@ public class Value
         return HashCode.Combine(Name, Type);
     }
 
-    public static bool operator ==(Value? left, Value? right)
+    public static bool operator ==(Reference? left, Reference? right)
     {
         return Equals(left, right);
     }
 
-    public static bool operator !=(Value? left, Value? right)
+    public static bool operator !=(Reference? left, Reference? right)
     {
         return !Equals(left, right);
     }

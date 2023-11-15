@@ -196,7 +196,7 @@ public class ScopeAwareClassDeclaration : IScopeAwareClassDeclaration
             base(scope, 
                 variableDeclarations.ToDictionary(
                     decl => decl.Name(),
-                    decl => new Value(decl.Name(), new Type(scope, decl.Type())))) {}
+                    decl => new Reference(decl.Name(), new Type(scope, decl.Type())))) {}
     }
 
 

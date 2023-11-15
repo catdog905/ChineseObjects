@@ -27,7 +27,7 @@
     public MethodCall methodCall;
     public ClassInstantiation classInstantiation;
 
-    public Statement stmt;
+    public IStatement stmt;
 
     public Parameter param;
     public Parameters parames;

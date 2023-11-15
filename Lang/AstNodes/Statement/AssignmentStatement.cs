@@ -1,7 +1,7 @@
 namespace ChineseObjects.Lang;
 
 // Assignment statement
-public class Assignment : Statement
+public class Assignment : IStatement
 {
     public readonly string Varname;
     public readonly Expression Expr;

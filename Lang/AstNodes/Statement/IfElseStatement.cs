@@ -1,13 +1,13 @@
 namespace ChineseObjects.Lang;
 
 // If-then[-else] statement
-public class IfElse : Statement
+public class IfElse : IStatement
 {
     public readonly Expression cond;
-    public readonly Statement then;
-    public readonly Statement? else_;
+    public readonly IStatement then;
+    public readonly IStatement? else_;
 
-    public IfElse(Expression cond, Statement then, Statement? else_)
+    public IfElse(Expression cond, IStatement then, IStatement? else_)
     {
         this.cond = cond;
         this.then = then;
@@ -15,7 +15,7 @@ public class IfElse : Statement
             
     }
         
-    public IfElse(Expression cond, Statement then)
+    public IfElse(Expression cond, IStatement then)
     {
         this.cond = cond;
         this.then = then;

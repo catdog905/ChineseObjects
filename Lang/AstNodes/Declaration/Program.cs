@@ -4,20 +4,19 @@ namespace ChineseObjects.Lang;
 
 public interface IProgram : IAstNode
 {
-    public IEnumerable<ClassDeclaration> ClassDeclarations();
+    public IEnumerable<IClassDeclaration> ClassDeclarations();
 }
 
-public interface IScopeAwareProgram : IProgram
+public interface IScopeAwareProgram : IProgram, IScopeAwareAstNode
 {
-    public Scope Scope();
-    new IEnumerable<ScopeAwareClassDeclaration> ClassDeclarations();
+    new IEnumerable<IScopeAwareClassDeclaration> ClassDeclarations();
 }
 
 public class Program : IProgram, IHumanReadable
 {
-    private readonly ImmutableList<ClassDeclaration> _classDeclarations;
+    private readonly ImmutableList<IClassDeclaration> _classDeclarations;
 
-    public Program(IEnumerable<ClassDeclaration> classDeclarations)
+    public Program(IEnumerable<IClassDeclaration> classDeclarations)
     {
        _classDeclarations = classDeclarations.ToImmutableList();
     }
@@ -39,7 +38,7 @@ public class Program : IProgram, IHumanReadable
         return "Program(" + String.Join(", ", _classDeclarations) + ")";
     }
 
-    public IEnumerable<ClassDeclaration> ClassDeclarations()
+    public IEnumerable<IClassDeclaration> ClassDeclarations()
     {
         return _classDeclarations;
     }
@@ -58,27 +57,32 @@ public class Program : IProgram, IHumanReadable
 
 class ScopeAwareProgram : IScopeAwareProgram
 {
-    private readonly IEnumerable<ScopeAwareClassDeclaration> _classDeclarations;
+    private readonly IEnumerable<IScopeAwareClassDeclaration> _classDeclarations;
     private readonly Scope _scope;
 
-    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IEnumerable<ScopeAwareClassDeclaration> classDeclarations)
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IEnumerable<IScopeAwareClassDeclaration> classDeclarations)
     {
         _classDeclarations = classDeclarations;
         _scope = scope;
     }
+
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IProgram program) : 
+        this(
+            scope, 
+            program.ClassDeclarations().Select(
+                    decl
+                        =>
+                        new ScopeAwareClassDeclaration(scope, decl))
+                .ToList()) {}
     
     public ScopeAwareProgram(Scope scope, IProgram program) : 
         this(
             new ScopeWithClassDeclarations(scope, program.ClassDeclarations()), 
-            program.ClassDeclarations().Select(
-                decl
-                    =>
-                    new ScopeAwareClassDeclaration(scope, decl))
-                .ToList()) {}
+            program) {}
 
     class ScopeWithClassDeclarations : Scope
     {
-        public ScopeWithClassDeclarations(Scope scope, IEnumerable<ClassDeclaration> classDeclarations) :
+        public ScopeWithClassDeclarations(Scope scope, IEnumerable<IClassDeclaration> classDeclarations) :
             base(
                 scope, 
                 classDeclarations.ToDictionary(
@@ -91,12 +95,12 @@ class ScopeAwareProgram : IScopeAwareProgram
         return _scope;
     }
 
-    public IEnumerable<ScopeAwareClassDeclaration> ClassDeclarations()
+    public IEnumerable<IScopeAwareClassDeclaration> ClassDeclarations()
     {
         return _classDeclarations;
     }
 
-    IEnumerable<ClassDeclaration> IProgram.ClassDeclarations()
+    IEnumerable<IClassDeclaration> IProgram.ClassDeclarations()
     {
         throw new NotImplementedException();
     }

@@ -3,12 +3,7 @@ namespace ChineseObjects.Lang;
 public interface IAstNode {}
 
 
-public class ScopeAwareAstNode : IAstNode
+public interface IScopeAwareAstNode
 {
-    public readonly IAstNode IAstNode;
-
-    public ScopeAwareAstNode(IAstNode astNode)
-    {
-        IAstNode = astNode;
-    }
+    public Scope Scope();
 }

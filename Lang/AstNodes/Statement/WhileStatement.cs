@@ -1,12 +1,12 @@
 namespace ChineseObjects.Lang;
 
 // While statement
-public class While : Statement
+public class While : IStatement
 {
     public readonly Expression cond;
-    public readonly Statement body;
+    public readonly IStatement body;
 
-    public While(Expression cond, Statement body)
+    public While(Expression cond, IStatement body)
     {
         this.cond = cond;
         this.body = body;

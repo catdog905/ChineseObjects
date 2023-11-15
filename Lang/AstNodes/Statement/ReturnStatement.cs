@@ -2,7 +2,7 @@ namespace ChineseObjects.Lang;
 
 
 // A return statement. Only stores the expression that is returned.
-public class Return : Statement
+public class Return : IStatement
 {
     public readonly Expression retval;
 

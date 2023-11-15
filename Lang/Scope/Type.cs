@@ -2,9 +2,9 @@ namespace ChineseObjects.Lang;
 
 public class Type
 {
-    private ClassDeclaration ClassDeclaration;
+    private IClassDeclaration ClassDeclaration;
 
-    public Type(ClassDeclaration classDeclaration)
+    public Type(IClassDeclaration classDeclaration)
     {
         ClassDeclaration = classDeclaration;
     }

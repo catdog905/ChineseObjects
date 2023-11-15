@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public abstract class MemberDeclaration : IAstNode {}
+public interface MemberDeclaration : IAstNode {}
 
 public class MemberDeclarations
 {

@@ -2,13 +2,31 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public class ClassDeclaration : IAstNode, IHumanReadable
+public interface IClassDeclaration : IAstNode
 {
-    public readonly string ClassName;
-    public readonly ImmutableList<string> ParentClassNames;
-    public readonly ImmutableList<ConstructorDeclaration> ConstructorDeclarations;
-    public readonly ImmutableList<VariableDeclaration> VariableDeclarations;
-    public readonly ImmutableList<MethodDeclaration> MethodDeclarations;
+    public string ClassName();
+    public IEnumerable<string> ParentClassNames();
+    public IEnumerable<ConstructorDeclaration> ConstructorDeclarations();
+    public IEnumerable<VariableDeclaration> VariableDeclarations();
+    public IEnumerable<MethodDeclaration> MethodDeclarations();
+}
+
+public interface IScopeAwareClassDeclaration : IClassDeclaration
+{
+    public Scope Scope();
+    new IEnumerable<string> ParentClassNames();
+    new IEnumerable<ScopeAwareConstructorDeclaration> ConstructorDeclarations();
+    new IEnumerable<ScopeAwareVariableDeclaration> VariableDeclarations();
+    new IEnumerable<ScopeAwareMethodDeclaration> MethodDeclarations();
+}
+
+public class ClassDeclaration : IClassDeclaration, IHumanReadable
+{
+    private readonly string _className;
+    private readonly ImmutableList<string> _parentClassNames;
+    private readonly ImmutableList<ConstructorDeclaration> _constructorDeclarations;
+    private readonly ImmutableList<VariableDeclaration> _variableDeclarations;
+    private readonly ImmutableList<MethodDeclaration> _methodDeclarations;
 
     public ClassDeclaration(
         string className, 
@@ -17,11 +35,11 @@ public class ClassDeclaration : IAstNode, IHumanReadable
         ImmutableList<VariableDeclaration> variableDeclarations, 
         ImmutableList<MethodDeclaration> methodDeclarations)
     {
-        ClassName = className;
-        ParentClassNames = parentClassNames;
-        ConstructorDeclarations = constructorDeclarations;
-        VariableDeclarations = variableDeclarations;
-        MethodDeclarations = methodDeclarations;
+        _className = className;
+        _parentClassNames = parentClassNames;
+        _constructorDeclarations = constructorDeclarations;
+        _variableDeclarations = variableDeclarations;
+        _methodDeclarations = methodDeclarations;
     }
     
     public ClassDeclaration(
@@ -83,51 +101,91 @@ public class ClassDeclaration : IAstNode, IHumanReadable
 
     public override string ToString()
     {
-        return ClassName + "(vars="+String.Join(", ", VariableDeclarations) + "; methods=" + String.Join(", ", MethodDeclarations) + "), also constructors but we forgot them.";
+        return _className + "(vars="+String.Join(", ", _variableDeclarations) + "; methods=" + String.Join(", ", _methodDeclarations) + "), also constructors but we forgot them.";
     }
 
     public IList<string> GetRepr()
     {
-        var ans = new List<string>{"CLASS " + ClassName};
-        foreach(ConstructorDeclaration ctor in ConstructorDeclarations)
+        var ans = new List<string>{"CLASS " + _className};
+        foreach(ConstructorDeclaration ctor in _constructorDeclarations)
         {
             ans.AddRange(ctor.GetRepr().Select(s => "| " + s));
         }
         ans.Add("|--");
-        foreach(VariableDeclaration var in VariableDeclarations)
+        foreach(VariableDeclaration var in _variableDeclarations)
         {
             ans.AddRange(var.GetRepr().Select(s => "| " + s));
         }
         ans.Add("|--");
-        foreach(MethodDeclaration method in MethodDeclarations)
+        foreach(MethodDeclaration method in _methodDeclarations)
         {
             ans.AddRange(method.GetRepr().Select(s => "| " + s));
         }
         return ans;
     }
+
+    public string ClassName()
+    {
+        return _className;
+    }
+
+    public IEnumerable<string> ParentClassNames()
+    {
+        return _parentClassNames;
+    }
+
+    public IEnumerable<ConstructorDeclaration> ConstructorDeclarations()
+    {
+        return _constructorDeclarations;
+    }
+
+    public IEnumerable<VariableDeclaration> VariableDeclarations()
+    {
+        return _variableDeclarations;
+    }
+
+    public IEnumerable<MethodDeclaration> MethodDeclarations()
+    {
+        return _methodDeclarations;
+    }
 }
 
-public class ScopeAwareClassDeclaration : ClassDeclaration
+public class ScopeAwareClassDeclaration : IClassDeclaration
 {
-    private readonly ClassDeclaration Origin;
-    private readonly Scope Scope;
+    private readonly Scope _scope;
+    private readonly string _className;
+    private readonly IEnumerable<string> _parentClassNames;
+    private readonly IEnumerable<ConstructorDeclaration> _constructorDeclarations;
+    private readonly IEnumerable<VariableDeclaration> _variableDeclarations;
+    private readonly IEnumerable<MethodDeclaration> _methodDeclarations;
 
-    private ScopeAwareClassDeclaration(ScopeWithFields scope, ClassDeclaration classDeclaration) :
-        base(classDeclaration.ClassName,
-            classDeclaration.ParentClassNames,
-            classDeclaration.ConstructorDeclarations
-                .Select(decl => new ScopeAwareConstructorDeclaration(scope, decl)),
-            classDeclaration.VariableDeclarations
-                .Select(decl => new ScopeAwareVariableDeclaration(scope, decl)),
-            classDeclaration.MethodDeclarations
-                .Select(decl => new ScopeAwareMethodDeclaration(scope, decl)))
+    private ScopeAwareClassDeclaration(
+        ScopeWithFields scope, 
+        string className, 
+        IEnumerable<string> parentClassNames, 
+        IEnumerable<ConstructorDeclaration> constructorDeclarations, 
+        IEnumerable<VariableDeclaration> variableDeclarations, 
+        IEnumerable<MethodDeclaration> methodDeclarations)
     {
-        Origin = classDeclaration;
-        Scope = scope;
+        _scope = scope;
+        _className = className;
+        _parentClassNames = parentClassNames;
+        _constructorDeclarations = constructorDeclarations;
+        _variableDeclarations = variableDeclarations;
+        _methodDeclarations = methodDeclarations;
     }
-    
+
     public ScopeAwareClassDeclaration(Scope scope, ClassDeclaration classDeclaration) :
-        this(new ScopeWithFields(scope, classDeclaration.VariableDeclarations), classDeclaration) {}
+        this(new ScopeWithFields(scope, classDeclaration.VariableDeclarations()),
+            classDeclaration.ClassName(),
+            classDeclaration.ParentClassNames(),
+            classDeclaration.ConstructorDeclarations()
+                .Select(decl => new ScopeAwareConstructorDeclaration(scope, decl)).ToImmutableList(),
+            classDeclaration.VariableDeclarations()
+                .Select(decl => new ScopeAwareVariableDeclaration(scope, decl)).ToImmutableList(),
+            classDeclaration.MethodDeclarations()
+                .Select(decl => new ScopeAwareMethodDeclaration(scope, decl)).ToImmutableList()
+            ) {}
 
     class ScopeWithFields : Scope
     {
@@ -135,6 +193,31 @@ public class ScopeAwareClassDeclaration : ClassDeclaration
             base(scope, 
                 variableDeclarations.ToDictionary(
                     decl => decl.Name,
-                    decl => new Value(/*TODO*/))) {}
+                    decl => new Value(decl.Name, new Type(scope, decl.Name)))) {}
+    }
+
+    public string ClassName()
+    {
+        return _className;
+    }
+
+    public IEnumerable<string> ParentClassNames()
+    {
+        return _parentClassNames;
+    }
+
+    public IEnumerable<ConstructorDeclaration> ConstructorDeclarations()
+    {
+        return _constructorDeclarations;
+    }
+
+    public IEnumerable<VariableDeclaration> VariableDeclarations()
+    {
+        return _variableDeclarations;
+    }
+
+    public IEnumerable<MethodDeclaration> MethodDeclarations()
+    {
+        return _methodDeclarations;
     }
 }

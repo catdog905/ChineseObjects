@@ -4,30 +4,30 @@ namespace ChineseObjects.Lang;
 
 public class Scope
 {
-    public readonly ImmutableDictionary<String, Type> TypeCollection;
-    public readonly ImmutableDictionary<String, Value> ValueCollection;
+    private readonly ImmutableDictionary<String, Type> _typeCollection;
+    private readonly ImmutableDictionary<String, Value> _valueCollection;
     
     public Scope(ImmutableDictionary<string, Type> typeCollection, ImmutableDictionary<string, Value> valueCollection)
     {
-        TypeCollection = typeCollection;
-        ValueCollection = valueCollection;
+        _typeCollection = typeCollection;
+        _valueCollection = valueCollection;
     }
     
     public Scope(
         Scope scope,
         ImmutableDictionary<string, Type> typeCollection,
         ImmutableDictionary<string, Value> valueCollection) :
-        this(scope.TypeCollection.AddRange(typeCollection), scope.ValueCollection.AddRange(valueCollection)) {}
+        this(scope._typeCollection.AddRange(typeCollection), scope._valueCollection.AddRange(valueCollection)) {}
     
     public Scope(
         Scope scope,
         Dictionary<string, Type> typeCollection) :
-        this(scope.TypeCollection.AddRange(typeCollection), ImmutableDictionary<string, Value>.Empty) {}
+        this(scope._typeCollection.AddRange(typeCollection), ImmutableDictionary<string, Value>.Empty) {}
     
     public Scope(
         Scope scope,
         Dictionary<string, Value> valueCollection) :
-        this(ImmutableDictionary<string, Type>.Empty, scope.ValueCollection.AddRange(valueCollection)) {}
+        this(ImmutableDictionary<string, Type>.Empty, scope._valueCollection.AddRange(valueCollection)) {}
     
     public Scope(Dictionary<string, Type> typeCollection, Dictionary<string, Value> valueCollection) : 
         this(typeCollection.ToImmutableDictionary(), valueCollection.ToImmutableDictionary()) {}
@@ -40,7 +40,7 @@ public class Scope
 
     public Type GetType(String typeName)
     {
-        if (TypeCollection.TryGetValue(typeName, out Type value))
+        if (_typeCollection.TryGetValue(typeName, out Type value))
         {
             return value;
         }
@@ -49,7 +49,7 @@ public class Scope
 
     public Value GetValue(String valueName)
     {
-        if (ValueCollection.TryGetValue(valueName, out Value value))
+        if (_valueCollection.TryGetValue(valueName, out Value value))
         {
             return value;
         }

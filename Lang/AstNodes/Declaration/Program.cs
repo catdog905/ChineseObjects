@@ -2,36 +2,52 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public class Program : IAstNode, IHumanReadable
+public interface IProgram : IAstNode
 {
-    public readonly ImmutableList<ClassDeclaration> ClassDeclarations;
+    public IEnumerable<ClassDeclaration> ClassDeclarations();
+}
+
+public interface IScopeAwareProgram : IProgram
+{
+    public Scope Scope();
+    new IEnumerable<ScopeAwareClassDeclaration> ClassDeclarations();
+}
+
+public class Program : IProgram, IHumanReadable
+{
+    private readonly ImmutableList<ClassDeclaration> _classDeclarations;
 
     public Program(IEnumerable<ClassDeclaration> classDeclarations)
     {
-        ClassDeclarations = classDeclarations.ToImmutableList();
+       _classDeclarations = classDeclarations.ToImmutableList();
     }
 
     public Program(
         Program program,
         ClassDeclaration classDeclaration
-    ) : this(program.ClassDeclarations.Add(classDeclaration)) {}
+    ) : this(program._classDeclarations.Add(classDeclaration)) {}
 
     public Program(
         ClassDeclaration classDeclaration,
         Program program
-    ) : this(new[] {classDeclaration}.Concat(program.ClassDeclarations)) {}
+    ) : this(new[] {classDeclaration}.Concat(program.ClassDeclarations())) {}
 
     public Program(params ClassDeclaration[] classDeclarations) : this(classDeclarations.ToImmutableList()) {}
 
     public override string ToString()
     {
-        return "Program(" + String.Join(", ", ClassDeclarations) + ")";
+        return "Program(" + String.Join(", ", _classDeclarations) + ")";
+    }
+
+    public IEnumerable<ClassDeclaration> ClassDeclarations()
+    {
+        throw new NotImplementedException();
     }
 
     public IList<string> GetRepr()
     {
         var ans = new List<string>{"PROGRAM"};
-        foreach(ClassDeclaration class_ in ClassDeclarations)
+        foreach(ClassDeclaration class_ in _classDeclarations)
         {
             ans.AddRange(class_.GetRepr().Select(s => "| " + s));
         }
@@ -40,23 +56,25 @@ public class Program : IAstNode, IHumanReadable
 }
 
 
-class ScopeAwareProgram : Program
+class ScopeAwareProgram : IScopeAwareProgram
 {
-    private readonly Program Origin;
-    private readonly Scope Scope;
+    private readonly IEnumerable<ScopeAwareClassDeclaration> _classDeclarations;
+    private readonly Scope _scope;
 
-    private ScopeAwareProgram(ScopeWithClassDeclarations scope, Program program) :
-        base(program.ClassDeclarations.Select(
-            decl
-                =>
-                new ScopeAwareClassDeclaration(scope, decl)))
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IEnumerable<ScopeAwareClassDeclaration> classDeclarations)
     {
-        Origin = program;
-        Scope = scope;
+        _classDeclarations = classDeclarations;
+        _scope = scope;
     }
     
-    public ScopeAwareProgram(Scope scope, Program program) : 
-        this(new ScopeWithClassDeclarations(scope, program.ClassDeclarations), program) {}
+    public ScopeAwareProgram(Scope scope, IProgram program) : 
+        this(
+            new ScopeWithClassDeclarations(scope, program.ClassDeclarations()), 
+            program.ClassDeclarations().Select(
+                decl
+                    =>
+                    new ScopeAwareClassDeclaration(scope, decl))
+                .ToList()) {}
 
     class ScopeWithClassDeclarations : Scope
     {
@@ -64,7 +82,22 @@ class ScopeAwareProgram : Program
             base(
                 scope, 
                 classDeclarations.ToDictionary(
-                    classDeclaration => classDeclaration.ClassName,
+                    classDeclaration => classDeclaration.ClassName(),
                     classDeclaration => new Type(classDeclaration))) {}
+    }
+
+    public Scope Scope()
+    {
+        return _scope;
+    }
+
+    public IEnumerable<ScopeAwareClassDeclaration> ClassDeclarations()
+    {
+        return _classDeclarations;
+    }
+
+    IEnumerable<ClassDeclaration> IProgram.ClassDeclarations()
+    {
+        throw new NotImplementedException();
     }
 }

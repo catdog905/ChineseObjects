@@ -30,15 +30,15 @@ public class ConstructorDeclaration : MemberDeclaration, IHumanReadable
         return ans;
     }
 }
-//
-// public class ScopeConstructorDeclaration : ConstructorDeclaration
-// {
-//     public readonly IScope Scope;
-//     public readonly ConstructorDeclaration ConstructorDeclaration;
-//
-//     public ScopeConstructorDeclaration(IScope scope, ConstructorDeclaration constructorDeclaration) 
-//         : base(constructorDeclaration.Parameters, constructorDeclaration.Body)
-//     {
-//         var parametersScope = 
-//     }
-// }
+
+public class ScopeAwareConstructorDeclaration : ConstructorDeclaration
+{
+    public readonly Scope Scope;
+    public readonly ConstructorDeclaration ConstructorDeclaration;
+
+    public ScopeAwareConstructorDeclaration(Scope scope, ConstructorDeclaration constructorDeclaration) 
+        : base(constructorDeclaration.Parameters, constructorDeclaration.Body)
+    {
+        throw new NotImplementedException();
+    }
+}

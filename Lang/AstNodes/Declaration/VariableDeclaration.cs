@@ -8,11 +8,13 @@ public class VariableDeclaration : MemberDeclaration, IHumanReadable
     public readonly string Name;
     public readonly string Type;
 
-    public VariableDeclaration(Identifier name, Identifier type)
+    public VariableDeclaration(string name, string typeName)
     {
-        Name = name.Name;
-        Type = type.Name;
+        Name = name;
+        Type = typeName;
     }
+    
+    public VariableDeclaration(Identifier name, Identifier type) : this(name.Name, type.Name) {}
 
     public override string ToString()
     {
@@ -22,5 +24,14 @@ public class VariableDeclaration : MemberDeclaration, IHumanReadable
     public IList<string> GetRepr()
     {
         return new List<string>{"VARIABLE " + Name + ": " + Type};
+    }
+}
+
+public class ScopeAwareVariableDeclaration : VariableDeclaration
+{
+    public ScopeAwareVariableDeclaration(Scope scope, VariableDeclaration variableDeclaration) : 
+        base(variableDeclaration.Name, variableDeclaration.Type)
+    {
+        throw new NotImplementedException();
     }
 }

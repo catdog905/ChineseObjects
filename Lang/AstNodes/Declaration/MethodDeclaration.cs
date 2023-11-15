@@ -6,19 +6,21 @@ public class MethodDeclaration : MemberDeclaration, IHumanReadable
     public readonly Parameters Parameters;
     public readonly string ReturnTypeName;
     public readonly StatementsBlock Body;
-
-
+    
+    public MethodDeclaration(string methodName, Parameters parameters, string returnTypeName, StatementsBlock body)
+    {
+        MethodName = methodName;
+        Parameters = parameters;
+        ReturnTypeName = returnTypeName;
+        Body = body;
+    }        
+    
     public MethodDeclaration(
         Identifier methodName, 
         Parameters parameters, 
         Identifier returnType, 
-        StatementsBlock body)
-    {
-        MethodName = methodName.Name;
-        Parameters = parameters;
-        ReturnTypeName = returnType.Name;
-        Body = body;
-    }
+        StatementsBlock body) :
+        this(methodName.Name, parameters, returnType.Name, body) {}
 
     public override string ToString()
     {
@@ -38,5 +40,19 @@ public class MethodDeclaration : MemberDeclaration, IHumanReadable
             ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
         }
         return ans;
+    }
+}
+
+public class ScopeAwareMethodDeclaration : MethodDeclaration
+{
+    public ScopeAwareMethodDeclaration(
+        Scope scope, 
+        MethodDeclaration methodDeclaration) : 
+        base(methodDeclaration.MethodName, 
+            methodDeclaration.Parameters, 
+            methodDeclaration.ReturnTypeName, 
+            methodDeclaration.Body)
+    {
+        throw new NotImplementedException();
     }
 }

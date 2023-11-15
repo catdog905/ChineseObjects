@@ -1,0 +1,17 @@
+class R is
+    method hello() : R is
+        return (new R()).hello()
+    end
+end
+
+
+Class R
+-> method hello R ()
+    -> return 
+        -> new R().hello()
+            -> MethodCall( new R(), hello, () )
+                -> ClassInstantiation
+                    -> ClassName
+                    -> Argument
+                -> Identifer
+                -> Arguments

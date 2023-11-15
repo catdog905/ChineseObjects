@@ -37,6 +37,10 @@ public class Scope
 
     public Scope(Dictionary<string, Value> valueCollection) :
         this(new Dictionary<string, Type>(), valueCollection) {}
+    
+    public Scope() : this(
+        ImmutableDictionary<string, Type>.Empty, 
+        ImmutableDictionary<string, Value>.Empty) {}
 
     public Type GetType(String typeName)
     {

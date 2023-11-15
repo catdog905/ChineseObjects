@@ -7,6 +7,9 @@ end
 
 Class R
 -> method hello R ()
+    -> hello
+    -> R
+    -> statementBlock
     -> return 
         -> new R().hello()
             -> MethodCall( new R(), hello, () )

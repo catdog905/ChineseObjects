@@ -41,7 +41,7 @@ public class Program : IProgram, IHumanReadable
 
     public IEnumerable<ClassDeclaration> ClassDeclarations()
     {
-        throw new NotImplementedException();
+        return _classDeclarations;
     }
 
     public IList<string> GetRepr()

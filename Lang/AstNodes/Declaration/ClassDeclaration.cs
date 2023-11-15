@@ -193,7 +193,7 @@ public class ScopeAwareClassDeclaration : IClassDeclaration
             base(scope, 
                 variableDeclarations.ToDictionary(
                     decl => decl.Name,
-                    decl => new Value(decl.Name, new Type(scope, decl.Name)))) {}
+                    decl => new Value(decl.Name, new Type(scope, decl.Type)))) {}
     }
 
     public string ClassName()

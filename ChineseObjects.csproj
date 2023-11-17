@@ -27,4 +27,8 @@
   <ItemGroup>
     <PackageReference Include="YaccLexTools" Version="1.2.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Lang\AbstractSyntaxTree\ScopeAwareTree\Statement\Expression\" />
+    <Folder Include="Lang\AbstractSyntaxTree\TypedTree\Statement\Expression\" />
+  </ItemGroup>
 </Project>

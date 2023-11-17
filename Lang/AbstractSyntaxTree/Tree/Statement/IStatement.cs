@@ -10,11 +10,6 @@ public interface IStatementsBlock : IStatement
     public IEnumerable<IStatement> Statements();
 }
 
-public interface IScopeAwareStatementsBlock : IStatementsBlock, IScopeAwareAstNode
-{
-    new IEnumerable<IStatement> Statements();
-}
-
 // A combination of statements
 public class StatementsBlock : IStatementsBlock
 {
@@ -55,34 +50,5 @@ public class StatementsBlock : IStatementsBlock
             ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
         }
         return ans;
-    }
-}
-
-
-public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock{
-    public ScopeAwareStatementsBlock(Scope scope, StatementsBlock body)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    IEnumerable<IStatement> IStatementsBlock.Statements()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Scope Scope()
-    {
-        throw new NotImplementedException();
-    }
-
-    IEnumerable<IStatement> IScopeAwareStatementsBlock.Statements()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IList<string> GetRepr()
-    {
-        throw new NotImplementedException();
     }
 }

@@ -3,7 +3,7 @@ namespace ChineseObjects.Lang;
 public interface IVariableDeclaration : MemberDeclaration
 {
     public string Name();
-    public string Type();
+    public string TypeName();
 }
 
 
@@ -38,7 +38,7 @@ public class VariableDeclaration : IVariableDeclaration, IHumanReadable
         return _name;
     }
 
-    public string Type()
+    public string TypeName()
     {
         return _type;
     }

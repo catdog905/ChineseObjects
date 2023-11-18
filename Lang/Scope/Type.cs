@@ -11,6 +11,11 @@ public class Type
 
     public Type(Scope scope, string className) : this(scope.GetType(className).ClassDeclaration) {}
 
+    public string TypeName()
+    {
+        return ClassDeclaration.ClassName();
+    }
+
     protected bool Equals(Type other)
     {
         return ClassDeclaration.Equals(other.ClassDeclaration);

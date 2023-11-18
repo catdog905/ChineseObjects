@@ -17,7 +17,7 @@ public class ScopeAwareVariableDeclaration : IScopeAwareVariableDeclaration
     }
 
     public ScopeAwareVariableDeclaration(Scope scope, IVariableDeclaration variableDeclaration) :
-        this(scope, variableDeclaration.Name(), variableDeclaration.Type()) {}
+        this(scope, variableDeclaration.Name(), variableDeclaration.TypeName()) {}
 
     public Scope Scope()
     {
@@ -29,7 +29,7 @@ public class ScopeAwareVariableDeclaration : IScopeAwareVariableDeclaration
         return _name;
     }
 
-    public string Type()
+    public string TypeName()
     {
         return _type;
     }

@@ -16,7 +16,7 @@ public class TypesAwareParameters : ITypesAwareParameters
         _parameters = parameters;
     }
     
-    public TypesAwareParameters(ScopeAwareParameters parameters)
+    public TypesAwareParameters(IScopeAwareParameters parameters)
     {
         _parameters = parameters.GetParameters().Select(parameter => new TypedParameter(parameters.Scope(), parameter));
     }

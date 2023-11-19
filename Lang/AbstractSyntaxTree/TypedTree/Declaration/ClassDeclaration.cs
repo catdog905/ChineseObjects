@@ -1,89 +1,70 @@
 namespace ChineseObjects.Lang.Declaration;
 
-public interface ITypesAwareClassDeclaration : IClassDeclaration, ITypesAwareAstNode
+public interface ITypedClass : IClass, ITypedAstNode
 {
-    public new IEnumerable<Type> ParentClassNames();
-    public new IEnumerable<ITypesAwareConstructorDeclaration> ConstructorDeclarations();
-    public new IEnumerable<ITypesAwareVariableDeclaration> VariableDeclarations();
-    public new IEnumerable<ITypesAwareMethodDeclaration> MethodDeclarations();
+    public IEnumerable<Type> ParentClassNames();
+    public IEnumerable<ITypesAwareConstructor> ConstructorDeclarations();
+    public IEnumerable<ITypesAwareVariable> VariableDeclarations();
+    public IEnumerable<ITypesAwareMethod> MethodDeclarations();
 }
 
-public class TypedAwareClassDeclaration : ITypesAwareClassDeclaration
+public class TypedClass : ITypedClass
 {
-    private readonly string _className;
+    private readonly Type _type;
     private readonly IEnumerable<Type> _parentClassNames;
-    private readonly IEnumerable<ITypesAwareConstructorDeclaration> _constructorDeclarations;
-    private readonly IEnumerable<ITypesAwareVariableDeclaration> _variableDeclarations;
-    private readonly IEnumerable<ITypesAwareMethodDeclaration> _methodDeclarations;
+    private readonly IEnumerable<ITypesAwareConstructor> _constructorDeclarations;
+    private readonly IEnumerable<ITypesAwareVariable> _variableDeclarations;
+    private readonly IEnumerable<ITypesAwareMethod> _methodDeclarations;
 
-    public TypedAwareClassDeclaration(
-        string className, 
+    public TypedClass(
+        Type type, 
         IEnumerable<Type> parentClassNames, 
-        IEnumerable<ITypesAwareConstructorDeclaration> constructorDeclarations, 
-        IEnumerable<ITypesAwareVariableDeclaration> variableDeclarations, 
-        IEnumerable<ITypesAwareMethodDeclaration> methodDeclarations)
+        IEnumerable<ITypesAwareConstructor> constructorDeclarations, 
+        IEnumerable<ITypesAwareVariable> variableDeclarations, 
+        IEnumerable<ITypesAwareMethod> methodDeclarations)
     {
-        _className = className;
+        _type = type;
         _parentClassNames = parentClassNames;
         _constructorDeclarations = constructorDeclarations;
         _variableDeclarations = variableDeclarations;
         _methodDeclarations = methodDeclarations;
     }
 
-    public TypedAwareClassDeclaration(IScopeAwareClassDeclaration classDeclaration) :
+    public TypedClass(IScopeAwareClass scopeAwareClass) :
         this(
-            classDeclaration.ClassName(),
-            classDeclaration.ParentClassNames()
-                .Select(name => new Type(classDeclaration.Scope(), name)),
-            classDeclaration.ConstructorDeclarations()
-                .Select(decl => new TypesAwareConstructorDeclaration(decl)),
-            classDeclaration.VariableDeclarations()
-                .Select(decl => new TypesAwareVariableDeclaration(decl)),
-            classDeclaration.MethodDeclarations()
-                .Select(decl => new TypesAwareMethodDeclaration(decl))) {}
+            new Type(scopeAwareClass.Scope(), scopeAwareClass.ClassName().Name()),
+            scopeAwareClass.ParentClassNames()
+                .Select(name => new Type(scopeAwareClass.Scope(), name)),
+            scopeAwareClass.ConstructorDeclarations()
+                .Select(decl => new TypesAwareConstructor(decl)),
+            scopeAwareClass.VariableDeclarations()
+                .Select(decl => new TypesAwareVariable(decl)),
+            scopeAwareClass.MethodDeclarations()
+                .Select(decl => new TypesAwareMethod(decl))) {}
 
-    public string ClassName()
+
+    public Type Type()
     {
-        return _className;
+        return _type;
     }
 
-    IEnumerable<Type> ITypesAwareClassDeclaration.ParentClassNames()
+    public IEnumerable<Type> ParentClassNames()
     {
         return _parentClassNames;
     }
 
-    public IEnumerable<ITypesAwareConstructorDeclaration> ConstructorDeclarations()
+    public IEnumerable<ITypesAwareConstructor> ConstructorDeclarations()
     {
         return _constructorDeclarations;
     }
 
-    public IEnumerable<ITypesAwareVariableDeclaration> VariableDeclarations()
+    public IEnumerable<ITypesAwareVariable> VariableDeclarations()
     {
         return _variableDeclarations;
     }
 
-    public IEnumerable<ITypesAwareMethodDeclaration> MethodDeclarations()
+    public IEnumerable<ITypesAwareMethod> MethodDeclarations()
     {
         return _methodDeclarations;
-    }
-
-    IEnumerable<string> IClassDeclaration.ParentClassNames()
-    {
-        return _parentClassNames.Select(parent => parent.TypeName());
-    }
-
-    IEnumerable<IConstructorDeclaration> IClassDeclaration.ConstructorDeclarations()
-    {
-        return ConstructorDeclarations();
-    }
-
-    IEnumerable<IVariableDeclaration> IClassDeclaration.VariableDeclarations()
-    {
-        return VariableDeclarations();
-    }
-
-    IEnumerable<IMethodDeclaration> IClassDeclaration.MethodDeclarations()
-    {
-        return MethodDeclarations();
     }
 }

@@ -2,23 +2,25 @@ namespace ChineseObjects.Lang;
 
 public class Type
 {
-    private IClassDeclaration ClassDeclaration;
+    private IClassDeclaration _classDeclaration;
 
     public Type(IClassDeclaration classDeclaration)
     {
-        ClassDeclaration = classDeclaration;
+        _classDeclaration = classDeclaration;
     }
 
-    public Type(Scope scope, string className) : this(scope.GetType(className).ClassDeclaration) {}
+    public Type(Scope scope, string className) : this(scope.GetType(className)._classDeclaration) {}
+    
+    public Type(Scope scope, IIdentifier className) : this(scope, className.Name()) {}
 
-    public string TypeName()
+    public IIdentifier TypeName()
     {
-        return ClassDeclaration.ClassName();
+        return _classDeclaration.ClassName();
     }
 
     protected bool Equals(Type other)
     {
-        return ClassDeclaration.Equals(other.ClassDeclaration);
+        return _classDeclaration.Equals(other._classDeclaration);
     }
 
     public override bool Equals(object? obj)
@@ -31,7 +33,7 @@ public class Type
 
     public override int GetHashCode()
     {
-        return ClassDeclaration.GetHashCode();
+        return _classDeclaration.GetHashCode();
     }
 
     public static bool operator ==(Type? left, Type? right)
@@ -42,5 +44,10 @@ public class Type
     public static bool operator !=(Type? left, Type? right)
     {
         return !Equals(left, right);
+    }
+
+    public override string ToString()
+    {
+        return $"{_classDeclaration.GetHashCode()}";
     }
 }

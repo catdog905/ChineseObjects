@@ -4,33 +4,33 @@ namespace ChineseObjects.Lang;
 
 public interface IScopeAwareProgram : IProgram, IScopeAwareAstNode
 {
-    public new IEnumerable<IScopeAwareClassDeclaration> ClassDeclarations();
+    public IEnumerable<IScopeAwareClass> ClassDeclarations();
 }
 
 class ScopeAwareProgram : IScopeAwareProgram
 {
-    private readonly IEnumerable<IScopeAwareClassDeclaration> _classDeclarations;
+    private readonly IEnumerable<IScopeAwareClass> _classDeclarations;
     private readonly Scope _scope;
 
-    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IEnumerable<IScopeAwareClassDeclaration> classDeclarations)
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IEnumerable<IScopeAwareClass> classDeclarations)
     {
         _classDeclarations = classDeclarations;
         _scope = scope;
     }
 
-    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IProgram program) : 
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IProgramDeclaration programDeclaration) : 
         this(
             scope, 
-            program.ClassDeclarations().Select(
+            programDeclaration.ClassDeclarations().Select(
                     decl
                         =>
-                        new ScopeAwareClassDeclaration(scope, decl))
+                        new ScopeAwareClass(scope, decl))
                 .ToList()) {}
     
-    public ScopeAwareProgram(Scope scope, IProgram program) : 
+    public ScopeAwareProgram(Scope scope, IProgramDeclaration programDeclaration) : 
         this(
-            new ScopeWithClassDeclarations(scope, program.ClassDeclarations()), 
-            program) {}
+            new ScopeWithClassDeclarations(scope, programDeclaration.ClassDeclarations()), 
+            programDeclaration) {}
 
     class ScopeWithClassDeclarations : Scope
     {
@@ -38,7 +38,7 @@ class ScopeAwareProgram : IScopeAwareProgram
             base(
                 scope, 
                 classDeclarations.ToDictionary(
-                    classDeclaration => classDeclaration.ClassName(),
+                    classDeclaration => classDeclaration.ClassName().Name(),
                     classDeclaration => new Type(classDeclaration))) {}
     }
 
@@ -47,13 +47,8 @@ class ScopeAwareProgram : IScopeAwareProgram
         return _scope;
     }
 
-    public IEnumerable<IScopeAwareClassDeclaration> ClassDeclarations()
+    public IEnumerable<IScopeAwareClass> ClassDeclarations()
     {
         return _classDeclarations;
-    }
-
-    IEnumerable<IClassDeclaration> IProgram.ClassDeclarations()
-    {
-        return ClassDeclarations();
     }
 }

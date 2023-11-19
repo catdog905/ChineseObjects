@@ -18,16 +18,16 @@ public class TypesAwareParameters : ITypesAwareParameters
     
     public TypesAwareParameters(IScopeAwareParameters parameters)
     {
-        _parameters = parameters.GetParameters().Select(parameter => new TypedParameter(parameters.Scope(), parameter));
-    }
-
-    IEnumerable<IParameter> IParameters.GetParameters()
-    {
-        return GetParameters();
+        _parameters = parameters.GetParameters().Select(parameter => new TypedParameter(parameter));
     }
 
     public IEnumerable<ITypedParameter> GetParameters()
     {
         return _parameters;
+    }
+
+    IEnumerable<IParameter> IParameters.GetParameters()
+    {
+        return GetParameters();
     }
 }

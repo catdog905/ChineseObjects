@@ -4,19 +4,16 @@ namespace ChineseObjects.Lang;
 
 public interface IScopeAwareStatementsBlock : IStatementsBlock, IScopeAwareAstNode
 {
-    public new IEnumerable<IStatement> Statements();
+    public new IEnumerable<IStatementDeclaration> Statements();
 }
 
-public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock{
-    public ScopeAwareStatementsBlock(Scope scope, IStatementsBlock body)
-    {
-        throw new NotImplementedException();
-    }
-
-
+public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock {
+    
+    public ScopeAwareStatementsBlock(Scope scope, IDeclarationStatementsBlock body) {}
+    
     IEnumerable<IStatement> IStatementsBlock.Statements()
     {
-        throw new NotImplementedException();
+        return Statements();
     }
 
     public Scope Scope()
@@ -24,12 +21,7 @@ public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock{
         throw new NotImplementedException();
     }
 
-    IEnumerable<IStatement> IScopeAwareStatementsBlock.Statements()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IList<string> GetRepr()
+    public IEnumerable<IStatementDeclaration> Statements()
     {
         throw new NotImplementedException();
     }

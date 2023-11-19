@@ -2,10 +2,10 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IClassDeclaration : IAstNode
+public interface IClassDeclaration : IClass, IDeclarationAstNode
 {
-    public string ClassName();
-    public IEnumerable<string> ParentClassNames();
+    public IIdentifierDeclaration ClassName();
+    public IEnumerable<IIdentifierDeclaration> ParentClassNames();
     public IEnumerable<IConstructorDeclaration> ConstructorDeclarations();
     public IEnumerable<IVariableDeclaration> VariableDeclarations();
     public IEnumerable<IMethodDeclaration> MethodDeclarations();
@@ -13,18 +13,18 @@ public interface IClassDeclaration : IAstNode
 
 public class ClassDeclaration : IClassDeclaration, IHumanReadable
 {
-    private readonly string _className;
-    private readonly ImmutableList<string> _parentClassNames;
-    private readonly ImmutableList<ConstructorDeclaration> _constructorDeclarations;
-    private readonly ImmutableList<VariableDeclaration> _variableDeclarations;
-    private readonly ImmutableList<MethodDeclaration> _methodDeclarations;
+    private readonly IIdentifierDeclaration _className;
+    private readonly ImmutableList<IIdentifierDeclaration> _parentClassNames;
+    private readonly ImmutableList<IConstructorDeclaration> _constructorDeclarations;
+    private readonly ImmutableList<IVariableDeclaration> _variableDeclarations;
+    private readonly ImmutableList<IMethodDeclaration> _methodDeclarations;
 
     public ClassDeclaration(
-        string className, 
-        ImmutableList<string> parentClassNames, 
-        ImmutableList<ConstructorDeclaration> constructorDeclarations, 
-        ImmutableList<VariableDeclaration> variableDeclarations, 
-        ImmutableList<MethodDeclaration> methodDeclarations)
+        IIdentifierDeclaration className, 
+        ImmutableList<IIdentifierDeclaration> parentClassNames, 
+        ImmutableList<IConstructorDeclaration> constructorDeclarations, 
+        ImmutableList<IVariableDeclaration> variableDeclarations, 
+        ImmutableList<IMethodDeclaration> methodDeclarations)
     {
         _className = className;
         _parentClassNames = parentClassNames;
@@ -34,11 +34,11 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
     }
     
     public ClassDeclaration(
-        string className, 
-        List<string> parentClassNames, 
-        List<ConstructorDeclaration> constructorDeclarations, 
-        List<VariableDeclaration> variableDeclarations, 
-        List<MethodDeclaration> methodDeclarations)
+        IIdentifierDeclaration className, 
+        IEnumerable<IIdentifierDeclaration> parentClassNames, 
+        IEnumerable<IConstructorDeclaration> constructorDeclarations, 
+        IEnumerable<IVariableDeclaration> variableDeclarations, 
+        IEnumerable<IMethodDeclaration> methodDeclarations)
         : this(
             className,
             parentClassNames.ToImmutableList(),
@@ -47,46 +47,46 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
             methodDeclarations.ToImmutableList()) {}
 
     public ClassDeclaration(
-        Identifier className, 
-        Identifiers parentClassNames, 
+        IIdentifierDeclaration className, 
+        IDeclarationIdentifiers parentClassNames, 
         MemberDeclarations memberDeclarations)
         : this(
-            className.Name, 
-            parentClassNames.Names,
+            className, 
+            parentClassNames.GetIdentifiers(),
             ExtractConstructors(memberDeclarations),
             ExtractVariables(memberDeclarations),
             ExtractMethods(memberDeclarations)) {}
 
-    private static ImmutableList<ConstructorDeclaration> ExtractConstructors(MemberDeclarations memberDeclarations)
+    private static IEnumerable<IConstructorDeclaration> ExtractConstructors(MemberDeclarations memberDeclarations)
     {
         var constructors = memberDeclarations.MemberDeclarations_
-            .OfType<ConstructorDeclaration>()
+            .OfType<IConstructorDeclaration>()
             .ToList();
 
         
         return constructors.ToImmutableList();
     }
 
-    private static ImmutableList<VariableDeclaration> ExtractVariables(MemberDeclarations memberDeclarations)
+    private static IEnumerable<IVariableDeclaration> ExtractVariables(MemberDeclarations memberDeclarations)
     {
         var vars = memberDeclarations.MemberDeclarations_
-            .OfType<VariableDeclaration>()
+            .OfType<IVariableDeclaration>()
             .ToList();
         
         return vars.ToImmutableList();
     }
 
-    private static ImmutableList<MethodDeclaration> ExtractMethods(MemberDeclarations memberDeclarations)
+    private static IEnumerable<IMethodDeclaration> ExtractMethods(MemberDeclarations memberDeclarations)
     {
         var methods = memberDeclarations.MemberDeclarations_
-            .OfType<MethodDeclaration>()
+            .OfType<IMethodDeclaration>()
             .ToList();
         
         return methods.ToImmutableList();
     }
     
     public ClassDeclaration(
-        Identifier className, 
+        IIdentifierDeclaration className, 
         MemberDeclarations memberDeclarations
     ) : this(className, new Identifiers(), memberDeclarations) {}
 
@@ -115,12 +115,12 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
         return ans;
     }
 
-    public string ClassName()
+    public IIdentifierDeclaration ClassName()
     {
         return _className;
     }
 
-    public IEnumerable<string> ParentClassNames()
+    public IEnumerable<IIdentifierDeclaration> ParentClassNames()
     {
         return _parentClassNames;
     }

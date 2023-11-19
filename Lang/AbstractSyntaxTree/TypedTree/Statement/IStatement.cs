@@ -4,32 +4,18 @@ namespace ChineseObjects.Lang;
 
 public interface ITypesAwareStatementsBlock : IStatementsBlock, ITypesAwareAstNode
 {
-    public new IEnumerable<IStatement> Statements();
+    public new IEnumerable<IStatementDeclaration> Statements();
 }
 
 public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock{
-    public TypesAwareStatementsBlock(IScopeAwareStatementsBlock statementsBlock)
-    {
-        throw new NotImplementedException();
-    }
-
-
+    public TypesAwareStatementsBlock(IScopeAwareStatementsBlock statementsBlock) {}
+    
     IEnumerable<IStatement> IStatementsBlock.Statements()
     {
-        throw new NotImplementedException();
+        return Statements();
     }
 
-    public Scope Scope()
-    {
-        throw new NotImplementedException();
-    }
-
-    IEnumerable<IStatement> ITypesAwareStatementsBlock.Statements()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IList<string> GetRepr()
+    public IEnumerable<IStatementDeclaration> Statements()
     {
         throw new NotImplementedException();
     }

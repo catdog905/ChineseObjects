@@ -2,29 +2,29 @@ namespace ChineseObjects.Lang;
 
 public interface IAstTree
 {
-    public IAstNode Root();
+    public IDeclarationAstNode Root();
 }
 
 public class SyntacticAstTree : IAstTree
 {
-    private readonly IProgram _root;
+    private readonly IProgramDeclaration _root;
 
-    public SyntacticAstTree(IProgram root)
+    public SyntacticAstTree(IProgramDeclaration root)
     {
         _root = root;
     }
 
-    public IAstNode Root()
+    public IDeclarationAstNode Root()
     {
         return _root;
     }
 }
 
-public class SemanticAstTree : IAstNode
+public class SemanticDeclarationAstTree : IDeclarationAstNode
 {
     private readonly IScopeAwareProgram _root;
 
-    public SemanticAstTree(IScopeAwareProgram program)
+    public SemanticDeclarationAstTree(IScopeAwareProgram program)
     {
         _root = program;
     }

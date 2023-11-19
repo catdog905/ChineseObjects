@@ -1,35 +1,41 @@
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareVariableDeclaration : IVariableDeclaration, IScopeAwareAstNode
-{}
+public interface IScopeAwareVariable : IVariable, IScopeAwareAstNode
+{
+    public IScopeAwareIdentifier Name();
+    public IScopeAwareIdentifier TypeName();
+}
 
-public class ScopeAwareVariableDeclaration : IScopeAwareVariableDeclaration
+public class ScopeAwareVariable : IScopeAwareVariable
 {
     private readonly Scope _scope;
-    private readonly string _name;
-    private readonly string _type;
+    private readonly IScopeAwareIdentifier _name;
+    private readonly IScopeAwareIdentifier _type;
 
-    public ScopeAwareVariableDeclaration(Scope scope, string name, string type)
+    public ScopeAwareVariable(Scope scope, IScopeAwareIdentifier name, IScopeAwareIdentifier type)
     {
         _scope = scope;
         _name = name;
         _type = type;
     }
 
-    public ScopeAwareVariableDeclaration(Scope scope, IVariableDeclaration variableDeclaration) :
-        this(scope, variableDeclaration.Name(), variableDeclaration.TypeName()) {}
+    public ScopeAwareVariable(Scope scope, IVariableDeclaration variableDeclaration) :
+        this(
+            scope, 
+            new ScopeAwareIdentifier(scope, variableDeclaration.Name()), 
+            new ScopeAwareIdentifier(scope , variableDeclaration.TypeName())) {}
 
     public Scope Scope()
     {
         return _scope;
     }
 
-    public string Name()
+    public IScopeAwareIdentifier Name()
     {
         return _name;
     }
 
-    public string TypeName()
+    public IScopeAwareIdentifier TypeName()
     {
         return _type;
     }

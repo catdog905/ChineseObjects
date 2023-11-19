@@ -13,3 +13,5 @@ foreach (string s in hp.GetRepr())
 }
 
 ScopeAwareProgram scopeAwareProgram = new ScopeAwareProgram(new Scope(), program);
+
+Console.WriteLine(scopeAwareProgram.Scope());

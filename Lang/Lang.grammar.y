@@ -17,7 +17,7 @@
      * `.obj` for higher `AST` nodes which don't care about
      * the concrete type of expression.
      */
-    public Expression expr;
+    public IExpressionDeclaration expr;
 
     public Return ret;
     public Assignment assign;
@@ -27,7 +27,7 @@
     public MethodCall methodCall;
     public ClassInstantiation classInstantiation;
 
-    public IStatement stmt;
+    public IStatementDeclaration stmt;
 
     public Parameter param;
     public Parameters parames;
@@ -37,7 +37,7 @@
 
     public Program program;
     public ClassDeclaration classDeclaration;
-    public MemberDeclaration memberDeclaration;
+    public IMemberDeclaration memberDeclaration;
     public MemberDeclarations memberDeclarations;
     public VariableDeclaration variableDeclaration;
     public MethodDeclaration methodDeclaration;
@@ -86,7 +86,7 @@ methodDeclaration   : METHOD IDENTIFIER P_OPEN parameters P_CLOSE COLON IDENTIFI
 constructorDeclaration : THIS P_OPEN parameters P_CLOSE IS body END  { $$.constructorDeclaration = new ConstructorDeclaration( $3.parames, $6.body ); }
                        ;
 
-parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.identifier.Name, $3.identifier ); }
+parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.identifier, $3.identifier ); }
             ;
 
 parameters  :                                { $$.parames = new Parameters(); }
@@ -107,7 +107,7 @@ statement : assignment          { $$.stmt = $1.assign; }
           ;
 
 
-assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier.Name, $3.expr); }
+assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier, $3.expr); }
             ;
 
 whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.stmt); }

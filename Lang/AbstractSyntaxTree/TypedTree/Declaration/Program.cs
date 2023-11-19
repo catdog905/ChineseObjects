@@ -2,28 +2,23 @@ namespace ChineseObjects.Lang.Declaration;
 
 public interface ITypesAwareProgram : IProgram, ITypesAwareAstNode
 {
-    public new IEnumerable<ITypesAwareClassDeclaration> ClassDeclarations();
+    public IEnumerable<ITypedClass> ClassDeclarations();
 }
 
 class TypesAwareProgram : ITypesAwareProgram
 {
-    private readonly IEnumerable<ITypesAwareClassDeclaration> _classDeclarations;
+    private readonly IEnumerable<ITypedClass> _classDeclarations;
 
-    public TypesAwareProgram(IEnumerable<ITypesAwareClassDeclaration> classDeclarations)
+    public TypesAwareProgram(IEnumerable<ITypedClass> classDeclarations)
     {
         _classDeclarations = classDeclarations;
     }
     
-    public TypesAwareProgram(IEnumerable<IScopeAwareClassDeclaration> classDeclarations) :
+    public TypesAwareProgram(IEnumerable<IScopeAwareClass> classDeclarations) :
         this(classDeclarations.Select(
-            decl => new TypedAwareClassDeclaration(decl))) {}
-    
-    IEnumerable<IClassDeclaration> IProgram.ClassDeclarations()
-    {
-        return ClassDeclarations();
-    }
+            decl => new TypedClass(decl))) {}
 
-    public IEnumerable<ITypesAwareClassDeclaration> ClassDeclarations()
+    public IEnumerable<ITypedClass> ClassDeclarations()
     {
         return _classDeclarations;
     }

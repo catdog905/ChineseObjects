@@ -1,22 +1,23 @@
 namespace ChineseObjects.Lang.Declaration;
 
 
-public interface ITypesAwareMethodDeclaration : IMethodDeclaration, ITypesAwareAstNode
+public interface ITypesAwareMethod : IMethod, ITypesAwareAstNode
 {
-    public new ITypesAwareParameters Parameters();
-    public new Type ReturnType();
-    public new ITypesAwareStatementsBlock Body();
+    public IIdentifier MethodName();
+    public ITypesAwareParameters Parameters();
+    public Type ReturnType();
+    public ITypesAwareStatementsBlock Body();
 }
 
-public class TypesAwareMethodDeclaration : ITypesAwareMethodDeclaration
+public class TypesAwareMethod : ITypesAwareMethod
 {
-    private readonly string _methodName;
+    private readonly IIdentifier _methodName;
     private readonly ITypesAwareParameters _parameters;
     private readonly Type _returnType;
     private readonly ITypesAwareStatementsBlock _body;
 
-    public TypesAwareMethodDeclaration(
-        string methodName, 
+    public TypesAwareMethod(
+        IIdentifier methodName, 
         ITypesAwareParameters parameters, 
         Type returnType, 
         ITypesAwareStatementsBlock body)
@@ -27,13 +28,13 @@ public class TypesAwareMethodDeclaration : ITypesAwareMethodDeclaration
         _body = body;
     }
     
-    public TypesAwareMethodDeclaration(IScopeAwareMethodDeclaration methodDeclaration) :
-        this(methodDeclaration.MethodName(),
-            new TypesAwareParameters(methodDeclaration.Parameters()),
-            new Type(methodDeclaration.Scope(), methodDeclaration.ReturnTypeName()),
-            new TypesAwareStatementsBlock(methodDeclaration.Body())) {}
+    public TypesAwareMethod(IScopeAwareMethod awareMethod) :
+        this(awareMethod.MethodName(),
+            new TypesAwareParameters(awareMethod.Parameters()),
+            new Type(awareMethod.Scope(), awareMethod.ReturnTypeName()),
+            new TypesAwareStatementsBlock(awareMethod.Body())) {}
 
-    public string MethodName()
+    public IIdentifier MethodName()
     {
         return _methodName;
     }
@@ -51,20 +52,5 @@ public class TypesAwareMethodDeclaration : ITypesAwareMethodDeclaration
     public ITypesAwareStatementsBlock Body()
     {
         return _body;
-    }
-
-    IParameters IMethodDeclaration.Parameters()
-    {
-        return Parameters();
-    }
-
-    public string ReturnTypeName()
-    {
-        return _returnType.TypeName();
-    }
-
-    IStatementsBlock IMethodDeclaration.Body()
-    {
-        return Body();
     }
 }

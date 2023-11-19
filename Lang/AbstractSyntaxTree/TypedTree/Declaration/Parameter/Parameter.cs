@@ -17,10 +17,11 @@ public class TypedParameter : ITypedParameter
         _type = type;
     }
     
-    public TypedParameter(Scope scope, string name, string typeName) : this(name, typeName,scope.GetType(typeName))
-    {}
-    
-    public TypedParameter(Scope scope, IParameter parameter) : this(scope, parameter.Name(), parameter.TypeName()) {}
+    public TypedParameter(IScopeAwareParameter parameter) :
+        this(
+            parameter.Name().Name(), 
+            parameter.TypeName().Name(), 
+            parameter.Scope().GetType(parameter.TypeName().Name())) {}
 
 
     public string Name() => _name;

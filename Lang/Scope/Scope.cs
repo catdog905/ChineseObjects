@@ -59,6 +59,12 @@ public class Scope
         }
         throw new NoSuchValueInScope();
     }
+
+
+    public override string ToString()
+    {
+        return string.Join(Environment.NewLine, _typeCollection.Select(a => $"{a.Key}: {a.Value}"));
+    }
 }
 
 public class ScopeException : Exception { }

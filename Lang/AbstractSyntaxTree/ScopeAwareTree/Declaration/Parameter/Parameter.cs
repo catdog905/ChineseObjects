@@ -3,29 +3,30 @@ using System.Collections.Immutable;
 namespace ChineseObjects.Lang;
 
 public interface IScopeAwareParameter : IParameter, IScopeAwareAstNode
-{}
+{
+    public IScopeAwareIdentifier Name();
+    public IScopeAwareIdentifier TypeName();
+}
 
 public class ScopeAwareParameter : IScopeAwareParameter
 {
     private readonly Scope _scope;
-    private readonly string _name;
-    private readonly string _type;
+    private readonly IScopeAwareIdentifier _name;
+    private readonly IScopeAwareIdentifier _typeName;
 
-    public ScopeAwareParameter(Scope scope, string name, string type)
+    public ScopeAwareParameter(Scope scope, IScopeAwareIdentifier name, IScopeAwareIdentifier typeName)
     {
         _scope = scope;
         _name = name;
-        _type = type;
+        _typeName = typeName;
     }
     
-    public ScopeAwareParameter(Scope scope, IParameter parameter) : 
-        this(scope, parameter.Name(), parameter.TypeName()) {}
+    public ScopeAwareParameter(Scope scope, IParameterDeclaration parameterDeclaration) : 
+        this(scope, 
+            new ScopeAwareIdentifier(scope,parameterDeclaration.Name()), 
+            new ScopeAwareIdentifier(scope, parameterDeclaration.TypeName())) {}
 
-    public Scope Scope()
-    {
-        return _scope;
-    }
-    
-    public string TypeName() => _type;
-    public string Name() => _name;
+    public Scope Scope() => _scope;
+    public IScopeAwareIdentifier TypeName() => _typeName;
+    public IScopeAwareIdentifier Name() => _name;
 }

@@ -5,7 +5,7 @@ using ChineseObjects.Lang;
 using Type = ChineseObjects.Lang.Type;
 
 var calculator = new LangParser();
-ChineseObjects.Lang.Program program = calculator.Parse(File.ReadAllText("tokenizer/program_text.txt"));
+ChineseObjects.Lang.Program program = calculator.Parse(File.ReadAllText("test/tokenizer/program_text.txt"));
 IHumanReadable hp = program;
 foreach (string s in hp.GetRepr())
 {

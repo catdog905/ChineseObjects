@@ -22,12 +22,12 @@ public class Scope
     public Scope(
         Scope scope,
         Dictionary<string, Type> typeCollection) :
-        this(scope._typeCollection.AddRange(typeCollection), ImmutableDictionary<string, Reference>.Empty) {}
+        this(scope._typeCollection.AddRange(typeCollection), scope._valueCollection) {}
     
     public Scope(
         Scope scope,
         Dictionary<string, Reference> valueCollection) :
-        this(ImmutableDictionary<string, Type>.Empty, scope._valueCollection.AddRange(valueCollection)) {}
+        this(scope._typeCollection, scope._valueCollection.AddRange(valueCollection)) {}
     
     public Scope(Dictionary<string, Type> typeCollection, Dictionary<string, Reference> valueCollection) : 
         this(typeCollection.ToImmutableDictionary(), valueCollection.ToImmutableDictionary()) {}

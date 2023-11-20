@@ -1,4 +1,4 @@
-
+using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
@@ -42,7 +42,9 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
     //TODO: Could be a need for a proper interface methods implementation     
     public IEnumerable<IStatementDeclaration> Statements()
     {
-        throw new NotImplementedException();
+        return ImmutableList<IStatementDeclaration>.Empty.Add(_cond)
+            .AddRange(_then.Statements())
+            .AddRange(_else.Statements());
     }
 
     IEnumerable<IStatement> IStatementsBlock.Statements()

@@ -2,12 +2,12 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IArgumentDeclaration : IArgument, IExpressionDeclaration
+public interface IArgumentDeclaration : IExpressionDeclaration
 {
     public IExpressionDeclaration Value();
 }
 
-public interface IDeclarationArguments : IArguments, IDeclarationAstNode
+public interface IDeclarationArguments : IDeclarationAstNode
 {
     public IEnumerable<IArgumentDeclaration> Values();
 }

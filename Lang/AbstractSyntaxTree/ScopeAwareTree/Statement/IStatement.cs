@@ -2,19 +2,14 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareStatementsBlock : IStatementsBlock, IScopeAwareAstNode
+public interface IScopeAwareStatementsBlock : IScopeAwareAstNode
 {
-    public new IEnumerable<IStatementDeclaration> Statements();
+    public IEnumerable<IStatementDeclaration> Statements();
 }
 
 public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock {
     
     public ScopeAwareStatementsBlock(Scope scope, IDeclarationStatementsBlock body) {}
-    
-    IEnumerable<IStatement> IStatementsBlock.Statements()
-    {
-        return Statements();
-    }
 
     public Scope Scope()
     {

@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareProgram : IProgram, IScopeAwareAstNode
+public interface IScopeAwareProgram : IScopeAwareAstNode
 {
     public IEnumerable<IScopeAwareClass> ClassDeclarations();
 }

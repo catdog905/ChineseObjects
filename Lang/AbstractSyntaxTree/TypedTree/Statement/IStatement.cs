@@ -2,20 +2,16 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface ITypesAwareStatementsBlock : IStatementsBlock, ITypesAwareAstNode
+public interface ITypesAwareStatement : ITypesAwareAstNode {}
+
+public interface ITypesAwareStatementsBlock : ITypesAwareAstNode
 {
-    public new IEnumerable<IStatementDeclaration> Statements();
+    public IEnumerable<ITypesAwareStatement> Statements();
 }
 
 public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock{
     public TypesAwareStatementsBlock(IScopeAwareStatementsBlock statementsBlock) {}
-    
-    IEnumerable<IStatement> IStatementsBlock.Statements()
-    {
-        return Statements();
-    }
-
-    public IEnumerable<IStatementDeclaration> Statements()
+    public IEnumerable<ITypesAwareStatement> Statements()
     {
         throw new NotImplementedException();
     }

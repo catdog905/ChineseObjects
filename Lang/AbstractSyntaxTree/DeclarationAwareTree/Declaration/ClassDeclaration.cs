@@ -2,10 +2,10 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IClassDeclaration : IClass, IDeclarationAstNode
+public interface IClassDeclaration : IDeclarationAstNode
 {
-    public IIdentifierDeclaration ClassName();
-    public IEnumerable<IIdentifierDeclaration> ParentClassNames();
+    public IDeclarationIdentifier ClassName();
+    public IEnumerable<IDeclarationIdentifier> ParentClassNames();
     public IEnumerable<IConstructorDeclaration> ConstructorDeclarations();
     public IEnumerable<IVariableDeclaration> VariableDeclarations();
     public IEnumerable<IMethodDeclaration> MethodDeclarations();
@@ -13,15 +13,15 @@ public interface IClassDeclaration : IClass, IDeclarationAstNode
 
 public class ClassDeclaration : IClassDeclaration, IHumanReadable
 {
-    private readonly IIdentifierDeclaration _className;
-    private readonly ImmutableList<IIdentifierDeclaration> _parentClassNames;
+    private readonly IDeclarationIdentifier _className;
+    private readonly ImmutableList<IDeclarationIdentifier> _parentClassNames;
     private readonly ImmutableList<IConstructorDeclaration> _constructorDeclarations;
     private readonly ImmutableList<IVariableDeclaration> _variableDeclarations;
     private readonly ImmutableList<IMethodDeclaration> _methodDeclarations;
 
     public ClassDeclaration(
-        IIdentifierDeclaration className, 
-        ImmutableList<IIdentifierDeclaration> parentClassNames, 
+        IDeclarationIdentifier className, 
+        ImmutableList<IDeclarationIdentifier> parentClassNames, 
         ImmutableList<IConstructorDeclaration> constructorDeclarations, 
         ImmutableList<IVariableDeclaration> variableDeclarations, 
         ImmutableList<IMethodDeclaration> methodDeclarations)
@@ -34,8 +34,8 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
     }
     
     public ClassDeclaration(
-        IIdentifierDeclaration className, 
-        IEnumerable<IIdentifierDeclaration> parentClassNames, 
+        IDeclarationIdentifier className, 
+        IEnumerable<IDeclarationIdentifier> parentClassNames, 
         IEnumerable<IConstructorDeclaration> constructorDeclarations, 
         IEnumerable<IVariableDeclaration> variableDeclarations, 
         IEnumerable<IMethodDeclaration> methodDeclarations)
@@ -47,7 +47,7 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
             methodDeclarations.ToImmutableList()) {}
 
     public ClassDeclaration(
-        IIdentifierDeclaration className, 
+        IDeclarationIdentifier className, 
         IDeclarationIdentifiers parentClassNames, 
         MemberDeclarations memberDeclarations)
         : this(
@@ -86,7 +86,7 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
     }
     
     public ClassDeclaration(
-        IIdentifierDeclaration className, 
+        IDeclarationIdentifier className, 
         MemberDeclarations memberDeclarations
     ) : this(className, new Identifiers(), memberDeclarations) {}
 
@@ -115,12 +115,12 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
         return ans;
     }
 
-    public IIdentifierDeclaration ClassName()
+    public IDeclarationIdentifier ClassName()
     {
         return _className;
     }
 
-    public IEnumerable<IIdentifierDeclaration> ParentClassNames()
+    public IEnumerable<IDeclarationIdentifier> ParentClassNames()
     {
         return _parentClassNames;
     }

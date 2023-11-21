@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang.Declaration;
 
-public interface ITypesAwareProgram : IProgram, ITypesAwareAstNode
+public interface ITypesAwareProgram : ITypesAwareAstNode
 {
     public IEnumerable<ITypedClass> ClassDeclarations();
 }

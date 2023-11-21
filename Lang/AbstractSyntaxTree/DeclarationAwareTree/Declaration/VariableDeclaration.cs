@@ -1,9 +1,9 @@
 namespace ChineseObjects.Lang;
 
-public interface IVariableDeclaration : IVariable, IMemberDeclaration, IDeclarationAstNode
+public interface IVariableDeclaration : IMemberDeclaration, IDeclarationAstNode
 {
-    public IIdentifierDeclaration Name();
-    public IIdentifierDeclaration TypeName();
+    public IDeclarationIdentifier Name();
+    public IDeclarationIdentifier TypeName();
 }
 
 
@@ -12,10 +12,10 @@ public interface IVariableDeclaration : IVariable, IMemberDeclaration, IDeclarat
 // be the same or different types of nodes?
 public class VariableDeclaration : IVariableDeclaration, IHumanReadable
 {
-    private readonly IIdentifierDeclaration _name;
-    private readonly IIdentifierDeclaration _typeName;
+    private readonly IDeclarationIdentifier _name;
+    private readonly IDeclarationIdentifier _typeName;
 
-    public VariableDeclaration(IIdentifierDeclaration name, IIdentifierDeclaration typeNameName)
+    public VariableDeclaration(IDeclarationIdentifier name, IDeclarationIdentifier typeNameName)
     {
         _name = name;
         _typeName = typeNameName;
@@ -31,12 +31,12 @@ public class VariableDeclaration : IVariableDeclaration, IHumanReadable
         return new List<string>{"VARIABLE " + _name + ": " + _typeName};
     }
 
-    public IIdentifierDeclaration Name()
+    public IDeclarationIdentifier Name()
     {
         return _name;
     }
 
-    public IIdentifierDeclaration TypeName()
+    public IDeclarationIdentifier TypeName()
     {
         return _typeName;
     }

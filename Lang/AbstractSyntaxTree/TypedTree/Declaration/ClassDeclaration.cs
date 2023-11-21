@@ -1,10 +1,10 @@
 namespace ChineseObjects.Lang.Declaration;
 
-public interface ITypedClass : IClass, ITypedAstNode
+public interface ITypedClass : ITypedAstNode
 {
     public IEnumerable<Type> ParentClassNames();
     public IEnumerable<ITypesAwareConstructor> ConstructorDeclarations();
-    public IEnumerable<ITypesAwareVariable> VariableDeclarations();
+    public IEnumerable<ITypedVariable> VariableDeclarations();
     public IEnumerable<ITypesAwareMethod> MethodDeclarations();
 }
 
@@ -13,14 +13,14 @@ public class TypedClass : ITypedClass
     private readonly Type _type;
     private readonly IEnumerable<Type> _parentClassNames;
     private readonly IEnumerable<ITypesAwareConstructor> _constructorDeclarations;
-    private readonly IEnumerable<ITypesAwareVariable> _variableDeclarations;
+    private readonly IEnumerable<ITypedVariable> _variableDeclarations;
     private readonly IEnumerable<ITypesAwareMethod> _methodDeclarations;
 
     public TypedClass(
         Type type, 
         IEnumerable<Type> parentClassNames, 
         IEnumerable<ITypesAwareConstructor> constructorDeclarations, 
-        IEnumerable<ITypesAwareVariable> variableDeclarations, 
+        IEnumerable<ITypedVariable> variableDeclarations, 
         IEnumerable<ITypesAwareMethod> methodDeclarations)
     {
         _type = type;
@@ -38,7 +38,7 @@ public class TypedClass : ITypedClass
             scopeAwareClass.ConstructorDeclarations()
                 .Select(decl => new TypesAwareConstructor(decl)),
             scopeAwareClass.VariableDeclarations()
-                .Select(decl => new TypesAwareVariable(decl)),
+                .Select(decl => new TypedVariable(decl)),
             scopeAwareClass.MethodDeclarations()
                 .Select(decl => new TypesAwareMethod(decl))) {}
 
@@ -58,7 +58,7 @@ public class TypedClass : ITypedClass
         return _constructorDeclarations;
     }
 
-    public IEnumerable<ITypesAwareVariable> VariableDeclarations()
+    public IEnumerable<ITypedVariable> VariableDeclarations()
     {
         return _variableDeclarations;
     }

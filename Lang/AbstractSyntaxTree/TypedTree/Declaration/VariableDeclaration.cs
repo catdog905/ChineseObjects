@@ -1,28 +1,27 @@
 namespace ChineseObjects.Lang.Declaration;
 
-public interface ITypesAwareVariable : IVariable, ITypesAwareAstNode
+public interface ITypedVariable : ITypedAstNode
 {
-    public IIdentifier Name();
-    public Type Type();
+    public IDeclarationIdentifier Name();
 }
 
-public class TypesAwareVariable : ITypesAwareVariable
+public class TypedVariable : ITypedVariable
 {
-    private readonly IIdentifier _name;
+    private readonly IDeclarationIdentifier _name;
     private readonly Type _type;
 
-    public TypesAwareVariable(IIdentifier name, Type type)
+    public TypedVariable(IDeclarationIdentifier name, Type type)
     {
         _name = name;
         _type = type;
     }
     
-    public TypesAwareVariable(IScopeAwareVariable variable) :
+    public TypedVariable(IScopeAwareVariable variable) :
         this(
             variable.Name(), 
             new Type(variable.Scope(), variable.TypeName())) {}
 
-    public IIdentifier Name()
+    public IDeclarationIdentifier Name()
     {
         return _name;
     }

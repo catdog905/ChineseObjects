@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang.Declaration;
 
-public interface ITypesAwareConstructor : IConstructor, ITypesAwareAstNode
+public interface ITypesAwareConstructor : ITypesAwareAstNode
 {
     public ITypesAwareParameters Parameters();
     public ITypesAwareStatementsBlock Body();

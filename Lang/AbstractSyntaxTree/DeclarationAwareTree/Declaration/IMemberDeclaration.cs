@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IMemberDeclaration : IMember, IDeclarationAstNode {}
+public interface IMemberDeclaration : IDeclarationAstNode {}
 
-public class MemberDeclarations : IMembers, IDeclarationAstNode
+public class MemberDeclarations : IDeclarationAstNode
 {
     public readonly ImmutableList<IMemberDeclaration> MemberDeclarations_;
 
@@ -27,10 +27,5 @@ public class MemberDeclarations : IMembers, IDeclarationAstNode
     public override string ToString()
     {
         return String.Join(",", MemberDeclarations_);
-    }
-
-    public IEnumerable<IMember> GetMember()
-    {
-        return MemberDeclarations_;
     }
 }

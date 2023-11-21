@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface IReturnDeclaration : IReturn, IStatementDeclaration {}
+public interface IReturnDeclaration : IStatementDeclaration {}
 
 // A return statement. Only stores the expression that is returned.
 public class Return : IReturnDeclaration

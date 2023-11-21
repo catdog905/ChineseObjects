@@ -2,18 +2,20 @@ namespace ChineseObjects.Lang;
 
 public class Reference
 {
-    public readonly IIdentifier Name;
+    public readonly string Name;
     public readonly Type Type;
 
-    public Reference(IIdentifier name, Type type)
+    public Reference(string name, Type type)
     {
         Name = name;
         Type = type;
     }
+    
+    public Reference(IDeclarationIdentifier declarationIdentifier, Type type) : this(declarationIdentifier.Name(), type) {}
 
     protected bool Equals(Reference other)
     {
-        return Name.Name() == other.Name.Name() && Type.Equals(other.Type);
+        return Name == other.Name && Type.Equals(other.Type);
     }
 
     public override bool Equals(object? obj)
@@ -26,7 +28,7 @@ public class Reference
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Name.Name(), Type);
+        return HashCode.Combine(Name, Type);
     }
 
     public static bool operator ==(Reference? left, Reference? right)

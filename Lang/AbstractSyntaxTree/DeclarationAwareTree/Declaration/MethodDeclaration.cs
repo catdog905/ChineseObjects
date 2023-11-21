@@ -2,25 +2,25 @@ using System.Reflection.Emit;
 
 namespace ChineseObjects.Lang;
 
-public interface IMethodDeclaration : IMethod, IMemberDeclaration, IDeclarationAstNode
+public interface IMethodDeclaration : IMemberDeclaration, IDeclarationAstNode
 {
-    public IIdentifierDeclaration MethodName();
+    public IDeclarationIdentifier MethodName();
     public IParameterDeclarations Parameters();
-    public IIdentifierDeclaration ReturnTypeName();
+    public IDeclarationIdentifier ReturnTypeName();
     public IDeclarationStatementsBlock Body();
 }
 
 public class MethodDeclaration : IMethodDeclaration, IHumanReadable
 {
-    private readonly IIdentifierDeclaration _methodName;
+    private readonly IDeclarationIdentifier _methodName;
     private readonly IParameterDeclarations _parameters;
-    private readonly IIdentifierDeclaration _returnTypeName;
+    private readonly IDeclarationIdentifier _returnTypeName;
     private readonly IDeclarationStatementsBlock _body;
     
     public MethodDeclaration(
-        IIdentifierDeclaration methodName, 
+        IDeclarationIdentifier methodName, 
         IParameterDeclarations parameterDeclarations, 
-        IIdentifierDeclaration returnTypeName,
+        IDeclarationIdentifier returnTypeName,
         IDeclarationStatementsBlock body)
     {
         _methodName = methodName;
@@ -49,7 +49,7 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
         return ans;
     }
 
-    public IIdentifierDeclaration MethodName()
+    public IDeclarationIdentifier MethodName()
     {
         return _methodName;
     }
@@ -59,7 +59,7 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
         return _parameters;
     }
 
-    public IIdentifierDeclaration ReturnTypeName()
+    public IDeclarationIdentifier ReturnTypeName()
     {
         return _returnTypeName;
     }

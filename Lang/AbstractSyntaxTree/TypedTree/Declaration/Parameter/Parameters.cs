@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface ITypesAwareParameters : IParameters, ITypesAwareAstNode
+public interface ITypesAwareParameters : ITypesAwareAstNode
 { 
-    public new IEnumerable<ITypedParameter> GetParameters();
+    public IEnumerable<ITypedParameter> GetParameters();
 }
 
 public class TypesAwareParameters : ITypesAwareParameters
@@ -24,10 +24,5 @@ public class TypesAwareParameters : ITypesAwareParameters
     public IEnumerable<ITypedParameter> GetParameters()
     {
         return _parameters;
-    }
-
-    IEnumerable<IParameter> IParameters.GetParameters()
-    {
-        return GetParameters();
     }
 }

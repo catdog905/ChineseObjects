@@ -2,10 +2,10 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareClass : IClass, IScopeAwareAstNode
+public interface IScopeAwareClass : IScopeAwareAstNode
 {
-    public IScopeAwareIdentifier ClassName();
-    public IEnumerable<IScopeAwareIdentifier> ParentClassNames();
+    public IScopeAwareDeclarationIdentifier ClassName();
+    public IEnumerable<IScopeAwareDeclarationIdentifier> ParentClassNames();
     public IEnumerable<IScopeAwareConstructor> ConstructorDeclarations();
     public IEnumerable<IScopeAwareVariable> VariableDeclarations();
     public IEnumerable<IScopeAwareMethod> MethodDeclarations();
@@ -14,16 +14,16 @@ public interface IScopeAwareClass : IClass, IScopeAwareAstNode
 public class ScopeAwareClass : IScopeAwareClass
 {
     private readonly Scope _scope;
-    private readonly IScopeAwareIdentifier _className;
-    private readonly IEnumerable<IScopeAwareIdentifier> _parentClassNames;
+    private readonly IScopeAwareDeclarationIdentifier _className;
+    private readonly IEnumerable<IScopeAwareDeclarationIdentifier> _parentClassNames;
     private readonly IEnumerable<ScopeAwareConstructor> _constructorDeclarations;
     private readonly IEnumerable<ScopeAwareVariable> _variableDeclarations;
     private readonly IEnumerable<ScopeAwareMethod> _methodDeclarations;
 
     private ScopeAwareClass(
         ScopeWithFields scope, 
-        IScopeAwareIdentifier className, 
-        IEnumerable<IScopeAwareIdentifier> parentClassNames, 
+        IScopeAwareDeclarationIdentifier className, 
+        IEnumerable<IScopeAwareDeclarationIdentifier> parentClassNames, 
         IEnumerable<ScopeAwareConstructor> constructorDeclarations, 
         IEnumerable<ScopeAwareVariable> variableDeclarations, 
         IEnumerable<ScopeAwareMethod> methodDeclarations)
@@ -38,9 +38,9 @@ public class ScopeAwareClass : IScopeAwareClass
     
     private ScopeAwareClass(ScopeWithFields scope, IClassDeclaration classDeclaration) :
         this(scope,
-            new ScopeAwareIdentifier(scope, classDeclaration.ClassName()),
+            new ScopeAwareDeclarationIdentifier(scope, classDeclaration.ClassName()),
             classDeclaration.ParentClassNames()
-                .Select(name => new ScopeAwareIdentifier(scope, name)),
+                .Select(name => new ScopeAwareDeclarationIdentifier(scope, name)),
             classDeclaration.ConstructorDeclarations()
                 .Select(decl => new ScopeAwareConstructor(scope, decl)).ToImmutableList(),
             classDeclaration.VariableDeclarations()
@@ -64,12 +64,12 @@ public class ScopeAwareClass : IScopeAwareClass
     }
 
 
-    public IScopeAwareIdentifier ClassName()
+    public IScopeAwareDeclarationIdentifier ClassName()
     {
         return _className;
     }
 
-    public IEnumerable<IScopeAwareIdentifier> ParentClassNames()
+    public IEnumerable<IScopeAwareDeclarationIdentifier> ParentClassNames()
     {
         return _parentClassNames;
     }

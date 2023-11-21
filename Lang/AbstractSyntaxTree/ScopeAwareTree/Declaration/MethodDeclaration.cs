@@ -3,27 +3,27 @@ using System.Reflection.Emit;
 namespace ChineseObjects.Lang;
 
 
-public interface IScopeAwareMethod : IMethod, IScopeAwareAstNode
+public interface IScopeAwareMethod : IScopeAwareAstNode
 {
-    public IScopeAwareIdentifier MethodName();
+    public IScopeAwareDeclarationIdentifier MethodName();
     public IScopeAwareParameters Parameters();
-    public IScopeAwareIdentifier ReturnTypeName();
+    public IScopeAwareDeclarationIdentifier ReturnTypeName();
     public IScopeAwareStatementsBlock Body();
 }
 
 public class ScopeAwareMethod : IScopeAwareMethod
 {
     private readonly Scope _scope;
-    private readonly IScopeAwareIdentifier _methodName;
+    private readonly IScopeAwareDeclarationIdentifier _methodName;
     private readonly IScopeAwareParameters _parameters;
-    private readonly IScopeAwareIdentifier _returnTypeName;
+    private readonly IScopeAwareDeclarationIdentifier _returnTypeName;
     private readonly IScopeAwareStatementsBlock _body;
 
     public ScopeAwareMethod(
         Scope scope, 
-        IScopeAwareIdentifier methodName, 
+        IScopeAwareDeclarationIdentifier methodName, 
         IScopeAwareParameters parameters, 
-        IScopeAwareIdentifier returnTypeName, 
+        IScopeAwareDeclarationIdentifier returnTypeName, 
         IScopeAwareStatementsBlock body)
     {
         _scope = scope;
@@ -35,13 +35,13 @@ public class ScopeAwareMethod : IScopeAwareMethod
 
     public ScopeAwareMethod(Scope scope, IMethodDeclaration methodDeclaration) :
         this(scope,
-            new ScopeAwareIdentifier(scope, methodDeclaration.MethodName()),
+            new ScopeAwareDeclarationIdentifier(scope, methodDeclaration.MethodName()),
             new ScopeAwareParameters(scope, methodDeclaration.Parameters()),
-            new ScopeAwareIdentifier(scope, methodDeclaration.ReturnTypeName()),
+            new ScopeAwareDeclarationIdentifier(scope, methodDeclaration.ReturnTypeName()),
             new ScopeAwareStatementsBlock(scope, methodDeclaration.Body())) {}
 
 
-    public IScopeAwareIdentifier MethodName()
+    public IScopeAwareDeclarationIdentifier MethodName()
     {
         return _methodName;
     }
@@ -51,7 +51,7 @@ public class ScopeAwareMethod : IScopeAwareMethod
         return _body;
     }
 
-    public IScopeAwareIdentifier ReturnTypeName()
+    public IScopeAwareDeclarationIdentifier ReturnTypeName()
     {
         return _returnTypeName;
     }

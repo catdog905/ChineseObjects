@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IParameterDeclarations : IParameters, IDeclarationAstNode
+public interface IParameterDeclarations : IDeclarationAstNode
 {
     public IEnumerable<IParameterDeclaration> GetParameters();
 }
@@ -32,11 +32,6 @@ public class Parameters : IParameterDeclarations {
     public override string ToString()
     {
         return String.Join(",", _parameters);
-    }
-
-    IEnumerable<IParameter> IParameters.GetParameters()
-    {
-        return GetParameters();
     }
 
     public IEnumerable<IParameterDeclaration> GetParameters()

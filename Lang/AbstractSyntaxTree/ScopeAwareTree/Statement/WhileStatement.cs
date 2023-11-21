@@ -36,11 +36,6 @@ public class ScopeAwareWhile : IScopeAwareWhile
         throw new NotImplementedException();
     }
 
-    IEnumerable<IStatement> IStatementsBlock.Statements()
-    {
-        return Statements();
-    }
-
     IList<string> IHumanReadable.GetRepr()
     {
         throw new NotImplementedException();

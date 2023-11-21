@@ -1,22 +1,22 @@
 namespace ChineseObjects.Lang;
 
-public interface IMethodCallDeclaration : IMethodCall, IExpressionDeclaration
+public interface IMethodCallDeclaration : IExpressionDeclaration
 {
     public IExpressionDeclaration Caller();
-    public IIdentifierDeclaration MethodName();
+    public IDeclarationIdentifier MethodName();
     public IDeclarationArguments Arguments(); 
 }
 
 public class MethodCall : IMethodCallDeclaration
 {
     public readonly IExpressionDeclaration _caller;
-    public readonly IIdentifierDeclaration _methodName;
+    public readonly IDeclarationIdentifier _methodName;
     public readonly IDeclarationArguments _arguments;
 
-    public MethodCall(IExpressionDeclaration caller, IIdentifierDeclaration identifier, IDeclarationArguments arguments)
+    public MethodCall(IExpressionDeclaration caller, IDeclarationIdentifier declarationIdentifier, IDeclarationArguments arguments)
     {
         _caller = caller;
-        _methodName = identifier;
+        _methodName = declarationIdentifier;
         _arguments = arguments;
     }
 
@@ -44,7 +44,7 @@ public class MethodCall : IMethodCallDeclaration
         return _caller;
     }
 
-    public IIdentifierDeclaration MethodName()
+    public IDeclarationIdentifier MethodName()
     {
         return _methodName;
     }

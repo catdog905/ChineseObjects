@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IProgramDeclaration : IProgram, IDeclarationAstNode
+public interface IProgramDeclaration : IDeclarationAstNode
 {
     public IEnumerable<IClassDeclaration> ClassDeclarations();
 }

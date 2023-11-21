@@ -2,19 +2,19 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareParameter : IParameter, IScopeAwareAstNode
+public interface IScopeAwareParameter : IScopeAwareAstNode
 {
-    public IScopeAwareIdentifier Name();
-    public IScopeAwareIdentifier TypeName();
+    public IScopeAwareDeclarationIdentifier Name();
+    public IScopeAwareDeclarationIdentifier TypeName();
 }
 
 public class ScopeAwareParameter : IScopeAwareParameter
 {
     private readonly Scope _scope;
-    private readonly IScopeAwareIdentifier _name;
-    private readonly IScopeAwareIdentifier _typeName;
+    private readonly IScopeAwareDeclarationIdentifier _name;
+    private readonly IScopeAwareDeclarationIdentifier _typeName;
 
-    public ScopeAwareParameter(Scope scope, IScopeAwareIdentifier name, IScopeAwareIdentifier typeName)
+    public ScopeAwareParameter(Scope scope, IScopeAwareDeclarationIdentifier name, IScopeAwareDeclarationIdentifier typeName)
     {
         _scope = scope;
         _name = name;
@@ -23,10 +23,10 @@ public class ScopeAwareParameter : IScopeAwareParameter
     
     public ScopeAwareParameter(Scope scope, IParameterDeclaration parameterDeclaration) : 
         this(scope, 
-            new ScopeAwareIdentifier(scope,parameterDeclaration.Name()), 
-            new ScopeAwareIdentifier(scope, parameterDeclaration.TypeName())) {}
+            new ScopeAwareDeclarationIdentifier(scope,parameterDeclaration.Name()), 
+            new ScopeAwareDeclarationIdentifier(scope, parameterDeclaration.TypeName())) {}
 
     public Scope Scope() => _scope;
-    public IScopeAwareIdentifier TypeName() => _typeName;
-    public IScopeAwareIdentifier Name() => _name;
+    public IScopeAwareDeclarationIdentifier TypeName() => _typeName;
+    public IScopeAwareDeclarationIdentifier Name() => _name;
 }

@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface IConstructorDeclaration : IConstructor, IMemberDeclaration, IDeclarationAstNode
+public interface IConstructorDeclaration : IMemberDeclaration, IDeclarationAstNode
 {
     public IParameterDeclarations Parameters();
     public IDeclarationStatementsBlock Body();

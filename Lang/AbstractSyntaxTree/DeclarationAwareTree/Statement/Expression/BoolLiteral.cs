@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface IBoolLiteralDeclaration : IBoolLiteral, IExpressionDeclaration
+public interface IBoolLiteralDeclaration : IExpressionDeclaration
 {
     public bool Value();
 }

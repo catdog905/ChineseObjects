@@ -11,9 +11,9 @@ public class Type
 
     public Type(Scope scope, string className) : this(scope.GetType(className)._classDeclaration) {}
     
-    public Type(Scope scope, IIdentifier className) : this(scope, className.Name()) {}
+    public Type(Scope scope, IDeclarationIdentifier className) : this(scope, className.Name()) {}
 
-    public IIdentifier TypeName()
+    public IDeclarationIdentifier TypeName()
     {
         return _classDeclaration.ClassName();
     }

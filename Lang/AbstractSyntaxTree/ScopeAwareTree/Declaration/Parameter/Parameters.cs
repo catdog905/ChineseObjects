@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareParameters : IParameters, IScopeAwareAstNode
+public interface IScopeAwareParameters : IScopeAwareAstNode
 {
-    public new IEnumerable<IScopeAwareParameter> GetParameters();
+    public IEnumerable<IScopeAwareParameter> GetParameters();
 }
 
 public class ScopeAwareParameters : IScopeAwareParameters
@@ -24,8 +24,4 @@ public class ScopeAwareParameters : IScopeAwareParameters
     public IEnumerable<IScopeAwareParameter> GetParameters() => _parameters;
 
     public Scope Scope() => _scope;
-    IEnumerable<IParameter> IParameters.GetParameters()
-    {
-        return GetParameters();
-    }
 }

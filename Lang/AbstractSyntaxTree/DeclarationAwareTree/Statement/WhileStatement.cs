@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface IWhileDeclaration : IWhile, IStatementDeclaration {}
+public interface IWhileDeclaration : IStatementDeclaration {}
 
 // While statement
 public class While : IWhileDeclaration

@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface IIfElseDeclaration : IIfElse, IStatementDeclaration {}
+public interface IIfElseDeclaration : IStatementDeclaration {}
 
 // If-then[-else] statement
 public class IfElse : IIfElseDeclaration

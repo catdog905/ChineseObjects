@@ -1,3 +1,3 @@
 namespace ChineseObjects.Lang;
 
-public interface IDeclarationAstNode : IAstNode {}
+public interface IDeclarationAstNode {}

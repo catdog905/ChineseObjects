@@ -3,11 +3,11 @@ using System.Collections.Immutable;
 namespace ChineseObjects.Lang;
 
 // Base class for all statements
-public interface IStatementDeclaration : IStatement, IHumanReadable, IDeclarationAstNode {}
+public interface IStatementDeclaration : IHumanReadable, IDeclarationAstNode {}
 
-public interface IDeclarationStatementsBlock : IStatementsBlock, IDeclarationAstNode
+public interface IDeclarationStatementsBlock : IDeclarationAstNode
 {
-    public new IEnumerable<IStatementDeclaration> Statements();
+    public IEnumerable<IStatementDeclaration> Statements();
 }
 
 // A combination of statements
@@ -35,11 +35,6 @@ public class StatementsBlock : IDeclarationStatementsBlock
     public override string ToString()
     {
         return String.Join(";", _statements);
-    }
-
-    IEnumerable<IStatement> IStatementsBlock.Statements()
-    {
-        return Statements();
     }
 
     public IEnumerable<IStatementDeclaration> Statements()

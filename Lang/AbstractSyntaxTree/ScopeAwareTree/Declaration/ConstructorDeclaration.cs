@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareConstructor : IConstructor, IScopeAwareAstNode
+public interface IScopeAwareConstructor : IScopeAwareAstNode
 {
     public IScopeAwareParameters Parameters();
     public IScopeAwareStatementsBlock Body();

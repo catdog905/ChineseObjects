@@ -2,20 +2,20 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IParameterDeclaration : IParameter
+public interface IParameterDeclaration
 {
-    public IIdentifierDeclaration Name();
-    public IIdentifierDeclaration TypeName();
+    public IDeclarationIdentifier Name();
+    public IDeclarationIdentifier TypeName();
 }
     
 // A parameter (is not an expression)
 public class Parameter : IParameterDeclaration, IHumanReadable {
-    private readonly IIdentifierDeclaration _name;
-    private readonly IIdentifierDeclaration _typeName;
+    private readonly IDeclarationIdentifier _name;
+    private readonly IDeclarationIdentifier _typeName;
 
-    public Parameter(IIdentifierDeclaration name, IIdentifierDeclaration identifier) {
+    public Parameter(IDeclarationIdentifier name, IDeclarationIdentifier declarationIdentifier) {
         _name = name;
-        _typeName = identifier;
+        _typeName = declarationIdentifier;
     }
 
     public override string ToString()
@@ -29,12 +29,12 @@ public class Parameter : IParameterDeclaration, IHumanReadable {
     }
 
 
-    public IIdentifierDeclaration Name()
+    public IDeclarationIdentifier Name()
     {
         return _name;
     }
 
-    public IIdentifierDeclaration TypeName()
+    public IDeclarationIdentifier TypeName()
     {
         return _typeName;
     }

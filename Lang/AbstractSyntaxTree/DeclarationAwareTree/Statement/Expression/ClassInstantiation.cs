@@ -1,19 +1,19 @@
 namespace ChineseObjects.Lang;
 
-public interface IClassInstantiationDeclaration : IClassInstantiation, IExpressionDeclaration
+public interface IClassInstantiationDeclaration : IExpressionDeclaration
 {
-    public IIdentifierDeclaration ClassName();
+    public IDeclarationIdentifier ClassName();
     public IDeclarationArguments Arguments();
 }
 
 public class ClassInstantiation : IClassInstantiationDeclaration
 {
-    private readonly IIdentifierDeclaration _className;
+    private readonly IDeclarationIdentifier _className;
     private readonly IDeclarationArguments _arguments;
 
-    public ClassInstantiation(IIdentifierDeclaration identifier, IDeclarationArguments arguments)
+    public ClassInstantiation(IDeclarationIdentifier declarationIdentifier, IDeclarationArguments arguments)
     {
-        _className = identifier;
+        _className = declarationIdentifier;
         _arguments = arguments;
     }
 
@@ -32,7 +32,7 @@ public class ClassInstantiation : IClassInstantiationDeclaration
         return ans;
     }
 
-    public IIdentifierDeclaration ClassName()
+    public IDeclarationIdentifier ClassName()
     {
         return _className;
     }
@@ -43,7 +43,7 @@ public class ClassInstantiation : IClassInstantiationDeclaration
     }
 }
 
-public interface IDeclarationAwareThis : IThis, IExpressionDeclaration {}
+public interface IDeclarationAwareThis : IExpressionDeclaration {}
 
 public class This : IDeclarationAwareThis
 {

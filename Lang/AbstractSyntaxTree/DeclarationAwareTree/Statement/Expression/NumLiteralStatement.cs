@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface INumLiteralDeclaration : INumLiteral, IExpressionDeclaration
+public interface INumLiteralDeclaration : IExpressionDeclaration
 {
     public double Value();
 }

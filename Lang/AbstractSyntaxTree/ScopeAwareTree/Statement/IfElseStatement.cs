@@ -44,7 +44,7 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
     {
         return ImmutableList<IStatement>.Empty.Add(_cond)
             .AddRange(_then.Statements())
-            .AddRange(_else.Statements());
+            .AddRange(_else?.Statements() ?? ImmutableList<IStatement>.Empty);
     }
 
     IList<string> IHumanReadable.GetRepr()

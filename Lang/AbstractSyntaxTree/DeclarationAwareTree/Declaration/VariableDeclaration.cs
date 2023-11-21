@@ -2,7 +2,7 @@ namespace ChineseObjects.Lang;
 
 public interface IVariableDeclaration : IMemberDeclaration, IAstNode
 {
-    public IIdentifier Name();
+    public IIdentifier Identifier();
     public IIdentifier TypeName();
 }
 
@@ -31,7 +31,7 @@ public class VariableDeclaration : IVariableDeclaration, IHumanReadable
         return new List<string>{"VARIABLE " + _name + ": " + _typeName};
     }
 
-    public IIdentifier Name()
+    public IIdentifier Identifier()
     {
         return _name;
     }

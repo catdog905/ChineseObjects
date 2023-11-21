@@ -36,7 +36,7 @@ public class TypeCheckedClassDeclaration : ITypeCheckedClassDeclaration
             .GroupBy(decl => decl.MethodName())
             .Where(group => group.Count() > 1);
         if (methodDuplicates.Count() != 0)
-            throw new DuplicateClassException(methodDuplicates);
+            throw new DuplicateMethodsException(methodDuplicates);
         //TODO : check type of statement block in every constructor
     }
     
@@ -79,6 +79,10 @@ public class TypeCheckedClassDeclaration : ITypeCheckedClassDeclaration
 
 public class DuplicateMethodsException : Exception
 {
+    public DuplicateMethodsException(IEnumerable<IGrouping<IIdentifier,ITypeCheckedMethodDeclaration>> methodDuplicates)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class DuplicateFieldsException : Exception

@@ -22,7 +22,7 @@ public class ScopeAwareVariable : IScopeAwareVariable
     public ScopeAwareVariable(Scope scope, IVariableDeclaration variableDeclaration) :
         this(
             scope, 
-            new ScopeAwareIdentifier(scope, variableDeclaration.Name()), 
+            new ScopeAwareIdentifier(scope, variableDeclaration.Identifier()), 
             new ScopeAwareIdentifier(scope , variableDeclaration.TypeName())) {}
 
     public Scope Scope()

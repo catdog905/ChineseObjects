@@ -18,19 +18,19 @@ class ScopeAwareProgram : IScopeAwareProgram
         _scope = scope;
     }
 
-    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IProgramDeclaration programDeclaration) : 
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IProgram program) : 
         this(
             scope, 
-            programDeclaration.ClassDeclarations().Select(
+            program.ClassDeclarations().Select(
                     decl
                         =>
                         new ScopeAwareClass(scope, decl))
                 .ToList()) {}
     
-    public ScopeAwareProgram(Scope scope, IProgramDeclaration programDeclaration) : 
+    public ScopeAwareProgram(Scope scope, IProgram program) : 
         this(
-            new ScopeWithClassDeclarations(scope, programDeclaration.ClassDeclarations()), 
-            programDeclaration) {}
+            new ScopeWithClassDeclarations(scope, program.ClassDeclarations()), 
+            program) {}
 
     class ScopeWithClassDeclarations : Scope
     {

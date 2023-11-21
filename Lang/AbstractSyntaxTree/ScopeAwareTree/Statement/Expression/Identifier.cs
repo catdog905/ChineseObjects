@@ -2,25 +2,25 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareDeclarationIdentifier : IDeclarationIdentifier, IScopeAwareAstNode { }
+public interface IScopeAwareIdentifier : IIdentifier, IScopeAwareAstNode { }
 
 // An identifier. Note that it is used to express that an `Identifier`
 // is an `Expression`. In more complex expressions that include identifiers
 // (such as variable/method/class declaration, etc) identifier is stored
 // as a mere `string` rather than the `Identifier` object.
-public class ScopeAwareDeclarationIdentifier : IScopeAwareDeclarationIdentifier
+public class ScopeAwareIdentifier : IScopeAwareIdentifier
 {
     private readonly Scope _scope;
     private readonly string _name;
 
-    public ScopeAwareDeclarationIdentifier(Scope scope, string name)
+    public ScopeAwareIdentifier(Scope scope, string name)
     {
         _scope = scope;
         _name = name;
     }
     
-    public ScopeAwareDeclarationIdentifier(Scope scope, IDeclarationIdentifier declarationIdentifier) :
-        this(scope, declarationIdentifier.Name()) {}
+    public ScopeAwareIdentifier(Scope scope, IIdentifier identifier) :
+        this(scope, identifier.Name()) {}
 
     public override string ToString()
     {

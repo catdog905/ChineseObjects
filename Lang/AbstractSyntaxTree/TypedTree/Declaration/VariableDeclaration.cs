@@ -2,15 +2,15 @@ namespace ChineseObjects.Lang.Declaration;
 
 public interface ITypedVariable : ITypedAstNode
 {
-    public IDeclarationIdentifier Name();
+    public IIdentifier Name();
 }
 
 public class TypedVariable : ITypedVariable
 {
-    private readonly IDeclarationIdentifier _name;
+    private readonly IIdentifier _name;
     private readonly Type _type;
 
-    public TypedVariable(IDeclarationIdentifier name, Type type)
+    public TypedVariable(IIdentifier name, Type type)
     {
         _name = name;
         _type = type;
@@ -21,7 +21,7 @@ public class TypedVariable : ITypedVariable
             variable.Name(), 
             new Type(variable.Scope(), variable.TypeName())) {}
 
-    public IDeclarationIdentifier Name()
+    public IIdentifier Name()
     {
         return _name;
     }

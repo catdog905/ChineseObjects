@@ -1,15 +1,15 @@
 namespace ChineseObjects.Lang;
 
-public interface IIfElseDeclaration : IStatementDeclaration {}
+public interface IIfElse : IStatement {}
 
 // If-then[-else] statement
-public class IfElse : IIfElseDeclaration
+public class IfElse : IIfElse
 {
-    public readonly IExpressionDeclaration cond;
-    public readonly IDeclarationStatementsBlock then;
-    public readonly IDeclarationStatementsBlock? else_;
+    public readonly IExpression cond;
+    public readonly IStatementsBlock then;
+    public readonly IStatementsBlock? else_;
 
-    public IfElse(IExpressionDeclaration cond, IDeclarationStatementsBlock then, IDeclarationStatementsBlock? else_)
+    public IfElse(IExpression cond, IStatementsBlock then, IStatementsBlock? else_)
     {
         this.cond = cond;
         this.then = then;
@@ -17,7 +17,7 @@ public class IfElse : IIfElseDeclaration
             
     }
         
-    public IfElse(IExpressionDeclaration cond, IDeclarationStatementsBlock then)
+    public IfElse(IExpression cond, IStatementsBlock then)
     {
         this.cond = cond;
         this.then = then;

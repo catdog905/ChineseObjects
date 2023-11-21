@@ -1,13 +1,13 @@
 namespace ChineseObjects.Lang;
 
-public interface IBoolLiteralDeclaration : IExpressionDeclaration
+public interface IBoolLiteral : IExpression
 {
     public bool Value();
 }
 
 // The boolean literal expression
 // TODO: merge with `NumLiteral`?
-public class BoolLiteral : IBoolLiteralDeclaration {
+public class BoolLiteral : IBoolLiteral {
     private readonly bool _value;
 
     public BoolLiteral(bool value) {

@@ -1,14 +1,14 @@
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareWhile : IWhileDeclaration, IScopeAwareStatementsBlock {}
+public interface IScopeAwareWhile : IWhile, IScopeAwareStatementsBlock {}
 
 public class ScopeAwareWhile : IScopeAwareWhile
 {
     private readonly Scope _scope;
-    private readonly IExpressionDeclaration _cond; // Should be ScopeAwareExpression?
+    private readonly IExpression _cond; // Should be ScopeAwareExpression?
     private readonly IScopeAwareStatementsBlock _body;
 
-    public ScopeAwareWhile(Scope scope, IExpressionDeclaration condition, IScopeAwareStatementsBlock body)
+    public ScopeAwareWhile(Scope scope, IExpression condition, IScopeAwareStatementsBlock body)
     {
         _scope = scope;
         _cond = condition;
@@ -20,7 +20,7 @@ public class ScopeAwareWhile : IScopeAwareWhile
         return _scope;
     }
 
-    public IExpressionDeclaration Condition()
+    public IExpression Condition()
     {
         return _cond;
     }
@@ -31,7 +31,7 @@ public class ScopeAwareWhile : IScopeAwareWhile
     }
 
     //TODO: Could be a need for a proper interface methods implementation 
-    public IEnumerable<IStatementDeclaration> Statements()
+    public IEnumerable<IStatement> Statements()
     {
         throw new NotImplementedException();
     }

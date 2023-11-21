@@ -11,7 +11,7 @@ public class Reference
         Type = type;
     }
     
-    public Reference(IDeclarationIdentifier declarationIdentifier, Type type) : this(declarationIdentifier.Name(), type) {}
+    public Reference(IIdentifier identifier, Type type) : this(identifier.Name(), type) {}
 
     protected bool Equals(Reference other)
     {

@@ -3,7 +3,7 @@ namespace ChineseObjects.Lang.Declaration;
 
 public interface ITypesAwareMethod : ITypesAwareAstNode
 {
-    public IDeclarationIdentifier MethodName();
+    public IIdentifier MethodName();
     public ITypesAwareParameters Parameters();
     public Type ReturnType();
     public ITypesAwareStatementsBlock Body();
@@ -11,13 +11,13 @@ public interface ITypesAwareMethod : ITypesAwareAstNode
 
 public class TypesAwareMethod : ITypesAwareMethod
 {
-    private readonly IDeclarationIdentifier _methodName;
+    private readonly IIdentifier _methodName;
     private readonly ITypesAwareParameters _parameters;
     private readonly Type _returnType;
     private readonly ITypesAwareStatementsBlock _body;
 
     public TypesAwareMethod(
-        IDeclarationIdentifier methodName, 
+        IIdentifier methodName, 
         ITypesAwareParameters parameters, 
         Type returnType, 
         ITypesAwareStatementsBlock body)
@@ -34,7 +34,7 @@ public class TypesAwareMethod : ITypesAwareMethod
             new Type(awareMethod.Scope(), awareMethod.ReturnTypeName()),
             new TypesAwareStatementsBlock(awareMethod.Body())) {}
 
-    public IDeclarationIdentifier MethodName()
+    public IIdentifier MethodName()
     {
         return _methodName;
     }

@@ -1,22 +1,22 @@
 namespace ChineseObjects.Lang;
 
-public interface IMethodCallDeclaration : IExpressionDeclaration
+public interface IMethodCall : IExpression
 {
-    public IExpressionDeclaration Caller();
-    public IDeclarationIdentifier MethodName();
-    public IDeclarationArguments Arguments(); 
+    public IExpression Caller();
+    public IIdentifier MethodName();
+    public IArguments Arguments(); 
 }
 
-public class MethodCall : IMethodCallDeclaration
+public class MethodCall : IMethodCall
 {
-    public readonly IExpressionDeclaration _caller;
-    public readonly IDeclarationIdentifier _methodName;
-    public readonly IDeclarationArguments _arguments;
+    public readonly IExpression _caller;
+    public readonly IIdentifier _methodName;
+    public readonly IArguments _arguments;
 
-    public MethodCall(IExpressionDeclaration caller, IDeclarationIdentifier declarationIdentifier, IDeclarationArguments arguments)
+    public MethodCall(IExpression caller, IIdentifier identifier, IArguments arguments)
     {
         _caller = caller;
-        _methodName = declarationIdentifier;
+        _methodName = identifier;
         _arguments = arguments;
     }
 
@@ -31,7 +31,7 @@ public class MethodCall : IMethodCallDeclaration
         ans.AddRange(_caller.GetRepr().Select(s => "| " + s));
         ans.Add("NAMED " + _methodName);
         ans.Add("WITH ARGS:");
-        foreach (IArgumentDeclaration arg in _arguments.Values())
+        foreach (IArgument arg in _arguments.Values())
         {
             ans.AddRange(arg.Value().GetRepr().Select(s => "| " + s));
         }
@@ -39,18 +39,18 @@ public class MethodCall : IMethodCallDeclaration
         return ans;
     }
 
-    public IExpressionDeclaration Caller()
+    public IExpression Caller()
     {
         return _caller;
     }
 
-    public IDeclarationIdentifier MethodName()
+    public IIdentifier MethodName()
     {
         return _methodName;
     }
 
 
-    public IDeclarationArguments Arguments()
+    public IArguments Arguments()
     {
         return _arguments;
     }

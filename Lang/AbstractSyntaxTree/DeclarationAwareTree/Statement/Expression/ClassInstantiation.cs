@@ -1,19 +1,19 @@
 namespace ChineseObjects.Lang;
 
-public interface IClassInstantiationDeclaration : IExpressionDeclaration
+public interface IClassInstantiation : IExpression
 {
-    public IDeclarationIdentifier ClassName();
-    public IDeclarationArguments Arguments();
+    public IIdentifier ClassName();
+    public IArguments Arguments();
 }
 
-public class ClassInstantiation : IClassInstantiationDeclaration
+public class ClassInstantiation : IClassInstantiation
 {
-    private readonly IDeclarationIdentifier _className;
-    private readonly IDeclarationArguments _arguments;
+    private readonly IIdentifier _className;
+    private readonly IArguments _arguments;
 
-    public ClassInstantiation(IDeclarationIdentifier declarationIdentifier, IDeclarationArguments arguments)
+    public ClassInstantiation(IIdentifier identifier, IArguments arguments)
     {
-        _className = declarationIdentifier;
+        _className = identifier;
         _arguments = arguments;
     }
 
@@ -25,27 +25,27 @@ public class ClassInstantiation : IClassInstantiationDeclaration
     public IList<string> GetRepr()
     {
         var ans = new List<string> {"NEW " + _className};
-        foreach(IArgumentDeclaration arg in _arguments.Values())
+        foreach(IArgument arg in _arguments.Values())
         {
             ans.AddRange(arg.Value().GetRepr().Select(s => "| " + s));
         }
         return ans;
     }
 
-    public IDeclarationIdentifier ClassName()
+    public IIdentifier ClassName()
     {
         return _className;
     }
 
-    public IDeclarationArguments Arguments()
+    public IArguments Arguments()
     {
         return _arguments;
     }
 }
 
-public interface IDeclarationAwareThis : IExpressionDeclaration {}
+public interface IAwareThis : IExpression {}
 
-public class This : IDeclarationAwareThis
+public class This : IAwareThis
 {
     public override string ToString()
     {

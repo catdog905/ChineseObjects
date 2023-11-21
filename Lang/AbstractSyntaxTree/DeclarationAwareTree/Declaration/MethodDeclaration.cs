@@ -2,29 +2,29 @@ using System.Reflection.Emit;
 
 namespace ChineseObjects.Lang;
 
-public interface IMethodDeclaration : IMemberDeclaration, IDeclarationAstNode
+public interface IMethodDeclaration : IMemberDeclaration, IAstNode
 {
-    public IDeclarationIdentifier MethodName();
-    public IParameterDeclarations Parameters();
-    public IDeclarationIdentifier ReturnTypeName();
-    public IDeclarationStatementsBlock Body();
+    public IIdentifier MethodName();
+    public IParameter Parameters();
+    public IIdentifier ReturnTypeName();
+    public IStatementsBlock Body();
 }
 
 public class MethodDeclaration : IMethodDeclaration, IHumanReadable
 {
-    private readonly IDeclarationIdentifier _methodName;
-    private readonly IParameterDeclarations _parameters;
-    private readonly IDeclarationIdentifier _returnTypeName;
-    private readonly IDeclarationStatementsBlock _body;
+    private readonly IIdentifier _methodName;
+    private readonly IParameter _parameters;
+    private readonly IIdentifier _returnTypeName;
+    private readonly IStatementsBlock _body;
     
     public MethodDeclaration(
-        IDeclarationIdentifier methodName, 
-        IParameterDeclarations parameterDeclarations, 
-        IDeclarationIdentifier returnTypeName,
-        IDeclarationStatementsBlock body)
+        IIdentifier methodName, 
+        IParameter parameter, 
+        IIdentifier returnTypeName,
+        IStatementsBlock body)
     {
         _methodName = methodName;
-        _parameters = parameterDeclarations;
+        _parameters = parameter;
         _returnTypeName = returnTypeName;
         _body = body;
     }        
@@ -42,29 +42,29 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
             ans.AddRange(param.GetRepr().Select(s => "| " + s));
         }
         ans.Add("|--");
-        foreach(IStatementDeclaration stmt in _body.Statements())
+        foreach(IStatement stmt in _body.Statements())
         {
             ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
         }
         return ans;
     }
 
-    public IDeclarationIdentifier MethodName()
+    public IIdentifier MethodName()
     {
         return _methodName;
     }
 
-    public IParameterDeclarations Parameters()
+    public IParameter Parameters()
     {
         return _parameters;
     }
 
-    public IDeclarationIdentifier ReturnTypeName()
+    public IIdentifier ReturnTypeName()
     {
         return _returnTypeName;
     }
 
-    public IDeclarationStatementsBlock Body()
+    public IStatementsBlock Body()
     {
         return _body;
     }

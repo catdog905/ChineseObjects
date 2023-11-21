@@ -2,12 +2,12 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IProgramDeclaration : IDeclarationAstNode
+public interface IProgram : IAstNode
 {
     public IEnumerable<IClassDeclaration> ClassDeclarations();
 }
 
-public class Program : IProgramDeclaration, IHumanReadable
+public class Program : IProgram, IHumanReadable
 {
     private readonly ImmutableList<IClassDeclaration> _classDeclarations;
 

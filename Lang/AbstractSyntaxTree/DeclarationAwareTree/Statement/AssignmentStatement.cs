@@ -1,14 +1,14 @@
 namespace ChineseObjects.Lang;
 
-public interface IAssignmentDeclaration : IStatementDeclaration {}
+public interface IAssignment : IStatement {}
 
 // Assignment statement
-public class Assignment : IAssignmentDeclaration
+public class Assignment : IAssignment
 {
-    public readonly IDeclarationIdentifier Varname;
-    public readonly IExpressionDeclaration Expr;
+    public readonly IIdentifier Varname;
+    public readonly IExpression Expr;
 
-    public Assignment(IDeclarationIdentifier varname, IExpressionDeclaration expr)
+    public Assignment(IIdentifier varname, IExpression expr)
     {
         Varname = varname;
         Expr = expr;

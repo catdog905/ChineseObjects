@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang.Expression;
 
-public interface ITypedIdentifier : IDeclarationIdentifier, ITypedAstNode { }
+public interface ITypedIdentifier : IIdentifier, ITypedAstNode { }
 
 public class TypedAwareIdentifier : ITypedIdentifier
 {
@@ -13,8 +13,8 @@ public class TypedAwareIdentifier : ITypedIdentifier
         _name = name;
     }
 
-    public TypedAwareIdentifier(IScopeAwareDeclarationIdentifier declarationIdentifier) :
-        this(declarationIdentifier.Scope().GetType(declarationIdentifier.Name()), declarationIdentifier.Name()) {}
+    public TypedAwareIdentifier(IScopeAwareIdentifier identifier) :
+        this(identifier.Scope().GetType(identifier.Name()), identifier.Name()) {}
 
 
     public string Name() => _name;

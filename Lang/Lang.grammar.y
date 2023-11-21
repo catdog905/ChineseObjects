@@ -17,7 +17,7 @@
      * `.obj` for higher `AST` nodes which don't care about
      * the concrete type of expression.
      */
-    public IExpressionDeclaration expr;
+    public IExpression expr;
 
     public Return ret;
     public Assignment assign;
@@ -27,7 +27,7 @@
     public MethodCall methodCall;
     public ClassInstantiation classInstantiation;
 
-    public IStatementDeclaration stmt;
+    public IStatement stmt;
 
     public Parameter param;
     public Parameters parames;

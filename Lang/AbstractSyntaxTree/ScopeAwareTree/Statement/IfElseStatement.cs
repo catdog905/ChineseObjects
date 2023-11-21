@@ -2,16 +2,16 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareIfElse : IIfElseDeclaration, IScopeAwareStatementsBlock {}
+public interface IScopeAwareIfElse : IIfElse, IScopeAwareStatementsBlock {}
 
 public class ScopeAwareIfElse : IScopeAwareIfElse
 {
     private readonly Scope _scope;
-    private readonly IExpressionDeclaration _cond;
+    private readonly IExpression _cond;
     private readonly IScopeAwareStatementsBlock _then;
     private readonly IScopeAwareStatementsBlock? _else;
 
-    public ScopeAwareIfElse(Scope scope, IExpressionDeclaration cond, IScopeAwareStatementsBlock then, IScopeAwareStatementsBlock? else_)
+    public ScopeAwareIfElse(Scope scope, IExpression cond, IScopeAwareStatementsBlock then, IScopeAwareStatementsBlock? else_)
     {
         _scope = scope;
         _cond = cond;
@@ -24,7 +24,7 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
         return _scope;
     }
 
-    public IExpressionDeclaration Condition()
+    public IExpression Condition()
     {
         return _cond;
     }
@@ -40,9 +40,9 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
     }
 
     //TODO: Could be a need for a proper interface methods implementation     
-    public IEnumerable<IStatementDeclaration> Statements()
+    public IEnumerable<IStatement> Statements()
     {
-        return ImmutableList<IStatementDeclaration>.Empty.Add(_cond)
+        return ImmutableList<IStatement>.Empty.Add(_cond)
             .AddRange(_then.Statements())
             .AddRange(_else.Statements());
     }

@@ -1,9 +1,9 @@
 namespace ChineseObjects.Lang;
 
-public interface IConstructorDeclaration : IMemberDeclaration, IDeclarationAstNode
+public interface IConstructorDeclaration : IMemberDeclaration, IAstNode
 {
-    public IParameterDeclarations Parameters();
-    public IDeclarationStatementsBlock Body();
+    public IParameter Parameters();
+    public IStatementsBlock Body();
 }
 
 public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
@@ -30,18 +30,18 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
             ans.AddRange(param.GetRepr().Select(s => "| " + s));
         }
         ans.Add("|--");
-        foreach(IStatementDeclaration stmt in _body._statements) {
+        foreach(IStatement stmt in _body._statements) {
             ans.AddRange(stmt.GetRepr().Select(s => "| " + s));
         }
         return ans;
     }
 
-    public IParameterDeclarations Parameters()
+    public IParameter Parameters()
     {
         return _parameters;
     }
 
-    public IDeclarationStatementsBlock Body()
+    public IStatementsBlock Body()
     {
         return _body;
     }

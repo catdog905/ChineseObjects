@@ -18,8 +18,8 @@ public class ScopeAwareParameters : IScopeAwareParameters
         _parameters = parameters;
     }
 
-    public ScopeAwareParameters(Scope scope, IParameterDeclarations parameterDeclarations) : 
-        this(scope, parameterDeclarations.GetParameters().Select(parameter => new ScopeAwareParameter(scope, parameter))) {}
+    public ScopeAwareParameters(Scope scope, IParameter parameter) : 
+        this(scope, parameter.GetParameters().Select(parameter => new ScopeAwareParameter(scope, parameter))) {}
 
     public IEnumerable<IScopeAwareParameter> GetParameters() => _parameters;
 

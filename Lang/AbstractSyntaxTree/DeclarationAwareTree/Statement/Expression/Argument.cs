@@ -2,21 +2,21 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IArgumentDeclaration : IExpressionDeclaration
+public interface IArgument : IExpression
 {
-    public IExpressionDeclaration Value();
+    public IExpression Value();
 }
 
-public interface IDeclarationArguments : IDeclarationAstNode
+public interface IArguments : IAstNode
 {
-    public IEnumerable<IArgumentDeclaration> Values();
+    public IEnumerable<IArgument> Values();
 }
 
-public class Argument : IArgumentDeclaration
+public class Argument : IArgument
 {
-    private readonly IExpressionDeclaration _value;
+    private readonly IExpression _value;
 
-    public Argument(IExpressionDeclaration value)
+    public Argument(IExpression value)
     {
         _value = value;
     }
@@ -31,33 +31,33 @@ public class Argument : IArgumentDeclaration
         return new List<string> { ToString() };
     }
 
-    public IExpressionDeclaration Value()
+    public IExpression Value()
     {
         return _value;
     }
 }
 
-public class Arguments : IDeclarationArguments
+public class Arguments : IArguments
 {
-    private readonly ImmutableList<IArgumentDeclaration> _values;
+    private readonly ImmutableList<IArgument> _values;
 
-    public Arguments(IEnumerable<IArgumentDeclaration> values)
+    public Arguments(IEnumerable<IArgument> values)
     {
         _values = values.ToImmutableList();
     }
 
-    public Arguments(params IArgumentDeclaration[] arguments) : this(arguments.ToImmutableList()) { }
+    public Arguments(params IArgument[] arguments) : this(arguments.ToImmutableList()) { }
 
-    public Arguments(Arguments arguments, IArgumentDeclaration argument) : this(arguments._values.Add(argument)) { }
+    public Arguments(Arguments arguments, IArgument argument) : this(arguments._values.Add(argument)) { }
 
-    public Arguments(IArgumentDeclaration argument, Arguments arguments) : this(new[] { argument }.Concat(arguments._values)) { }
+    public Arguments(IArgument argument, Arguments arguments) : this(new[] { argument }.Concat(arguments._values)) { }
 
     public override string ToString()
     {
         return String.Join(",", _values);
     }
 
-    public IEnumerable<IArgumentDeclaration> Values()
+    public IEnumerable<IArgument> Values()
     {
         return _values;
     }

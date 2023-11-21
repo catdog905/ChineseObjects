@@ -1,14 +1,14 @@
 namespace ChineseObjects.Lang;
 
-public interface IWhileDeclaration : IStatementDeclaration {}
+public interface IWhile : IStatement {}
 
 // While statement
-public class While : IWhileDeclaration
+public class While : IWhile
 {
-    public readonly IExpressionDeclaration cond;
-    public readonly IStatementDeclaration body;
+    public readonly IExpression cond;
+    public readonly IStatement body;
 
-    public While(IExpressionDeclaration cond, IStatementDeclaration body)
+    public While(IExpression cond, IStatement body)
     {
         this.cond = cond;
         this.body = body;

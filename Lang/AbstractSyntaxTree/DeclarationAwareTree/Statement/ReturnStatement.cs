@@ -1,13 +1,13 @@
 namespace ChineseObjects.Lang;
 
-public interface IReturnDeclaration : IStatementDeclaration {}
+public interface IReturn : IStatement {}
 
 // A return statement. Only stores the expression that is returned.
-public class Return : IReturnDeclaration
+public class Return : IReturn
 {
-    public readonly IExpressionDeclaration retval;
+    public readonly IExpression retval;
 
-    public Return(IExpressionDeclaration retval)
+    public Return(IExpression retval)
     {
         this.retval = retval;
     }

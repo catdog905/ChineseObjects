@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IDeclarationIdentifier : IExpressionDeclaration
+public interface IIdentifier : IExpression
 {
     public string Name();
 }
@@ -11,10 +11,10 @@ public interface IDeclarationIdentifier : IExpressionDeclaration
 // is an `Expression`. In more complex expressions that include identifiers
 // (such as variable/method/class declaration, etc) identifier is stored
 // as a mere `string` rather than the `Identifier` object.
-public class DeclarationIdentifier : IDeclarationIdentifier {
+public class Identifier : IIdentifier {
     private readonly string _name;
 
-    public DeclarationIdentifier(string name) {
+    public Identifier(string name) {
         _name = name;
     }
 
@@ -34,42 +34,42 @@ public class DeclarationIdentifier : IDeclarationIdentifier {
     }
 }
 
-public interface IDeclarationIdentifiers : IDeclarationAstNode
+public interface IIdentifiers : IAstNode
 {
-    public IEnumerable<IDeclarationIdentifier> GetIdentifiers();
+    public IEnumerable<IIdentifier> GetIdentifiers();
 }
 
-public class Identifiers : IDeclarationIdentifiers
+public class Identifiers : IIdentifiers
 {
-    private readonly ImmutableList<IDeclarationIdentifier> _names;
+    private readonly ImmutableList<IIdentifier> _names;
 
-    public Identifiers(IEnumerable<IDeclarationIdentifier> names)
+    public Identifiers(IEnumerable<IIdentifier> names)
     {
         _names = names.ToImmutableList();
     }
     // Have to declare the empty constructor separately to remove the ambiguity between
     // `Identifiers(params Identifier[])` and `Identifiers(params string[])`
-    public Identifiers() : this (ImmutableList<IDeclarationIdentifier>.Empty) {}
+    public Identifiers() : this (ImmutableList<IIdentifier>.Empty) {}
 
-    public Identifiers(params IDeclarationIdentifier[] identifiers) : this(identifiers.ToList()) {}
+    public Identifiers(params IIdentifier[] identifiers) : this(identifiers.ToList()) {}
 
-    public Identifiers(params string[] names) : this(names.Select(name => new DeclarationIdentifier(name))) {}
+    public Identifiers(params string[] names) : this(names.Select(name => new Identifier(name))) {}
 
     public Identifiers(
         Identifiers identifiers,
-        IDeclarationIdentifier declarationIdentifier
-    ) : this(identifiers._names.Add(declarationIdentifier)) {}
+        IIdentifier identifier
+    ) : this(identifiers._names.Add(identifier)) {}
 
     public Identifiers(
-        IDeclarationIdentifier declarationIdentifier,
+        IIdentifier identifier,
         Identifiers identifiers
-    ) : this(new[] {declarationIdentifier}.Concat(identifiers._names)) {}
+    ) : this(new[] {identifier}.Concat(identifiers._names)) {}
 
     public override string ToString() {
         return String.Join(",", _names);
     }
 
-    IEnumerable<IDeclarationIdentifier> IDeclarationIdentifiers.GetIdentifiers()
+    IEnumerable<IIdentifier> IIdentifiers.GetIdentifiers()
     {
         return _names;
     }

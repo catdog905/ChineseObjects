@@ -10,7 +10,7 @@ namespace ChineseObjects.Lang
         public override void yyerror(string format, params object[] args)
         {
             base.yyerror(format, args);
-            Console.WriteLine(base.yylval.DeclarationIdentifier.ToString());
+            Console.WriteLine(base.yylval.identifier.ToString());
             Console.WriteLine(format, args);
             Console.WriteLine();
         }

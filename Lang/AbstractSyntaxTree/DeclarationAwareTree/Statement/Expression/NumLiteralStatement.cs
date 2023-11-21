@@ -1,13 +1,13 @@
 namespace ChineseObjects.Lang;
 
-public interface INumLiteralDeclaration : IExpressionDeclaration
+public interface INumLiteral : IExpression
 {
     public double Value();
 }
 
 // The literal number expression (both for integers and floats)
 // TODO: separate integers and floats? Leave as is?
-public class NumLiteral : INumLiteralDeclaration {
+public class NumLiteral : INumLiteral {
     private readonly double _value;
 
     public NumLiteral(double value) {

@@ -2,7 +2,7 @@ namespace ChineseObjects.Lang;
 
 public interface IConstructorDeclaration : IMemberDeclaration, IAstNode
 {
-    public IParameter Parameters();
+    public IParameters Parameters();
     public IStatementsBlock Body();
 }
 
@@ -36,7 +36,7 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
         return ans;
     }
 
-    public IParameter Parameters()
+    public IParameters Parameters()
     {
         return _parameters;
     }

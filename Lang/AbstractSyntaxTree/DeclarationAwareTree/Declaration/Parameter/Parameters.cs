@@ -2,13 +2,13 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IParameter : IAstNode
+public interface IParameters : IAstNode
 {
     public IEnumerable<IParameterDeclaration> GetParameters();
 }
 
 // A list of parameters (is not an expression)
-public class Parameters : IParameter {
+public class Parameters : IParameters {
     private readonly ImmutableList<IParameterDeclaration> _parameters;
 
     public Parameters(IEnumerable<IParameterDeclaration> parames)

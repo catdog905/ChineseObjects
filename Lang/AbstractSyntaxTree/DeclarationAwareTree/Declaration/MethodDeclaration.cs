@@ -5,7 +5,7 @@ namespace ChineseObjects.Lang;
 public interface IMethodDeclaration : IMemberDeclaration, IAstNode
 {
     public IIdentifier MethodName();
-    public IParameter Parameters();
+    public IParameters Parameters();
     public IIdentifier ReturnTypeName();
     public IStatementsBlock Body();
 }
@@ -13,18 +13,18 @@ public interface IMethodDeclaration : IMemberDeclaration, IAstNode
 public class MethodDeclaration : IMethodDeclaration, IHumanReadable
 {
     private readonly IIdentifier _methodName;
-    private readonly IParameter _parameters;
+    private readonly IParameters _parameters;
     private readonly IIdentifier _returnTypeName;
     private readonly IStatementsBlock _body;
     
     public MethodDeclaration(
         IIdentifier methodName, 
-        IParameter parameter, 
+        IParameters parameters, 
         IIdentifier returnTypeName,
         IStatementsBlock body)
     {
         _methodName = methodName;
-        _parameters = parameter;
+        _parameters = parameters;
         _returnTypeName = returnTypeName;
         _body = body;
     }        
@@ -54,7 +54,7 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
         return _methodName;
     }
 
-    public IParameter Parameters()
+    public IParameters Parameters()
     {
         return _parameters;
     }

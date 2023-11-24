@@ -5,7 +5,7 @@ namespace ChineseObjects.Lang;
 // Base class for all statements
 public interface IStatement : IHumanReadable, IAstNode {}
 
-public interface IStatementsBlock : IAstNode
+public interface IStatementsBlock : IAstNode, IHumanReadable
 {
     public IEnumerable<IStatement> Statements();
 }

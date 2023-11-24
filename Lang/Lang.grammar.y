@@ -110,7 +110,7 @@ statement : assignment          { $$.stmt = $1.assign; }
 assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier, $3.expr); }
             ;
 
-whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.stmt); }
+whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.body); }
             ;
 
 // TODO: thisRef may be a trap of if-else described in one of the lectures, isn't it?..

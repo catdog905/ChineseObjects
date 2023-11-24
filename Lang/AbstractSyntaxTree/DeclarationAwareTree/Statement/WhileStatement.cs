@@ -6,9 +6,9 @@ public interface IWhile : IStatement {}
 public class While : IWhile
 {
     public readonly IExpression cond;
-    public readonly IStatement body;
+    public readonly IStatementsBlock body;
 
-    public While(IExpression cond, IStatement body)
+    public While(IExpression cond, IStatementsBlock body)
     {
         this.cond = cond;
         this.body = body;

@@ -2,16 +2,21 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareIfElse : IIfElse, IScopeAwareStatementsBlock {}
+public interface IScopeAwareIfElse : IScopeAwareStatement
+{
+    public IScopeAwareExpression Condition();
+    public IScopeAwareStatementsBlock ThenBlock();
+    public IScopeAwareStatementsBlock ElseBlock();
+}
 
 public class ScopeAwareIfElse : IScopeAwareIfElse
 {
     private readonly Scope _scope;
-    private readonly IExpression _cond;
+    private readonly IScopeAwareExpression _cond;
     private readonly IScopeAwareStatementsBlock _then;
     private readonly IScopeAwareStatementsBlock? _else;
 
-    public ScopeAwareIfElse(Scope scope, IExpression cond, IScopeAwareStatementsBlock then, IScopeAwareStatementsBlock? else_)
+    public ScopeAwareIfElse(Scope scope, IScopeAwareExpression cond, IScopeAwareStatementsBlock then, IScopeAwareStatementsBlock? else_)
     {
         _scope = scope;
         _cond = cond;
@@ -19,12 +24,18 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
         _else = else_;
     }
 
+    public ScopeAwareIfElse(Scope scope, IfElse ifElseStmt)
+    : this (scope, Irrealizable.MakeScopeAware(scope, ifElseStmt.cond),
+        new ScopeAwareStatementsBlock(scope, ifElseStmt.then),
+        ifElseStmt.else_ is null ? null : new ScopeAwareStatementsBlock(scope, ifElseStmt.else_))
+    {}
+
     public Scope Scope()
     {
         return _scope;
     }
 
-    public IExpression Condition()
+    public IScopeAwareExpression Condition()
     {
         return _cond;
     }
@@ -39,17 +50,11 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
         return _else;
     }
 
-    //TODO: Could be a need for a proper interface methods implementation     
-    public IEnumerable<IStatement> Statements()
+    //TODO: Either remove this method or add to one of the interfaces     
+    public IEnumerable<IScopeAwareStatement> Statements()
     {
-        return ImmutableList<IStatement>.Empty.Add(_cond)
+        return ImmutableList<IScopeAwareStatement>.Empty.Add(_cond)
             .AddRange(_then.Statements())
-            .AddRange(_else?.Statements() ?? ImmutableList<IStatement>.Empty);
+            .AddRange(_else?.Statements() ?? ImmutableList<IScopeAwareStatement>.Empty);
     }
-
-    IList<string> IHumanReadable.GetRepr()
-    {
-        throw new NotImplementedException();
-    }
-
 }

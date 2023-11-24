@@ -1,22 +1,22 @@
-using System.Collections.Immutable;
-
 namespace ChineseObjects.Lang;
+
+public interface IScopeAwareStatement : IScopeAwareAstNode {}
 
 public interface IScopeAwareStatementsBlock : IScopeAwareAstNode
 {
-    public IEnumerable<IStatement> Statements();
+    public IEnumerable<IScopeAwareStatement> Statements();
 }
 
 public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock {
     
     public ScopeAwareStatementsBlock(Scope scope, IStatementsBlock body) {}
 
-    public Scope Scope()
+    public IEnumerable<IScopeAwareStatement> Statements()
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<IStatement> Statements()
+    public Scope Scope()
     {
         throw new NotImplementedException();
     }

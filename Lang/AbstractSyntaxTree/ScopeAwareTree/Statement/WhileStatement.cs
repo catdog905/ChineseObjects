@@ -1,26 +1,34 @@
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareWhile : IWhile, IScopeAwareStatementsBlock {}
+public interface IScopeAwareWhile : IScopeAwareStatement
+{
+    public IScopeAwareExpression Condition();
+    public IScopeAwareStatementsBlock Body();
+}
 
 public class ScopeAwareWhile : IScopeAwareWhile
 {
     private readonly Scope _scope;
-    private readonly IExpression _cond; // Should be ScopeAwareExpression?
+    private readonly IScopeAwareExpression _cond;
     private readonly IScopeAwareStatementsBlock _body;
 
-    public ScopeAwareWhile(Scope scope, IExpression condition, IScopeAwareStatementsBlock body)
+    public ScopeAwareWhile(Scope scope, IScopeAwareExpression condition, IScopeAwareStatementsBlock body)
     {
         _scope = scope;
         _cond = condition;
         _body = body;
     }
 
+    public ScopeAwareWhile(Scope scope, While whileStmt)
+    : this(scope, Irrealizable.MakeScopeAware(scope, whileStmt.cond), new ScopeAwareStatementsBlock(scope, whileStmt.body))
+    {}
+
     public Scope Scope()
     {
         return _scope;
     }
 
-    public IExpression Condition()
+    public IScopeAwareExpression Condition()
     {
         return _cond;
     }
@@ -29,16 +37,4 @@ public class ScopeAwareWhile : IScopeAwareWhile
     {
         return _body;
     }
-
-    //TODO: Could be a need for a proper interface methods implementation 
-    public IEnumerable<IStatement> Statements()
-    {
-        throw new NotImplementedException();
-    }
-
-    IList<string> IHumanReadable.GetRepr()
-    {
-        throw new NotImplementedException();
-    }
-
 }

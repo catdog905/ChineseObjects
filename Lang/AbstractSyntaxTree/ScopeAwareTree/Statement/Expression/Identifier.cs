@@ -2,7 +2,10 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareIdentifier : IIdentifier, IScopeAwareAstNode { }
+public interface IScopeAwareIdentifier : IScopeAwareExpression
+{
+    public string Name();
+}
 
 // An identifier. Note that it is used to express that an `Identifier`
 // is an `Expression`. In more complex expressions that include identifiers

@@ -16,6 +16,9 @@ namespace ChineseObjects.Lang
             _returnValue = returnValue;
         }
 
+        public ScopeAwareReturn(Scope scope, IReturn returnValue) :
+            this(scope, Irrealizable.MakeScopeAware(scope, returnValue.Value())) {}
+
         public Scope Scope()
         {
             return _scope;

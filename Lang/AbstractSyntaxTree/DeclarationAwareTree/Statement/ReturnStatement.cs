@@ -1,26 +1,34 @@
 namespace ChineseObjects.Lang;
 
-public interface IReturn : IStatement {}
+public interface IReturn : IStatement
+{
+    public IExpression Value();
+}
 
 // A return statement. Only stores the expression that is returned.
 public class Return : IReturn
 {
-    public readonly IExpression retval;
+    private readonly IExpression _retval;
 
     public Return(IExpression retval)
     {
-        this.retval = retval;
+        _retval = retval;
     }
 
     public override string ToString()
     {
-        return retval?.ToString() ?? "NULL";
+        return _retval?.ToString() ?? "NULL";
     }
 
     public IList<string> GetRepr()
     {
         var ans = new List<string> { "RETURN" };
-        ans.AddRange(retval.GetRepr().Select(s => "| " + s));
+        ans.AddRange(_retval.GetRepr().Select(s => "| " + s));
         return ans;
+    }
+
+    public IExpression Value()
+    {
+        return _retval;
     }
 }

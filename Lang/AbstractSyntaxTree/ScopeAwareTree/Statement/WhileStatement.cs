@@ -19,8 +19,11 @@ public class ScopeAwareWhile : IScopeAwareWhile
         _body = body;
     }
 
-    public ScopeAwareWhile(Scope scope, While whileStmt)
-    : this(scope, Irrealizable.MakeScopeAware(scope, whileStmt.cond), new ScopeAwareStatementsBlock(scope, whileStmt.body))
+    public ScopeAwareWhile(Scope scope, IWhile whileStmt)
+    : this(
+        scope, 
+        Irrealizable.MakeScopeAware(scope, whileStmt.Condition()),
+        new ScopeAwareStatementsBlock(scope, whileStmt.Body()))
     {}
 
     public Scope Scope()

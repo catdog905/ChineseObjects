@@ -19,6 +19,13 @@ namespace ChineseObjects.Lang
             _expr = expr;
         }
 
+        public ScopeAwareAssignment(Scope scope, IAssignment assignment) :
+            this(
+                scope, 
+                new ScopeAwareIdentifier(scope, assignment.Name()),
+                Irrealizable.MakeScopeAware(scope, assignment.Expr()))
+        {}
+
         public Scope Scope()
         {
             return _scope;

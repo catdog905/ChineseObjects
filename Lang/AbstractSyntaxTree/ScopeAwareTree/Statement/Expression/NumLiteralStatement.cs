@@ -17,6 +17,9 @@ namespace ChineseObjects.Lang
             _value = value;
         }
 
+        public ScopeAwareNumLiteral(Scope scope, INumLiteral numLiteral) :
+            this(scope, numLiteral.Value()) {}
+
         public Scope Scope()
         {
             return _scope;

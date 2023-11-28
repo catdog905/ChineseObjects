@@ -14,13 +14,26 @@ namespace ChineseObjects.Lang
         private readonly IScopeAwareIdentifier _methodName;
         private readonly IScopeAwareArguments _arguments;
 
-        public ScopeAwareMethodCall(Scope scope, IScopeAwareExpression caller, IScopeAwareIdentifier methodName, IScopeAwareArguments arguments)
+        public ScopeAwareMethodCall(
+            Scope scope, 
+            IScopeAwareExpression caller, 
+            IScopeAwareIdentifier methodName, 
+            IScopeAwareArguments arguments)
         {
             _scope = scope;
             _caller = caller;
             _methodName = methodName;
             _arguments = arguments;
         }
+
+        public ScopeAwareMethodCall(Scope scope, MethodCall methodCall) :
+            this(
+                scope, 
+                Irrealizable.MakeScopeAware(
+                    scope, 
+                    methodCall.Caller()),
+                new ScopeAwareIdentifier(scope, methodCall.MethodName()),
+                new ScopeAwareArguments(scope, methodCall.Arguments())) {}
 
         public Scope Scope()
         {

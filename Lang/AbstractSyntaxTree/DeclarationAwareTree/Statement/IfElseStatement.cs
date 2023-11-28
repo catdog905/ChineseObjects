@@ -1,44 +1,61 @@
 namespace ChineseObjects.Lang;
 
-public interface IIfElse : IStatement {}
+public interface IIfElse : IStatement
+{
+    public IExpression Condition();
+    public IStatementsBlock Then();
+    public IStatementsBlock? Else();
+}
 
 // If-then[-else] statement
 public class IfElse : IIfElse
 {
-    public readonly IExpression cond;
-    public readonly IStatementsBlock then;
-    public readonly IStatementsBlock? else_;
+    private readonly IExpression _cond;
+    private readonly IStatementsBlock _then;
+    private readonly IStatementsBlock? _else;
 
     public IfElse(IExpression cond, IStatementsBlock then, IStatementsBlock? else_)
     {
-        this.cond = cond;
-        this.then = then;
-        this.else_ = else_;
+        _cond = cond;
+        _then = then;
+        _else = else_;
             
     }
         
-    public IfElse(IExpression cond, IStatementsBlock then)
-    {
-        this.cond = cond;
-        this.then = then;
-    }
+    public IfElse(IExpression cond, IStatementsBlock then) :
+        this(cond, then, null) {}
 
     public override string ToString()
     {
-        return "IfElse(" + cond + "){" + then + "}{" + else_ + "}";
+        return "IfElse(" + _cond + "){" + _then + "}{" + _else + "}";
     }
 
     public IList<string> GetRepr()
     {
         var ans = new List<string> {"IF:"};
-        ans.AddRange(cond.GetRepr().Select(s => "| " + s));
+        ans.AddRange(_cond.GetRepr().Select(s => "| " + s));
         ans.Add("THEN:");
-        ans.AddRange(((StatementsBlock)then).GetRepr().Select(s => "| " + s));
-        if (else_ is not null)
+        ans.AddRange(((StatementsBlock)_then).GetRepr().Select(s => "| " + s));
+        if (_else is not null)
         {
             ans.Add("ELSE:");
-            ans.AddRange(((StatementsBlock)else_).GetRepr().Select(s => "| " + s));
+            ans.AddRange(((StatementsBlock)_else).GetRepr().Select(s => "| " + s));
         }
         return ans;
+    }
+
+    public IExpression Condition()
+    {
+        return _cond;
+    }
+
+    public IStatementsBlock Then()
+    {
+        return _then;
+    }
+
+    public IStatementsBlock? Else()
+    {
+        return _else;
     }
 }

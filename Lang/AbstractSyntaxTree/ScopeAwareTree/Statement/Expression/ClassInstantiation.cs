@@ -12,12 +12,21 @@ namespace ChineseObjects.Lang
         private readonly IScopeAwareIdentifier _className;
         private readonly IScopeAwareArguments _arguments;
 
-        public ScopeAwareClassInstantiation(Scope scope, IScopeAwareIdentifier className, IScopeAwareArguments arguments)
+        public ScopeAwareClassInstantiation(
+            Scope scope, 
+            IScopeAwareIdentifier className, 
+            IScopeAwareArguments arguments)
         {
             _scope = scope;
             _className = className;
             _arguments = arguments;
         }
+
+        public ScopeAwareClassInstantiation(Scope scope, IClassInstantiation classInstantiation)
+            : this(
+                scope, 
+                new ScopeAwareIdentifier(scope, classInstantiation.ClassName()), 
+                new ScopeAwareArguments(scope, classInstantiation.Arguments())) {}
 
         public Scope Scope()
         {

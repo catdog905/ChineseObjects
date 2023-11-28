@@ -1,30 +1,44 @@
 namespace ChineseObjects.Lang;
 
-public interface IWhile : IStatement {}
+public interface IWhile : IStatement
+{
+    public IExpression Condition();
+    public IStatementsBlock Body();
+}
 
 // While statement
 public class While : IWhile
 {
-    public readonly IExpression cond;
-    public readonly IStatementsBlock body;
+    public readonly IExpression _cond;
+    public readonly IStatementsBlock _body;
 
     public While(IExpression cond, IStatementsBlock body)
     {
-        this.cond = cond;
-        this.body = body;
+        this._cond = cond;
+        this._body = body;
     }
 
     public override string ToString()
     {
-        return "While(" + cond + "){" + body + "}";
+        return "While(" + _cond + "){" + _body + "}";
     }
 
     public IList<string> GetRepr()
     {
         var ans = new List<string> {"WHILE:"};
-        ans.AddRange(cond.GetRepr().Select(s => "| " + s));
+        ans.AddRange(_cond.GetRepr().Select(s => "| " + s));
         ans.Add("DO:");
-        ans.AddRange(body.GetRepr().Select(s => "| " + s));
+        ans.AddRange(_body.GetRepr().Select(s => "| " + s));
         return ans;
+    }
+
+    public IExpression Condition()
+    {
+        return _cond;
+    }
+
+    public IStatementsBlock Body()
+    {
+        return _body;
     }
 }

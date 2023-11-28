@@ -24,10 +24,10 @@ public class ScopeAwareIfElse : IScopeAwareIfElse
         _else = else_;
     }
 
-    public ScopeAwareIfElse(Scope scope, IfElse ifElseStmt)
-    : this (scope, Irrealizable.MakeScopeAware(scope, ifElseStmt.cond),
-        new ScopeAwareStatementsBlock(scope, ifElseStmt.then),
-        ifElseStmt.else_ is null ? null : new ScopeAwareStatementsBlock(scope, ifElseStmt.else_))
+    public ScopeAwareIfElse(Scope scope, IIfElse ifElseStmt)
+    : this (scope, Irrealizable.MakeScopeAware(scope, ifElseStmt.Condition()),
+        new ScopeAwareStatementsBlock(scope, ifElseStmt.Then()),
+        ifElseStmt.Else() is null ? null : new ScopeAwareStatementsBlock(scope, ifElseStmt.Else()))
     {}
 
     public Scope Scope()

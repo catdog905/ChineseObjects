@@ -107,7 +107,7 @@ statement : assignment          { $$.stmt = $1.assign; }
           ;
 
 
-assignment  : IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier, $3.expr); }
+assignment  : IDENTIFIER COLON IDENTIFIER ASSIGN expr    { $$.assign = new Assignment($1.identifier, $5.expr, $3.identifier); }
             ;
 
 whileLoop   : WHILE expr LOOP body END      { $$.while_ = new While($2.expr, $4.body); }
@@ -127,7 +127,7 @@ expr : methodCall           { $$.expr = $1.methodCall; }
     | REAL_LITERAL          { $$.expr = $1.num_literal; }
     | BOOLEAN_LITERAL       { $$.expr = $1.bool_literal; }
     | THIS                  { $$.expr = $1.thisRef; }
-    | IDENTIFIER            { $$.expr = $1.identifier; }
+    | IDENTIFIER            { $$.expr = new Reference($1.identifier); }
     ;
 
 methodCall : expr DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new MethodCall( $1.expr, $3.identifier, $5.arguments ); }

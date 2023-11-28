@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IIdentifier : IExpression
+public interface IIdentifier
 {
-    public string Name();
+    public string Value();
 }
 
 // An identifier. Note that it is used to express that an `Identifier`
@@ -23,7 +23,7 @@ public class Identifier : IIdentifier {
         return _name;
     }
 
-    public string Name()
+    public string Value()
     {
         return _name;
     }

@@ -19,7 +19,7 @@ public class ScopeAwareConstructor : IScopeAwareConstructor
         _body = body;
     }
 
-    private ScopeAwareConstructor(ScopeWithFields scope, IConstructorDeclaration constructorDeclaration) :
+    private ScopeAwareConstructor(ScopeWithParameters scope, IConstructorDeclaration constructorDeclaration) :
         this(
             scope, 
             new ScopeAwareParameters(scope, constructorDeclaration.Parameters()), 
@@ -27,16 +27,16 @@ public class ScopeAwareConstructor : IScopeAwareConstructor
     
     public ScopeAwareConstructor(Scope scope, IConstructorDeclaration constructorDeclaration) :
         this(
-            new ScopeWithFields(scope, constructorDeclaration.Parameters().GetParameters()),
+            new ScopeWithParameters(scope, constructorDeclaration.Parameters().GetParameters()),
             constructorDeclaration) {}
     
-    class ScopeWithFields : Scope
+    class ScopeWithParameters : Scope
     {
-        public ScopeWithFields(Scope scope, IEnumerable<IParameterDeclaration> parameters) :
+        public ScopeWithParameters(Scope scope, IEnumerable<IParameterDeclaration> parameters) :
             base(scope, 
                 parameters.ToDictionary(
-                    parameter => parameter.Name().Name(),
-                    parameter => new Reference(parameter.Name(), new Type(scope, parameter.TypeName())))
+                    parameter => parameter.Name().Value(),
+                    parameter => new Entity(parameter.Name(), new Type(scope, parameter.TypeName())))
                 ) {}
     }
 

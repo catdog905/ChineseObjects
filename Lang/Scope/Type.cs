@@ -11,11 +11,29 @@ public class Type
 
     public Type(Scope scope, string className) : this(scope.GetType(className)._classDeclaration) {}
     
-    public Type(Scope scope, IIdentifier className) : this(scope, className.Name()) {}
+    public Type(Scope scope, IIdentifier className) : this(scope, className.Value()) {}
+
+    public Type(Scope scope, IScopeAwareIdentifier className) : 
+        this(scope, className.Value()) {}
 
     public IIdentifier TypeName()
     {
         return _classDeclaration.ClassName();
+    }
+
+    public Type MethodCallReturnType(Scope scope, string methodName)
+    {
+        var declarations = _classDeclaration.MethodDeclarations()
+            .Where(methodDeclaration => methodDeclaration.MethodName().Value() == methodName)
+            .ToList();
+        try
+        {
+            return new Type(scope, declarations.First().ReturnTypeName());
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new NoSuchMethodException(methodName, _classDeclaration.ClassName().Value(), e);
+        }
     }
 
     protected bool Equals(Type other)
@@ -50,4 +68,14 @@ public class Type
     {
         return $"{_classDeclaration.GetHashCode()}";
     }
+}
+
+public class NoSuchMethodException : Exception
+{
+    public NoSuchMethodException(
+        string methodName, 
+        string className, 
+        InvalidOperationException invalidOperationException) :
+        base("Method with name '" + methodName + "' wasn't found in " + className, invalidOperationException)
+    { }
 }

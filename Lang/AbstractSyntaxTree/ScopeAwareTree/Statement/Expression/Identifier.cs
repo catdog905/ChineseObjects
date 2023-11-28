@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareIdentifier : IScopeAwareExpression
+public interface IScopeAwareIdentifier
 {
-    public string Name();
+    public string Value();
 }
 
 // An identifier. Note that it is used to express that an `Identifier`
@@ -23,7 +23,7 @@ public class ScopeAwareIdentifier : IScopeAwareIdentifier
     }
     
     public ScopeAwareIdentifier(Scope scope, IIdentifier identifier) :
-        this(scope, identifier.Name()) {}
+        this(scope, identifier.Value()) {}
 
     public override string ToString()
     {
@@ -35,7 +35,7 @@ public class ScopeAwareIdentifier : IScopeAwareIdentifier
         return _scope;
     }
 
-    public string Name()
+    public string Value()
     {
         return _name;
     }

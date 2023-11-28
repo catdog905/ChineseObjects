@@ -26,7 +26,7 @@ namespace ChineseObjects.Lang
             _arguments = arguments;
         }
 
-        public ScopeAwareMethodCall(Scope scope, MethodCall methodCall) :
+        public ScopeAwareMethodCall(Scope scope, IMethodCall methodCall) :
             this(
                 scope, 
                 Irrealizable.MakeScopeAware(

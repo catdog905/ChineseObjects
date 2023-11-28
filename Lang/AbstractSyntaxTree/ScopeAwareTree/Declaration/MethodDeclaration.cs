@@ -19,8 +19,8 @@ public class ScopeAwareMethod : IScopeAwareMethod
     private readonly IScopeAwareIdentifier _returnTypeName;
     private readonly IScopeAwareStatementsBlock _body;
 
-    public ScopeAwareMethod(
-        Scope scope, 
+    private ScopeAwareMethod(
+        ScopeWithParameters scope, 
         IScopeAwareIdentifier methodName, 
         IScopeAwareParameters parameters, 
         IScopeAwareIdentifier returnTypeName, 
@@ -33,13 +33,27 @@ public class ScopeAwareMethod : IScopeAwareMethod
         _body = body;
     }
 
-    public ScopeAwareMethod(Scope scope, IMethodDeclaration methodDeclaration) :
+    private ScopeAwareMethod(ScopeWithParameters scope, IMethodDeclaration methodDeclaration) :
         this(scope,
             new ScopeAwareIdentifier(scope, methodDeclaration.MethodName()),
             new ScopeAwareParameters(scope, methodDeclaration.Parameters()),
             new ScopeAwareIdentifier(scope, methodDeclaration.ReturnTypeName()),
             new ScopeAwareStatementsBlock(scope, methodDeclaration.Body())) {}
 
+    public ScopeAwareMethod(Scope scope, IMethodDeclaration methodDeclaration) :
+        this(
+            new ScopeWithParameters(scope, methodDeclaration.Parameters().GetParameters()),
+            methodDeclaration) {}
+    
+    class ScopeWithParameters : Scope
+    {
+        public ScopeWithParameters(Scope scope, IEnumerable<IParameterDeclaration> parameters) :
+            base(scope, 
+                parameters.ToDictionary(
+                    parameter => parameter.Name().Value(),
+                    parameter => new Entity(parameter.Name(), new Type(scope, parameter.TypeName())))
+            ) {}
+    }
 
     public IScopeAwareIdentifier MethodName()
     {

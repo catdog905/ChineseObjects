@@ -24,8 +24,14 @@ public class ScopeAwareStatementsBlock : IScopeAwareStatementsBlock
         foreach (IStatement stmt in stmts)
         {
             IScopeAwareStatement aware = Irrealizable.MakeScopeAware(cur, stmt);
-            // `aware` might have introduced anything new into the scope:
-            cur = aware.Scope();
+            if (stmt is Assignment assignment)
+            {
+
+                cur = new Scope(
+                    cur, 
+                    assignment.Name().Value(), 
+                    new Type(scope, assignment.TypeName()));
+            }
             awareStmts.Add(aware);
         }
 

@@ -9,8 +9,8 @@ public class Irrealizable
             IArgument argument => new ScopeAwareArgument(scope, argument),
             IBoolLiteral boolLiteral => new ScopeAwareBoolLiteral(scope, boolLiteral),
             IClassInstantiation classInstantiation => new ScopeAwareClassInstantiation(scope, classInstantiation),
-            IIdentifier identifier => new ScopeAwareIdentifier(scope, identifier),
-            MethodCall methodCall => new ScopeAwareMethodCall(scope, methodCall),
+            Reference reference => new ScopeAwareReference(scope, reference),
+            IMethodCall methodCall => new ScopeAwareMethodCall(scope, methodCall),
             INumLiteral numLiteral => new ScopeAwareNumLiteral(scope, numLiteral),
             _ => throw new NotImplementedException("Implementation of expression not found")
         };
@@ -24,6 +24,7 @@ public class Irrealizable
             IIfElse ifElse => new ScopeAwareIfElse(scope, ifElse),
             IReturn @return => new ScopeAwareReturn(scope, @return),
             IWhile @while => new ScopeAwareWhile(scope, @while),
+            IExpression expression => MakeScopeAware(scope, expression),
             _ => throw new NotImplementedException("Implementation of statement not found")
         };
     }

@@ -61,8 +61,8 @@ public class ScopeAwareClass : IScopeAwareClass
         public ScopeWithFields(Scope scope, IEnumerable<IVariableDeclaration> variableDeclarations) :
             base(scope, 
                 variableDeclarations.ToDictionary(
-                    decl => decl.Identifier().Name(),
-                    decl => new Reference(decl.Identifier(), new Type(scope, decl.TypeName())))) {}
+                    decl => decl.Identifier().Value(),
+                    decl => new Entity(decl.Identifier(), new Type(scope, decl.TypeName())))) {}
     }
 
 

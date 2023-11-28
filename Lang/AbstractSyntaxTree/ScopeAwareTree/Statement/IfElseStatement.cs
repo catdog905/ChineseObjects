@@ -6,7 +6,7 @@ public interface IScopeAwareIfElse : IScopeAwareStatement
 {
     public IScopeAwareExpression Condition();
     public IScopeAwareStatementsBlock ThenBlock();
-    public IScopeAwareStatementsBlock ElseBlock();
+    public IScopeAwareStatementsBlock? ElseBlock();
 }
 
 public class ScopeAwareIfElse : IScopeAwareIfElse

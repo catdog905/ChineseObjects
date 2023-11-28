@@ -38,7 +38,7 @@ class ScopeAwareProgram : IScopeAwareProgram
             base(
                 scope, 
                 classDeclarations.ToDictionary(
-                    classDeclaration => classDeclaration.ClassName().Name(),
+                    classDeclaration => classDeclaration.ClassName().Value(),
                     classDeclaration => new Type(classDeclaration))) {}
     }
 

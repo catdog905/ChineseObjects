@@ -42,18 +42,3 @@ public class ClassInstantiation : IClassInstantiation
         return _arguments;
     }
 }
-
-public interface IAwareThis : IExpression {}
-
-public class This : IAwareThis
-{
-    public override string ToString()
-    {
-        return "This";
-    }
-
-    public IList<string> GetRepr()
-    {
-        return new List<string> {"THIS"};
-    }
-}

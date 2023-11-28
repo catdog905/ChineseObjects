@@ -51,7 +51,9 @@ public class ScopeAwareClass : IScopeAwareClass
 
 
     public ScopeAwareClass(Scope scope, IClassDeclaration classDeclaration) :
-        this(new ScopeWithFields(scope, classDeclaration.VariableDeclarations()),
+        this(new ScopeWithFields(scope,
+                classDeclaration.VariableDeclarations().ToImmutableList()
+                    .Add(new VariableDeclaration(new Identifier("this"), classDeclaration.ClassName()))),
             classDeclaration) {}
 
     class ScopeWithFields : Scope
@@ -87,6 +89,23 @@ public class ScopeAwareClass : IScopeAwareClass
     public IEnumerable<IScopeAwareMethod> MethodDeclarations()
     {
         return _methodDeclarations;
+    }
+
+    public Scope Scope()
+    {
+        return _scope;
+    }
+}
+
+public interface IScopeAwareThis : IScopeAwareExpression {}
+
+public class ScopeAwareThis : IScopeAwareThis
+{
+    private readonly Scope _scope;
+
+    public ScopeAwareThis(Scope scope)
+    {
+        _scope = scope;
     }
 
     public Scope Scope()

@@ -140,3 +140,18 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
         return _methodDeclarations;
     }
 }
+
+public interface IThis : IExpression {}
+
+public class This : IThis
+{
+    public override string ToString()
+    {
+        return "This";
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new List<string> {"THIS"};
+    }
+}

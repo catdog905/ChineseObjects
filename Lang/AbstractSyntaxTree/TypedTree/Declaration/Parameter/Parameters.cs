@@ -25,4 +25,42 @@ public class TypesAwareParameters : ITypesAwareParameters
     {
         return _parameters;
     }
+
+    protected bool Equals(TypesAwareParameters other)
+    {
+        if (_parameters.Count() != other.GetParameters().Count())
+            return false;
+        var parametersList = _parameters.ToList();
+        var otherParametersList = other.GetParameters().ToList();
+        for (int i = 0; i < _parameters.Count(); i++)
+        {
+            if (!parametersList[i].Type().Equals(otherParametersList[i].Type()))
+                return false;
+        }
+
+        return true;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((TypesAwareParameters)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return _parameters.Aggregate(0, (acc, parameter) => acc + parameter.Type().GetHashCode());
+    }
+
+    public static bool operator ==(TypesAwareParameters? left, TypesAwareParameters? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(TypesAwareParameters? left, TypesAwareParameters? right)
+    {
+        return !Equals(left, right);
+    }
 }

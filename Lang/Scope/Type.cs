@@ -2,7 +2,7 @@ namespace ChineseObjects.Lang;
 
 public class Type
 {
-    private IClassDeclaration _classDeclaration;
+    private readonly IClassDeclaration _classDeclaration;
 
     public Type(IClassDeclaration classDeclaration)
     {
@@ -65,7 +65,7 @@ public class Type
 
     protected bool Equals(Type other)
     {
-        return _classDeclaration.Equals(other._classDeclaration);
+        return _classDeclaration.ClassName().Equals(other._classDeclaration.ClassName());
     }
 
     public override bool Equals(object? obj)
@@ -78,7 +78,7 @@ public class Type
 
     public override int GetHashCode()
     {
-        return _classDeclaration.GetHashCode();
+        return _classDeclaration.ClassName().GetHashCode();
     }
 
     public static bool operator ==(Type? left, Type? right)

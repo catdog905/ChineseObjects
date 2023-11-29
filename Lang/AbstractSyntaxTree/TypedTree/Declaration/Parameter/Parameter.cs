@@ -27,4 +27,32 @@ public class TypedParameter : ITypedParameter
     public string Name() => _name;
 
     public Type Type() => _type;
+
+    protected bool Equals(TypedParameter other)
+    {
+        return _name == other._name && _type.Equals(other._type);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((TypedParameter)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_name, _type);
+    }
+
+    public static bool operator ==(TypedParameter? left, TypedParameter? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(TypedParameter? left, TypedParameter? right)
+    {
+        return !Equals(left, right);
+    }
 }

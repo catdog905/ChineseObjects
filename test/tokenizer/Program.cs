@@ -3,7 +3,6 @@
 
 using ChineseObjects.Lang;
 using ChineseObjects.Lang.Declaration;
-using Type = ChineseObjects.Lang.Type;
 
 var calculator = new LangParser();
 ChineseObjects.Lang.Program program = calculator.Parse(File.ReadAllText("tokenizer/program_text.txt"));

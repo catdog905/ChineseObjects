@@ -32,6 +32,11 @@ public class TypedArgument : ITypedArgument
         return _type;
     }
 
+    public T AcceptVisitor<T>(CodeGen.ITypedNodeVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
+
     public ITypedExpression Value()
     {
         return _value;

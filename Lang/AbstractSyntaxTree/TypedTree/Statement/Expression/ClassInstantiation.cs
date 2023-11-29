@@ -45,6 +45,11 @@ public class TypedClassInstantiation : ITypedClassInstantiation
         return _type;
     }
 
+    public T AcceptVisitor<T>(CodeGen.ITypedNodeVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
+
     public string ClassName()
     {
         return _className;

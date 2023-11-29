@@ -55,4 +55,9 @@ public class TypedParameter : ITypedParameter
     {
         return !Equals(left, right);
     }
+    
+    public T AcceptVisitor<T>(CodeGen.ITypedNodeVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
 }

@@ -39,6 +39,11 @@ public class TypedMethodCall : ITypedMethodCall
         return _type;
     }
 
+    public T AcceptVisitor<T>(CodeGen.ITypedNodeVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
+
     public ITypedExpression Caller()
     {
         return _caller;

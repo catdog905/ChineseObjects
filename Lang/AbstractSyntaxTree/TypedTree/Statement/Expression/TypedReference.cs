@@ -27,6 +27,11 @@ public class TypedReference : ITypedReference
         return _type;
     }
 
+    public T AcceptVisitor<T>(CodeGen.ITypedNodeVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
+
     public string Name()
     {
         return _name;

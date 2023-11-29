@@ -62,6 +62,45 @@ public class Type
                 e);
         }
     }
+    
+    public void ConstructorCallCheck(ITypesAwareArguments arguments)
+    {
+        ITypesAwareArguments constructorCallArguments = arguments;
+        bool ConstructorSignatureCheck(IConstructorDeclaration constructorDeclaration)
+        {
+            if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
+                return false;
+            foreach (var parameter in constructorDeclaration.Parameters().GetParameters()) 
+            {
+                if (constructorCallArguments
+                        .Values()
+                        .Count(arg => 
+                            arg.Type().TypeName().Value()
+                                .Equals(
+                                    parameter.TypeName().Value())
+                        ) != 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        var declarations = _classDeclaration.ConstructorDeclarations()
+            .Where(ConstructorSignatureCheck)
+            .ToList();
+        try
+        {
+            declarations.First();
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new NoSuchConstructorException(
+                constructorCallArguments,
+                _classDeclaration.ClassName().Value(), 
+                e);
+        }
+    }
 
     protected bool Equals(Type other)
     {
@@ -107,6 +146,20 @@ public class NoSuchMethodException : Exception
         base("Method with name '" + 
              methodName + 
              "' and arguments with types {" + 
+             String.Join("; ", arguments.Values().Select(arg => arg.Type().TypeName())) + 
+             "} wasn't found in " + 
+             className, 
+            invalidOperationException)
+    { }
+}
+
+public class NoSuchConstructorException : Exception
+{
+    public NoSuchConstructorException(
+        ITypesAwareArguments arguments,
+        string className,
+        InvalidOperationException invalidOperationException) :
+        base("Constructor of arguments with types {" + 
              String.Join("; ", arguments.Values().Select(arg => arg.Type().TypeName())) + 
              "} wasn't found in " + 
              className, 

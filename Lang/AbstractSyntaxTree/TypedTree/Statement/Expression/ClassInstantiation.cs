@@ -20,6 +20,8 @@ public class TypedClassInstantiation : ITypedClassInstantiation
         _type = type;
         _className = className;
         _arguments = arguments;
+
+        _type.ConstructorCallCheck(arguments);
     }
 
     public TypedClassInstantiation(IScopeAwareClassInstantiation classInstantiation) :
@@ -28,6 +30,14 @@ public class TypedClassInstantiation : ITypedClassInstantiation
                 classInstantiation.ClassName()), 
             classInstantiation.ClassName().Value(),
             new TypesAwareArguments(classInstantiation.Arguments())) {}
+    
+    // public TypedMethodCall(IScopeAwareMethodCall methodCall) :
+    //     this(
+    //         TypeIrrealizable.MakeTypedExpression(methodCall.Caller())
+    //             .Type().MethodCallReturnType(methodCall),
+    //         TypeIrrealizable.MakeTypedExpression(methodCall.Caller()),
+    //         methodCall.MethodName().Value(),
+    //         new TypesAwareArguments(methodCall.Arguments())){}
 
 
     public Type Type()

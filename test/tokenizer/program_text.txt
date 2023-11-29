@@ -10,6 +10,9 @@ class Console1 is
     end
 end
 class Console2 is
+    this () is 
+        a : Console2 := new Console2()
+    end
     var a: Console2
     var b: Console3
     method write(text : Console2) : Console2 is

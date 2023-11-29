@@ -28,8 +28,16 @@ Console.WriteLine();
 numLit.AcceptVisitor(gen).Dump();
 Console.WriteLine();
 
+gen.AddTrivialMethod("double", "make1.5", numLit.AcceptVisitor(gen));
+
+ITypedExpression methodCall = new TypedMethodCall(dbl, new TypedNumLiteral(dbl, 2.5), "make1.5",
+    new TypesAwareArguments(new List<ITypedArgument>()));
+methodCall.AcceptVisitor(gen).Dump();
+Console.WriteLine();
+
 
 // +
+/*
 LLVMModuleRef module = LLVM.ModuleCreateWithName("hello");
 LLVMBuilderRef builder = LLVM.CreateBuilder();
 
@@ -67,3 +75,4 @@ LLVM.VerifyFunction(func, LLVMVerifierFailureAction.LLVMPrintMessageAction);
 func = LLVM.GetNamedFunction(module, "SumConsts");
 
 LLVM.DumpValue(func);
+*/

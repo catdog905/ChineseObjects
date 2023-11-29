@@ -13,6 +13,37 @@ public class LLVMValGen : ITypedNodeVisitor<LLVMValueRef>
         _module = LLVM.ModuleCreateWithName("this");
         _builder = LLVM.CreateBuilder();
     }
+
+    public LLVMValueRef AddTrivialMethod(string className, string methodName, LLVMValueRef doubleToReturn)
+    {
+        string funcName = className + "::" + methodName;
+        LLVMValueRef func = LLVM.GetNamedFunction(_module, funcName);
+        if (func.Pointer != IntPtr.Zero)
+        {
+            // Unexpected: function is already declared
+            if (LLVM.CountBasicBlocks(func) != 0)
+            {
+                throw new LLVMGenException("Function with name " + funcName + " already has a body");
+            }
+        }
+        else
+        {
+            // TODO: build `LLVMTypeRef`s for types. For now, using argless functions that return doubles
+            func = LLVM.AddFunction(_module, funcName,
+                LLVM.FunctionType(LLVM.DoubleType(), Array.Empty<LLVMTypeRef>(), false));
+            LLVM.SetLinkage(func, LLVMLinkage.LLVMExternalLinkage);
+            // set params names here
+
+            LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(func, "entry"));
+            LLVM.BuildRet(_builder, doubleToReturn);
+        }
+
+        LLVM.VerifyFunction(func, LLVMVerifierFailureAction.LLVMPrintMessageAction);
+
+        func = LLVM.GetNamedFunction(_module, funcName);
+        func.Dump();
+        return func;
+    }
     
     public LLVMValueRef Visit(TypedBoolLiteral boolLit)
     {
@@ -37,38 +68,8 @@ public class LLVMValGen : ITypedNodeVisitor<LLVMValueRef>
         // TODO: "this" is an implicit first argument to every method call!
         var args = methodCall.Arguments().Values();
         var refArgs = new LLVMValueRef[args.Count()];
-        return LLVM.BuildCall(_builder, func, refArgs, "call/" + func);
+        return LLVM.BuildCall(_builder, func, refArgs, "result_of/" + funcName);
     }
-
-    /*
-    something for method declaration
-    {
-        string funcName = methodCall.Caller().Type().TypeName().Value() + "::" + methodCall.MethodName();
-        LLVMValueRef func = LLVM.GetNamedFunction(_module, funcName);
-        if (func.Pointer != IntPtr.Zero)
-        {
-            // Unexpected: function is already declared
-            if (LLVM.CountBasicBlocks(func) != 0)
-            {
-                throw new LLVMGenException("Function with name " + funcName + " already has a body");
-            }
-        }
-        else
-        {
-            // TODO: build `LLVMTypeRef`s for types. For now, using argless functions that return doubles
-            func = LLVM.AddFunction(_module, funcName,
-                LLVM.FunctionType(LLVM.DoubleType(), Array.Empty<LLVMTypeRef>(), false));
-            LLVM.SetLinkage(func, LLVMLinkage.LLVMExternalLinkage);
-            // set params names here
-
-            LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(func, "entry"));
-            
-            // TODO: add actual blocks
-        }
-
-        return func;
-    }
-    */
 
     public LLVMValueRef Visit(TypedParameter _)
     {

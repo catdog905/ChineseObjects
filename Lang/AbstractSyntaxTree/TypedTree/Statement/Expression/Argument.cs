@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang;
 
-public interface ITypedArgument : ITypedExpression
+public interface ITypedArgument : ITypedAstNode
 {
     public ITypedExpression Value();
 }
@@ -25,7 +25,7 @@ public class TypedArgument : ITypedArgument
         this(value.Type(), value) {}
     
     public TypedArgument(IScopeAwareArgument argument) :
-        this(TypeIrrealizable.MakeTypedExpression(argument)) {}
+        this(TypeIrrealizable.MakeTypedExpression(argument.Value())) {}
 
     public Type Type()
     {

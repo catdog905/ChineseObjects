@@ -29,7 +29,7 @@ public class TypedMethodCall : ITypedMethodCall
     public TypedMethodCall(IScopeAwareMethodCall methodCall) :
         this(
             TypeIrrealizable.MakeTypedExpression(methodCall.Caller())
-                .Type().MethodCallReturnType(methodCall.Scope(), methodCall.MethodName().Value()),
+                .Type().MethodCallReturnType(methodCall),
             TypeIrrealizable.MakeTypedExpression(methodCall.Caller()),
             methodCall.MethodName().Value(),
             new TypesAwareArguments(methodCall.Arguments())){}

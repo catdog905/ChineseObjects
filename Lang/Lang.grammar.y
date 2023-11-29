@@ -46,7 +46,7 @@
 
 %start program
 
-%token IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON, DOT
+%token IDENTIFIER, OP_PLUS, OP_MINUS, OP_MULT, OP_DIV, P_OPEN, P_CLOSE, COLON, DOT, COMMA
 %token OP_MOD, OP_EQUAL, OP_LESS, OP_GREATER, OP_LESS_EQUAL, OP_GREATER_EQUAL
 %token IS, END, LOOP, THEN, RETURN, ELSE, WHILE, ASSIGN, IF
 %token VAR, METHOD
@@ -63,7 +63,7 @@ classDeclaration : CLASS IDENTIFIER IS memberDeclarations END                   
                  | CLASS IDENTIFIER EXTENDS identifiers IS memberDeclarations END { $$.classDeclaration = new ClassDeclaration($2.identifier, $4.identifiers, $6.memberDeclarations); }
            	 ;
 
-identifiers : identifiers ',' IDENTIFIER        { $$.identifiers = new Identifiers( $1.identifiers, $3.identifier ); }
+identifiers : identifiers COMMA IDENTIFIER        { $$.identifiers = new Identifiers( $1.identifiers, $3.identifier ); }
             | IDENTIFIER                        { $$.identifiers = new Identifiers( $1.identifier ); }
             ;
 
@@ -90,7 +90,7 @@ parameter   : IDENTIFIER COLON IDENTIFIER        { $$.param = new Parameter( $1.
             ;
 
 parameters  :                                { $$.parames = new Parameters(); }
-            | parameters ',' parameter       { $$.parames = new Parameters( $1.parames, $3.param ); }
+            | parameters COMMA parameter       { $$.parames = new Parameters( $1.parames, $3.param ); }
             | parameter                      { $$.parames = new Parameters( $1.param ); }
             ;
 
@@ -134,7 +134,7 @@ methodCall : expr DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new
            ;
 
 arguments :                           { $$.arguments = new Arguments(); }
-          | arguments ',' argument    { $$.arguments = new Arguments( $1.arguments, $3.argument ); }
+          | arguments COMMA argument    { $$.arguments = new Arguments( $1.arguments, $3.argument ); }
           | argument                  { $$.arguments = new Arguments( $1.argument ); }
           ;
 

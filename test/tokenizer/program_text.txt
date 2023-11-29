@@ -12,7 +12,7 @@ end
 class Console2 is
     var a: Console2
     var b: Console3
-    method write(text : Console2) : Console3 is
+    method write(text : Console2) : Console2 is
         a : Number := 1
     end
 end
@@ -23,6 +23,7 @@ class Console3 is
         a : Number := 1
     end
     method read() : Console3 is
-        b.write()
+        temp : Console2 := new Console2()
+        b.write(temp.write(temp))
     end
 end

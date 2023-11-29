@@ -6,7 +6,6 @@ public class TypeIrrealizable
     {
         return expression switch
         {
-            IScopeAwareArgument argument => new TypedArgument(argument),
             IScopeAwareBoolLiteral boolLiteral => new TypedBoolLiteral(boolLiteral),
             IScopeAwareClassInstantiation classInstantiation => new TypedClassInstantiation(classInstantiation),
             IScopeAwareReference identifier => new TypedReference(identifier),

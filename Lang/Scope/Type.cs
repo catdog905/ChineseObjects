@@ -21,18 +21,45 @@ public class Type
         return _classDeclaration.ClassName();
     }
 
-    public Type MethodCallReturnType(Scope scope, string methodName)
+    public Type MethodCallReturnType(IScopeAwareMethodCall methodCall)
     {
+        ITypesAwareArguments methodCallArguments = new TypesAwareArguments(methodCall.Arguments());
+        bool MethodSignatureCheck(IMethodDeclaration methodDeclaration)
+        {
+            if (!methodDeclaration.MethodName().Value().Equals(methodCall.MethodName().Value()))
+                return false;
+            if (methodDeclaration.Parameters().GetParameters().Count() != methodCallArguments.Values().Count())
+                return false;
+            foreach (var parameter in methodDeclaration.Parameters().GetParameters()) 
+            {
+                if (methodCallArguments
+                        .Values()
+                        .Count(arg => 
+                            arg.Type().TypeName().Value()
+                            .Equals(
+                                parameter.TypeName().Value())
+                            ) != 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         var declarations = _classDeclaration.MethodDeclarations()
-            .Where(methodDeclaration => methodDeclaration.MethodName().Value() == methodName)
+            .Where(MethodSignatureCheck)
             .ToList();
         try
         {
-            return new Type(scope, declarations.First().ReturnTypeName());
+            return new Type(methodCall.Scope(), declarations.First().ReturnTypeName());
         }
         catch (InvalidOperationException e)
         {
-            throw new NoSuchMethodException(methodName, _classDeclaration.ClassName().Value(), e);
+            throw new NoSuchMethodException(
+                methodCall.MethodName().Value(), 
+                methodCallArguments,
+                _classDeclaration.ClassName().Value(), 
+                e);
         }
     }
 
@@ -73,9 +100,16 @@ public class Type
 public class NoSuchMethodException : Exception
 {
     public NoSuchMethodException(
-        string methodName, 
-        string className, 
+        string methodName,
+        ITypesAwareArguments arguments,
+        string className,
         InvalidOperationException invalidOperationException) :
-        base("Method with name '" + methodName + "' wasn't found in " + className, invalidOperationException)
+        base("Method with name '" + 
+             methodName + 
+             "' and arguments with types {" + 
+             String.Join("; ", arguments.Values().Select(arg => arg.Type().TypeName())) + 
+             "} wasn't found in " + 
+             className, 
+            invalidOperationException)
     { }
 }

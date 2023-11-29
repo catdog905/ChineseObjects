@@ -6,7 +6,6 @@ public class Irrealizable
     {
         return expression switch
         {
-            IArgument argument => new ScopeAwareArgument(scope, argument),
             IBoolLiteral boolLiteral => new ScopeAwareBoolLiteral(scope, boolLiteral),
             IClassInstantiation classInstantiation => new ScopeAwareClassInstantiation(scope, classInstantiation),
             Reference reference => new ScopeAwareReference(scope, reference),

@@ -28,6 +28,7 @@ Loop            loop
 This            this
 New             new
 Dot             \.
+Comma           \,
 Identifier      [a-zA-z0-9]+
 
 %{
@@ -41,6 +42,7 @@ Identifier      [a-zA-z0-9]+
 {PClose}             { return (int)Token.P_CLOSE; }
 {Colon}              { return (int)Token.COLON; }
 {Dot}                { return (int)Token.DOT; }
+{Comma}              { return (int)Token.COMMA; }
 {Assign}             { return (int)Token.ASSIGN; }
 
 /* Keywords */

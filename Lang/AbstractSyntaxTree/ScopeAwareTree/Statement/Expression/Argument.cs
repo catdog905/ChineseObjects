@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public interface IScopeAwareArgument : IScopeAwareExpression
+public interface IScopeAwareArgument : IScopeAwareAstNode
 {
     public IScopeAwareExpression Value();
 }
@@ -23,8 +23,8 @@ public class ScopeAwareArgument : IScopeAwareArgument
         _value = value;
     }
 
-    public ScopeAwareArgument(Scope scope, IExpression value)
-        : this(scope, Irrealizable.MakeScopeAware(scope, value)) {}
+    public ScopeAwareArgument(Scope scope, IArgument argument)
+        : this(scope, Irrealizable.MakeScopeAware(scope, argument.Value())) {}
 
     public Scope Scope()
     {

@@ -23,7 +23,7 @@ var dbl = new Type(new ClassDeclaration(new Identifier("double"), new List<IIden
     new List<IVariableDeclaration>(), new List<IMethodDeclaration>()));
 var scope = new Scope(ImmutableDictionary<string, Type>.Empty.Add("double", dbl), ImmutableDictionary<string, Entity>.Empty);
 ITypedExpression numLit = new TypedNumLiteral(dbl, 1.5);
-var gen = new LLVMValGen();
+var gen = new LLVMCodeGen();
 Console.WriteLine();
 numLit.AcceptVisitor(gen).Dump();
 Console.WriteLine();
@@ -37,6 +37,9 @@ Console.WriteLine();
 
 
 // +
+
+var _ = new LLVMCodeGen();
+
 /*
 LLVMModuleRef module = LLVM.ModuleCreateWithName("hello");
 LLVMBuilderRef builder = LLVM.CreateBuilder();
@@ -73,6 +76,7 @@ LLVM.BuildRet(builder, conv);
 LLVM.VerifyFunction(func, LLVMVerifierFailureAction.LLVMPrintMessageAction);
 
 func = LLVM.GetNamedFunction(module, "SumConsts");
+LLVM.BuildMalloc(builder, LLVM.IntType(8), "").Dump();
 
 LLVM.DumpValue(func);
 */

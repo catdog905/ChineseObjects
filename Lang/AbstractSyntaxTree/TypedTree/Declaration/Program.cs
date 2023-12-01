@@ -5,7 +5,7 @@ public interface ITypesAwareProgram : ITypesAwareAstNode
     public IEnumerable<ITypesAwareClassDeclaration> ClassDeclarations();
 }
 
-class TypesAwareProgram : ITypesAwareProgram
+public class TypesAwareProgram : ITypesAwareProgram
 {
     private readonly IEnumerable<ITypesAwareClassDeclaration> _classDeclarations;
 

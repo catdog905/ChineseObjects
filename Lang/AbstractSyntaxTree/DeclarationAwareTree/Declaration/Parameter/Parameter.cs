@@ -13,9 +13,9 @@ public class Parameter : IParameterDeclaration, IHumanReadable {
     private readonly IIdentifier _name;
     private readonly IIdentifier _typeName;
 
-    public Parameter(IIdentifier name, IIdentifier identifier) {
+    public Parameter(IIdentifier name, IIdentifier typeName) {
         _name = name;
-        _typeName = identifier;
+        _typeName = typeName;
     }
 
     public override string ToString()

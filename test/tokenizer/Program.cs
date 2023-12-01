@@ -13,12 +13,13 @@ foreach (string s in hp.GetRepr())
     Console.WriteLine(s);
 }
 
-ScopeAwareProgram scopeAwareProgram = new ScopeAwareProgram(new Scope(), program);
+ScopeAwareProgram scopeAwareProgram = new ScopeAwareProgram(NativeTypes.GlobalScope, program);
 TypesAwareProgram typesAwareProgram = new TypesAwareProgram(scopeAwareProgram);
 Console.WriteLine(scopeAwareProgram.Scope());
 
 // .
 
+/*
 var dbl = new Type(new ClassDeclaration(new Identifier("double"), new List<IIdentifier>(), new List<IConstructorDeclaration>(),
     new List<IVariableDeclaration>(), new List<IMethodDeclaration>()));
 var scope = new Scope(ImmutableDictionary<string, Type>.Empty.Add("double", dbl), ImmutableDictionary<string, Entity>.Empty);
@@ -34,11 +35,13 @@ ITypedExpression methodCall = new TypedMethodCall(dbl, new TypedNumLiteral(dbl, 
     new TypesAwareArguments(new List<ITypedArgument>()));
 methodCall.AcceptVisitor(gen).Dump();
 Console.WriteLine();
-
+*/
 
 // +
 
-var _ = new LLVMCodeGen();
+var gen = new LLVMCodeGen();
+gen.Compile(typesAwareProgram);
+gen.CheckAndDump();
 
 /*
 LLVMModuleRef module = LLVM.ModuleCreateWithName("hello");

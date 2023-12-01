@@ -22,4 +22,9 @@ public class TypesAwareReturn : ITypesAwareReturn
     {
         return _expression;
     }
+
+    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
 }

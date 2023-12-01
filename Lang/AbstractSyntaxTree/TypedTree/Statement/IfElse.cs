@@ -44,4 +44,9 @@ public class TypesAwareIfElse : ITypesAwareIfElse
     {
         return _else;
     }
+
+    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
 }

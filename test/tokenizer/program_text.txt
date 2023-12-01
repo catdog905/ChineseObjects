@@ -1,32 +1,6 @@
 class Number is end
-class Console1 is
-    var a: Console3
-    var b: Console3
-    method write(text : Console1) : Console3 is
-        a : Number := 1
-    end
-    method read() : Console2 is
-        b : Number := 2.22
-    end
-end
-class Console2 is
-    this () is 
-        a : Console2 := new Console2()
-    end
-    var a: Console2
-    var b: Console3
-    method write(text : Console2) : Console2 is
-        a : Number := 1
-    end
-end
-class Console3 is
-    var a: Console1
-    var b: Console2
-    method write(text : Console1) : Console1 is
-        a : Number := 1
-    end
-    method read() : Console3 is
-        temp : Console2 := new Console2()
-        b.write(temp.write(temp))
+class Main is
+    method Main() : Bool is
+        true.And(true).TerminateExecution()
     end
 end

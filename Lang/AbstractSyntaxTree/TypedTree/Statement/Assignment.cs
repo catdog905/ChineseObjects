@@ -32,4 +32,9 @@ public class TypesAwareAssignment : ITypesAwareAssignment
     {
         return _expression;
     }
+
+    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
 }

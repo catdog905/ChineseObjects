@@ -32,4 +32,9 @@ public class TypesAwareWhile : ITypesAwareWhile
     {
         return _body;
     }
+
+    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
 }

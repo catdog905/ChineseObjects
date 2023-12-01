@@ -17,7 +17,7 @@ public class TypedBoolLiteral : ITypedBoolLiteral
     }
 
     public TypedBoolLiteral(IScopeAwareBoolLiteral boolLiteral) :
-        this(new Type(boolLiteral.Scope(), "Boolean"), boolLiteral.Value()) {}
+        this(new Type(boolLiteral.Scope(), "Bool"), boolLiteral.Value()) {}
 
 
     public Type Type()
@@ -25,7 +25,7 @@ public class TypedBoolLiteral : ITypedBoolLiteral
         return _type;
     }
 
-    public T AcceptVisitor<T>(CodeGen.ITypedNodeVisitor<T> visitor)
+    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
     {
         return visitor.Visit(this);
     }

@@ -11,7 +11,7 @@ namespace ChineseObjects.Lang
             byte[] inputBuffer = Encoding.Default.GetBytes(s);
             MemoryStream stream = new MemoryStream(inputBuffer);
             this.Scanner = new LangScanner(stream);
-            Console.WriteLine(this.Parse());
+            Parse();
             return CurrentSemanticValue.program;
         }
     }

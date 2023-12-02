@@ -44,41 +44,45 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
     private LLVMModuleRef module;
     private LLVMBuilderRef builder;
 
-    /**
-     * Contains function types for all ever _declared_ functions.
-     * Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
-     * dictionary.
-     */
+    /// <summary>
+    /// Contains function types for all ever _declared_ functions.
+    /// Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
+    /// dictionary.
+    /// </summary>
     private Dictionary<string, LLVMTypeRef> FuncType;
 
-    /**
-     * Contains struct types declared for each of the classes, as well as structs corresponding to primitive types.
-     * Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
-     * dictionary.
-     */
+    /// <summary>
+    /// Contains struct types declared for each of the classes, as well as structs corresponding to primitive types.
+    /// Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
+    /// dictionary.
+    /// </summary>
     private Dictionary<string, LLVMTypeRef> Struct;
 
-    /**
-     * Generic pointer type.
-     *
-     * Represented as a pointer to the `Int1` type, as LLVMSharp does not give a way to represent an opaque pointer.
-     */
+    /// <summary>
+    /// Generic pointer type.
+    ///
+    /// Represented as a pointer to the `Int1` type, as LLVMSharp does not give a way to represent an opaque pointer.
+    /// </summary>
     private readonly LLVMTypeRef OpaquePtr; // Note: can't be declared static as must be a type from the `ctx` context.
 
-    /**
-     * Convert a type to a pointer of that type.
-     *
-     * Note: unless opaque pointers are disabled (which is not possible with the current upstream version of LLVMSharp),
-     * pointers to all types appear as a universal "ptr" type.
-     */
+    /// <summary>
+    /// Convert a type to a pointer of that type.
+    ///
+    /// Note: unless opaque pointers are disabled (which is not possible with the current upstream version of LLVMSharp),
+    /// pointers to all types appear as a universal "ptr" type.
+    /// </summary>
+    /// <param name="typ">Pointee type</param>
+    /// <returns>Pointer</returns>
     private LLVMTypeRef AsPtr(LLVMTypeRef typ)
     {
         return LLVMTypeRef.CreatePointer(typ, 0);
     }
     
-    /**
-     * Get a type that is a pointer to the struct with the given name.
-     */
+    /// <summary>
+    /// Get a type that is a pointer to the struct with the given name
+    /// </summary>
+    /// <param name="name">Pointee struct name</param>
+    /// <returns>Pointer</returns>
     private LLVMTypeRef StructPtr(string name)
     {
         return AsPtr(Struct[name]);

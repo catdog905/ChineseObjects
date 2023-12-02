@@ -35,7 +35,7 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
                 .Count(group => group.Count() > 1) != 0)
             throw new DuplicatedConstructorException(_className);
         if (methodDeclarations
-                .GroupBy(decl => decl.Parameters())
+                .GroupBy(decl => (decl.MethodName(), decl.Parameters()))
                 .Count(group => group.Count() > 1) != 0)
             throw new DuplicatedMethodException(_className);
     }

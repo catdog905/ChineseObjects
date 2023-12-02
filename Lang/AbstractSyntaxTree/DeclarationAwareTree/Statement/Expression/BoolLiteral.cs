@@ -1,4 +1,4 @@
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface IBoolLiteral : IExpression
 {

@@ -1,6 +1,9 @@
 using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 
 public interface IScopeAwareClass : IScopeAwareAstNode
 {

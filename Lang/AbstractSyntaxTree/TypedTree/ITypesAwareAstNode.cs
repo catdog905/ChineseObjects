@@ -1,8 +1,8 @@
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree;
 
 public interface ITypesAwareAstNode {}
 
-public interface ITypedAstNode
+public interface ITypedAstNode : ITypesAwareAstNode
 {
     public Type Type();
 }

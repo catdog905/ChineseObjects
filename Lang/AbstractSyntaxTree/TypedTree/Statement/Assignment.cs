@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 
 public interface ITypesAwareAssignment : ITypesAwareStatement
 {

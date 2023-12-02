@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
 public interface IVariableDeclaration : IMemberDeclaration, IAstNode
 {

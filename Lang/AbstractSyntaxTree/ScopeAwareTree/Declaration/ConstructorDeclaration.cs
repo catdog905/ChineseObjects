@@ -1,4 +1,9 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 
 public interface IScopeAwareConstructor : IScopeAwareAstNode
 {

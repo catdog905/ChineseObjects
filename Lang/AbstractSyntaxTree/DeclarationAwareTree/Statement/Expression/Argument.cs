@@ -1,13 +1,13 @@
 using System.Collections.Immutable;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface IArgument
 {
     public IExpression Value();
 }
 
-public interface IArguments : IAstNode
+public interface IArguments
 {
     public IEnumerable<IArgument> Values();
 }

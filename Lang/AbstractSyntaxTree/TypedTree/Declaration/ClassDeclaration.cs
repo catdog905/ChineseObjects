@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 public interface ITypesAwareClassDeclaration : ITypesAwareAstNode
 {

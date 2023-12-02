@@ -1,6 +1,8 @@
-using System.Reflection.Emit;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
 public interface IMethodDeclaration : IMemberDeclaration, IAstNode
 {
@@ -37,7 +39,7 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
     public IList<string> GetRepr()
     {
         var ans = new List<string>{"METHOD " + _methodName + ": " + _returnTypeName};
-        foreach(Parameter param in _parameters.GetParameters())
+        foreach(Parameter.Parameter param in _parameters.GetParameters())
         {
             ans.AddRange(param.GetRepr().Select(s => "| " + s));
         }

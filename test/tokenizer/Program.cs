@@ -2,11 +2,12 @@
 //Console.WriteLine("Hello, World!");
 
 using ChineseObjects.Lang;
-using ChineseObjects.Lang.Declaration;
-using Type = ChineseObjects.Lang.Type;
+using ChineseObjects.Lang.AbstractSyntaxTree;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 var calculator = new LangParser();
-ChineseObjects.Lang.Program program = calculator.Parse(File.ReadAllText("tokenizer/multi_class.txt"));
+ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Program program = calculator.Parse(File.ReadAllText("tokenizer/multi_class.txt"));
 IHumanReadable hp = program;
 foreach (string s in hp.GetRepr())
 {

@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
 
 public interface IScopeAwareReference : IScopeAwareExpression
 {

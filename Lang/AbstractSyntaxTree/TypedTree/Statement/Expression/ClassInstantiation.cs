@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 public interface ITypedClassInstantiation : ITypedExpression
 {

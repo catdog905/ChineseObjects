@@ -1,8 +1,8 @@
 using System.Collections.Immutable;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
 
-public interface IParameters : IAstNode
+public interface IParameters
 {
     public IEnumerable<IParameterDeclaration> GetParameters();
 }

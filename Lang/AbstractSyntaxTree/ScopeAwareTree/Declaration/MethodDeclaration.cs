@@ -1,6 +1,10 @@
-using System.Reflection.Emit;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 
 
 public interface IScopeAwareMethod : IScopeAwareAstNode

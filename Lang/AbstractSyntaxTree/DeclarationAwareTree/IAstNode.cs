@@ -1,3 +1,3 @@
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree;
 
-public interface IAstNode {}
+public interface IAstNode : IHumanReadable {}

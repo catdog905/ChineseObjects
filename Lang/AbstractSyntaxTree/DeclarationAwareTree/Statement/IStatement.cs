@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 
 // Base class for all statements
 public interface IStatement : IHumanReadable, IAstNode {}

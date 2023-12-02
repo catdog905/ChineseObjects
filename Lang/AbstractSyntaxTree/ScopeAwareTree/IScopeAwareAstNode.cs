@@ -1,4 +1,4 @@
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree;
 
 public interface IScopeAwareAstNode
 {

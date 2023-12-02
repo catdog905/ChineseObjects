@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
 public interface IConstructorDeclaration : IMemberDeclaration, IAstNode
 {
@@ -25,7 +28,7 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
     public IList<string> GetRepr()
     {
         var ans = new List<string> {"CONSTRUCTOR"};
-        foreach(Parameter param in _parameters.GetParameters())
+        foreach(Parameter.Parameter param in _parameters.GetParameters())
         {
             ans.AddRange(param.GetRepr().Select(s => "| " + s));
         }

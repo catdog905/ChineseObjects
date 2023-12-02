@@ -1,6 +1,6 @@
-using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration.Parameter;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
 
 public interface ITypedParameter : ITypedAstNode
 {

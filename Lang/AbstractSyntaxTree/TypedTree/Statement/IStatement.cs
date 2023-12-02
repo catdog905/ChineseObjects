@@ -1,6 +1,6 @@
-using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 
 public interface ITypesAwareStatement : ITypesAwareAstNode {}
 

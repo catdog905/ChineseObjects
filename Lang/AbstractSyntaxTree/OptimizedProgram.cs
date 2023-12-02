@@ -1,5 +1,7 @@
 using System.Collections.Immutable;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
@@ -17,7 +19,7 @@ public class OptimizedProgram
         _program = program;
     }
 
-    public ITypesAwareProgram WithoutUsedVariables()
+    public ITypesAwareProgram WithoutUnusedVariables()
     {
         return (ITypesAwareProgram)WithoutUnusedVariables(_program).Item2;
     }
@@ -35,22 +37,34 @@ public class OptimizedProgram
                             (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1)),
                     new TypesAwareProgram(
                         program.ClassDeclarations()
-                            .Select(decl => (TypesAwareClassDeclaration)WithoutUnusedVariables(decl).Item2))
+                            .Select(decl =>
+                                (TypesAwareClassDeclaration)WithoutUnusedVariables(decl).Item2))
                 );
             case ITypesAwareClassDeclaration classDeclaration:
-                var usedFields = classDeclaration.ConstructorDeclarations()
+                var usedFields = 
+                    classDeclaration.ConstructorDeclarations()
                     .Aggregate(
                         ImmutableList<string>.Empty,
-                        (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1))
+                        (acc, cur) =>
+                            acc.AddRange(WithoutUnusedVariables(cur).Item1))
                     .AddRange(
                         classDeclaration.MethodDeclarations()
                             .Aggregate(
                                 ImmutableList<string>.Empty,
-                                (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1)));
+                                (acc, cur) =>
+                                    acc.AddRange(WithoutUnusedVariables(cur).Item1)));
                 return
                 (
                     usedFields,
-                    classDeclaration.WithoutVariables(
+                    new TypesAwareClassDeclaration(
+                        classDeclaration.ClassName(),
+                        classDeclaration.ParentClassNames(),
+                        classDeclaration.ConstructorDeclarations()
+                            .Select(decl => (TypesAwareConstructor)WithoutUnusedVariables(decl).Item2),
+                        classDeclaration.VariableDeclarations(),
+                        classDeclaration.MethodDeclarations()
+                            .Select(decl => (TypesAwareMethod)WithoutUnusedVariables(decl).Item2)
+                        ).WithoutVariables(
                         classDeclaration.VariableDeclarations()
                             .Where(decl => !usedFields.Contains(decl.Name()))
                             .Select(decl => decl.Name())
@@ -62,9 +76,19 @@ public class OptimizedProgram
                     method.Parameters().GetParameters()
                         .Aggregate(
                             ImmutableList<string>.Empty,
-                            (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1))
+                            (acc, cur) =>
+                                acc.AddRange(WithoutUnusedVariables(cur).Item1))
                         .AddRange(WithoutUnusedVariables(method.Body()).Item1),
-                    method
+                    new TypesAwareMethod(
+                        method.MethodName(),
+                        new TypesAwareParameters(
+                            method.Parameters().GetParameters()
+                                .Aggregate(
+                                    ImmutableList<ITypedParameter>.Empty,
+                                    (acc, cur) =>
+                                        acc.Add((ITypedParameter)WithoutUnusedVariables(cur).Item2))),
+                        method.ReturnType(),
+                        (ITypesAwareStatementsBlock)WithoutUnusedVariables(method.Body()).Item2)
                 );
             case ITypesAwareConstructor constructor:
                 return
@@ -74,7 +98,16 @@ public class OptimizedProgram
                             ImmutableList<string>.Empty,
                             (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1))
                         .AddRange(WithoutUnusedVariables(constructor.Body()).Item1),
-                    constructor
+                    new TypesAwareConstructor(
+                        new TypesAwareParameters(
+                            constructor.Parameters().GetParameters()
+                                .Aggregate(
+                                    ImmutableList<ITypedParameter>.Empty,
+                                    (acc, cur) =>
+                                        acc.Add((ITypedParameter)WithoutUnusedVariables(cur).Item2))
+                        ),
+                        (ITypesAwareStatementsBlock)WithoutUnusedVariables(constructor.Body()).Item2
+                    )
                 );
             case ITypedVariable variable:
                 return
@@ -92,7 +125,7 @@ public class OptimizedProgram
                 return
                 (
                     WithoutUnusedVariables(argument.Value()).Item1,
-                    argument
+                    new TypedArgument((ITypedExpression)WithoutUnusedVariables(argument.Value()).Item2)
                 );
             case ITypesAwareStatementsBlock statementsBlock:
 
@@ -116,7 +149,7 @@ public class OptimizedProgram
                             = WithoutUnusedVariables(assignment);
                         return
                         (
-                            tailVars.AddRange(newUsedVars),
+                            tailVars.Remove(assignment.Name()).AddRange(newUsedVars),
                             new TypesAwareStatementsBlock(
                                 (ITypesAwareAssignment)newAssignment,
                                 tailStatementBlock
@@ -146,7 +179,10 @@ public class OptimizedProgram
                         return
                         (
                             WithoutUnusedVariables(assignment.Expr()).Item1,
-                            assignment
+                            new TypesAwareAssignment(
+                                assignment.Name(),
+                                (ITypedExpression)WithoutUnusedVariables(assignment.Expr()).Item2
+                                )
                         );
                     case ITypesAwareIfElse ifElse:
                         ImmutableList<string> usedVariables = WithoutUnusedVariables(ifElse.Condition()).Item1
@@ -156,13 +192,19 @@ public class OptimizedProgram
                         return
                         (
                             usedVariables,
-                            ifElse
+                            new TypesAwareIfElse(
+                                (ITypedExpression)WithoutUnusedVariables(ifElse.Condition()).Item2,
+                                (ITypesAwareStatementsBlock)WithoutUnusedVariables(ifElse.Then()).Item2,
+                                ifElse.Else() == null ? 
+                                    null : 
+                                    (ITypesAwareStatementsBlock?)WithoutUnusedVariables(ifElse.Else()).Item2
+                                )
                         );
                     case ITypesAwareReturn @return:
                         return
                         (
                             WithoutUnusedVariables(@return.Expression()).Item1,
-                            @return
+                            new TypesAwareReturn((ITypedExpression)WithoutUnusedVariables(@return.Expression()).Item2)
                         );
                     case ITypesAwareWhile @while:
                         return
@@ -170,7 +212,9 @@ public class OptimizedProgram
                             WithoutUnusedVariables(@while.Condition()).Item1
                                 .AddRange(
                                     WithoutUnusedVariables(@while.Body()).Item1),
-                            @while
+                            new TypesAwareWhile(
+                                (ITypedExpression)WithoutUnusedVariables(@while.Condition()).Item2,
+                                (ITypesAwareStatementsBlock)WithoutUnusedVariables(@while.Body()).Item2)
                         );
                     case ITypedExpression expression:
                         switch (expression)
@@ -189,7 +233,17 @@ public class OptimizedProgram
                                             ImmutableList<string>.Empty,
                                             (acc, cur) =>
                                                 acc.AddRange(WithoutUnusedVariables(cur).Item1)),
-                                    classInstantiation
+                                    new TypedClassInstantiation(
+                                        classInstantiation.Type(),
+                                        classInstantiation.ClassName(),
+                                        new TypesAwareArguments(
+                                            classInstantiation.Arguments().Values()
+                                                .Aggregate(
+                                                    ImmutableList<ITypedArgument>.Empty,
+                                                    (acc, cur) =>
+                                                        acc.Add((ITypedArgument)WithoutUnusedVariables(cur).Item2))
+                                        )
+                                    )
                                 );
                             case ITypedMethodCall methodCall:
                                 return
@@ -198,11 +252,23 @@ public class OptimizedProgram
                                         .AddRange(
                                             methodCall.Arguments().Values()
                                                 .Aggregate(
-                                                    ImmutableList<string>.Empty, 
-                                                    (acc, cur) => 
+                                                    ImmutableList<string>.Empty,
+                                                    (acc, cur) =>
                                                         acc.AddRange(
                                                             WithoutUnusedVariables(cur).Item1))),
-                                    methodCall
+                                    new TypedMethodCall(
+                                        methodCall.Type(),
+                                        (ITypedExpression)WithoutUnusedVariables(methodCall.Caller()).Item2,
+                                        methodCall.MethodName(),
+                                        new TypesAwareArguments(
+                                            methodCall.Arguments().Values()
+                                                .Aggregate(
+                                                    ImmutableList<ITypedArgument>.Empty,
+                                                    (acc, cur) =>
+                                                        acc.Add(
+                                                            (ITypedArgument)WithoutUnusedVariables(cur).Item2))
+                                        )
+                                    )
                                 );
                             case ITypedNumLiteral numLiteral:
                                 return

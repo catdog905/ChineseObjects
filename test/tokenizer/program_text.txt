@@ -1,9 +1,13 @@
 class Number is end
 class Console1 is
     var a: Console3
-    var b: Console3
+    var b: Console2
     method write(text : Console1) : Console3 is
-        a : Number := 1
+        tobedeleted1 : Console3 := new Console3()
+        temp : Console2 := new Console2()
+        tobedeleted2 : Console3 := new Console3()
+        b.write(temp.write(temp))
+        tobedeleted3 : Console3 := new Console3()
     end
     method read() : Console2 is
         b : Number := 2.22
@@ -20,13 +24,19 @@ class Console2 is
     end
 end
 class Console3 is
+    this () is
+        a : Console1 := new Console2()
+    end
     var a: Console1
     var b: Console2
     method write(text : Console1) : Console1 is
         a : Number := 1
     end
     method read() : Console3 is
+        tobedeleted1 : Console3 := new Console3()
         temp : Console2 := new Console2()
+        tobedeleted2 : Console3 := new Console3()
         b.write(temp.write(temp))
+        tobedeleted3 : Console3 := new Console3()
     end
 end

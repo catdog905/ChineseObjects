@@ -3,6 +3,7 @@
 
 using ChineseObjects.Lang;
 using ChineseObjects.Lang.AbstractSyntaxTree;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree;
 using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
@@ -16,7 +17,7 @@ foreach (string s in hp.GetRepr())
 
 ScopeAwareProgram scopeAwareProgram = new ScopeAwareProgram(new Scope(), program);
 TypesAwareProgram typesAwareProgram = new TypesAwareProgram(scopeAwareProgram);
-ITypesAwareProgram programWithoutUnusedVariables = new OptimizedProgram(typesAwareProgram).WithoutUsedVariables();
+ITypesAwareProgram programWithoutUnusedVariables = new OptimizedProgram(typesAwareProgram).WithoutUnusedVariables();
 Console.WriteLine(scopeAwareProgram.Scope());
 
 foreach (string s in programWithoutUnusedVariables.GetRepr())

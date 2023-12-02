@@ -1,4 +1,4 @@
-%namespace ChineseObjects.Lang
+%namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree
 %scannertype LangScanner
 %visibility internal
 %tokentype Token
@@ -58,13 +58,13 @@ Identifier      [a-zA-z0-9]+
 {Return}             { return (int)Token.RETURN; }
 {Var}                { return (int)Token.VAR; }
 {Method}             { return (int)Token.METHOD; }
-{This}               { yylval.thisRef = new This(); return (int)Token.THIS; }
+{This}               { yylval.thisRef = new Declaration.This(); return (int)Token.THIS; }
 {New}                { return (int)Token.NEW; }
 
 /* Other */
-{IntegerLiteral}     { yylval.num_literal = new NumLiteral(double.Parse(yytext)); return (int)Token.INTEGER_LITERAL; }
-{RealLiteral}        { yylval.num_literal = new NumLiteral(double.Parse(yytext)); return (int)Token.REAL_LITERAL; }
-{BooleanLiteral}     { yylval.bool_literal = new BoolLiteral(yytext[0] == 't');    return (int)Token.BOOLEAN_LITERAL; }
-{Identifier}         { yylval.identifier = new Identifier(yytext); return (int)Token.IDENTIFIER; }
+{IntegerLiteral}     { yylval.num_literal = new Statement.Expression.NumLiteral(double.Parse(yytext)); return (int)Token.INTEGER_LITERAL; }
+{RealLiteral}        { yylval.num_literal = new Statement.Expression.NumLiteral(double.Parse(yytext)); return (int)Token.REAL_LITERAL; }
+{BooleanLiteral}     { yylval.bool_literal = new Statement.Expression.BoolLiteral(yytext[0] == 't');    return (int)Token.BOOLEAN_LITERAL; }
+{Identifier}         { yylval.identifier = new Statement.Expression.Identifier(yytext); return (int)Token.IDENTIFIER; }
 
 %%

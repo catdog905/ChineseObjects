@@ -1,3 +1,5 @@
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface IClassInstantiation : IExpression
@@ -16,6 +18,11 @@ public class ClassInstantiation : IClassInstantiation
         _className = identifier;
         _arguments = arguments;
     }
+
+    public ClassInstantiation(ITypedClassInstantiation classInstantiation) :
+        this(
+            new Identifier(classInstantiation.ClassName()),
+            new Arguments(classInstantiation.Arguments())) {}
 
     public override string ToString()
     {

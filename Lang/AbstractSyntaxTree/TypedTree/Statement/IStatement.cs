@@ -34,4 +34,9 @@ public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock
     {
         return _statements;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.StatementsBlock(this).GetRepr();
+    }
 }

@@ -47,4 +47,9 @@ public class TypesAwareIfElse : ITypesAwareIfElse
     {
         return _else;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.IfElse(this).GetRepr();
+    }
 }

@@ -7,7 +7,7 @@ public interface ITypedArgument : ITypedAstNode
     public ITypedExpression Value();
 }
 
-public interface ITypesAwareArguments : ITypesAwareAstNode
+public interface ITypesAwareArguments
 {
     public IEnumerable<ITypedArgument> Values();
 }
@@ -37,6 +37,11 @@ public class TypedArgument : ITypedArgument
     public ITypedExpression Value()
     {
         return _value;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.Argument(this).GetRepr();
     }
 }
 

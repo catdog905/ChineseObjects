@@ -32,4 +32,9 @@ public class TypedVariable : ITypedVariable
     {
         return _type;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.VariableDeclaration(this).GetRepr();
+    }
 }

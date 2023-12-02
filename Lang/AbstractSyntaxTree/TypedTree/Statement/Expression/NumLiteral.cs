@@ -31,4 +31,9 @@ public class TypedNumLiteral : ITypedNumLiteral
     {
         return _value;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.NumLiteral(this).GetRepr();
+    }
 }

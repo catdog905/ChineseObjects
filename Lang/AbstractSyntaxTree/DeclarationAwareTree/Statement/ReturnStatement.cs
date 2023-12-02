@@ -1,4 +1,5 @@
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 
@@ -16,6 +17,10 @@ public class Return : IReturn
     {
         _retval = retval;
     }
+
+    public Return(ITypesAwareReturn @return) :
+        this(new ExpressionWrapper(@return.Expression()))
+    {}
 
     public override string ToString()
     {

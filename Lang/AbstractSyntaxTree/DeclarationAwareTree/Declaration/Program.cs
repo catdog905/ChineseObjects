@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
@@ -27,6 +28,12 @@ public class Program : IProgram, IHumanReadable
     ) : this(new[] {classDeclaration}.Concat(program.ClassDeclarations())) {}
 
     public Program(params ClassDeclaration[] classDeclarations) : this(classDeclarations.ToImmutableList()) {}
+
+    public Program(ITypesAwareProgram program) :
+        this(program.ClassDeclarations()
+            .Select(decl => new ClassDeclaration(decl)))
+    {
+    }
 
     public override string ToString()
     {

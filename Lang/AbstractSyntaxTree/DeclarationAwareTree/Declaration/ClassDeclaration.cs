@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
@@ -90,6 +91,18 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
         IIdentifier className, 
         IMemberDeclarations memberDeclarations
     ) : this(className, new Identifiers(), memberDeclarations) {}
+
+    public ClassDeclaration(ITypesAwareClassDeclaration classDeclaration) : 
+        this(new Identifier(classDeclaration.ClassName()),
+            classDeclaration.ParentClassNames().
+                Select(decl => decl.TypeName()),
+            classDeclaration.ConstructorDeclarations()
+                .Select(decl => new ConstructorDeclaration(decl)),
+            classDeclaration.VariableDeclarations()
+                .Select(decl => new VariableDeclaration(decl)),
+            classDeclaration.MethodDeclarations()
+                .Select(decl => new MethodDeclaration(decl)))
+    {}
 
     public override string ToString()
     {

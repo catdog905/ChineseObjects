@@ -1,6 +1,6 @@
 namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree;
 
-public interface ITypesAwareAstNode {}
+public interface ITypesAwareAstNode : IHumanReadable {}
 
 public interface ITypedAstNode : ITypesAwareAstNode
 {

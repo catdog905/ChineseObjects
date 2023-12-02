@@ -1,6 +1,7 @@
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
@@ -29,8 +30,16 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
         _parameters = parameters;
         _returnTypeName = returnTypeName;
         _body = body;
-    }        
-    
+    }
+
+    public MethodDeclaration(ITypesAwareMethod method) :
+        this(new Identifier(method.MethodName()),
+            new Parameters(method.Parameters()),
+            method.ReturnType().TypeName(),
+            new StatementsBlock(method.Body())
+            )
+    {}
+
     public override string ToString()
     {
         return _methodName + "(" + _parameters + "):" + _returnTypeName + "{" + _body + "}";

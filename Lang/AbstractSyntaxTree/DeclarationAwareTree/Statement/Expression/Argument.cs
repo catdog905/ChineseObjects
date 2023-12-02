@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
@@ -20,6 +21,10 @@ public class Argument : IArgument
     {
         _value = value;
     }
+
+    public Argument(ITypedArgument argument) :
+        this(new ExpressionWrapper(argument.Value()))
+    {}
 
     public override string ToString()
     {
@@ -51,6 +56,10 @@ public class Arguments : IArguments
     public Arguments(Arguments arguments, IArgument argument) : this(arguments._values.Add(argument)) { }
 
     public Arguments(IArgument argument, Arguments arguments) : this(new[] { argument }.Concat(arguments._values)) { }
+
+    public Arguments(ITypesAwareArguments arguments) :
+        this(arguments.Values()
+            .Select(argument => new Argument(argument))) {}
 
     public override string ToString()
     {

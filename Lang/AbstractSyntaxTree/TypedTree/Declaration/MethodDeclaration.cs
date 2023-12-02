@@ -57,4 +57,9 @@ public class TypesAwareMethod : ITypesAwareMethod
     {
         return _body;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.MethodDeclaration(this).GetRepr();
+    }
 }

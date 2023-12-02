@@ -1,5 +1,6 @@
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
@@ -19,6 +20,12 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
         _parameters = parameters;
         _body = statementsBlock;
     }
+
+    public ConstructorDeclaration(ITypesAwareConstructor constructor) :
+        this(
+            new Parameters(constructor.Parameters()),
+            new StatementsBlock(constructor.Body()))
+    {}
 
     public override string ToString()
     {

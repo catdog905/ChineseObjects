@@ -1,4 +1,5 @@
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
@@ -19,6 +20,10 @@ public class Reference : IReference
     
     public Reference(IIdentifier identifier) :
         this(identifier.Value()) {}
+
+    public Reference(ITypedReference reference) :
+        this(reference.Name())
+    {}
 
 
     public string Name()

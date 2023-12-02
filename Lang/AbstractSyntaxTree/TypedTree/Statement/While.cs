@@ -35,4 +35,9 @@ public class TypesAwareWhile : ITypesAwareWhile
     {
         return _body;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.While(this).GetRepr();
+    }
 }

@@ -33,4 +33,9 @@ public class TypedReference : ITypedReference
     {
         return _name;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.Reference(this).GetRepr();
+    }
 }

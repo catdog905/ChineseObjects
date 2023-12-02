@@ -55,4 +55,9 @@ public class TypedMethodCall : ITypedMethodCall
     {
         return _arguments;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.MethodCall(this).GetRepr();
+    }
 }

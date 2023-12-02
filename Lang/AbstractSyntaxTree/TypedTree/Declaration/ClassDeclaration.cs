@@ -95,6 +95,11 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
             _methodDeclarations
         );
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.ClassDeclaration(this).GetRepr();
+    }
 }
 
 public class DuplicatedConstructorException : Exception

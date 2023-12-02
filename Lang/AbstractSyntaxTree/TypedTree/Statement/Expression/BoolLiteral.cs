@@ -31,4 +31,9 @@ public class TypedBoolLiteral : ITypedBoolLiteral
     {
         return _value;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.BoolLiteral(this).GetRepr();
+    }
 }

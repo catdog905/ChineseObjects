@@ -34,4 +34,9 @@ public class TypesAwareConstructor : ITypesAwareConstructor
     {
         return _parameters;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.ConstructorDeclaration(this).GetRepr();
+    }
 }

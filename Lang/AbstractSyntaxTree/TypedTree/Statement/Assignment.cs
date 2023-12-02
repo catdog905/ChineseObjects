@@ -35,4 +35,9 @@ public class TypesAwareAssignment : ITypesAwareAssignment
     {
         return _expression;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Assignment(this).GetRepr();
+    }
 }

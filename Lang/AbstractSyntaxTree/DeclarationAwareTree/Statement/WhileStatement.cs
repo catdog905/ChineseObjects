@@ -1,4 +1,5 @@
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 
@@ -19,6 +20,11 @@ public class While : IWhile
         this._cond = cond;
         this._body = body;
     }
+
+    public While(ITypesAwareWhile @while) :
+        this(
+            new ExpressionWrapper(@while.Condition()),
+            new StatementsBlock(@while.Body())) { }
 
     public override string ToString()
     {

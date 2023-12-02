@@ -28,4 +28,9 @@ class TypesAwareProgram : ITypesAwareProgram
     {
         return _classDeclarations;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.Program(this).GetRepr();
+    }
 }

@@ -1,11 +1,10 @@
 using System.Collections.Immutable;
-using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
-using TypedReference = ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression.TypedReference;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree;
 
@@ -29,12 +28,15 @@ public class OptimizedProgram
         {
             case ITypesAwareProgram program:
                 return
-                    (program.ClassDeclarations()
-                            .Aggregate(
-                                ImmutableList<string>.Empty,
-                                (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1)),
-                        program
-                    );
+                (
+                    program.ClassDeclarations()
+                        .Aggregate(
+                            ImmutableList<string>.Empty,
+                            (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1)),
+                    new TypesAwareProgram(
+                        program.ClassDeclarations()
+                            .Select(decl => (TypesAwareClassDeclaration)WithoutUnusedVariables(decl).Item2))
+                );
             case ITypesAwareClassDeclaration classDeclaration:
                 var usedFields = classDeclaration.ConstructorDeclarations()
                     .Aggregate(
@@ -51,7 +53,8 @@ public class OptimizedProgram
                     classDeclaration.WithoutVariables(
                         classDeclaration.VariableDeclarations()
                             .Where(decl => !usedFields.Contains(decl.Name()))
-                            .Select(decl => decl.Name()))
+                            .Select(decl => decl.Name())
+                            .ToList())
                 );
             case ITypesAwareMethod method:
                 return
@@ -181,7 +184,11 @@ public class OptimizedProgram
                             case ITypedClassInstantiation classInstantiation:
                                 return
                                 (
-                                    WithoutUnusedVariables(classInstantiation.Arguments()).Item1,
+                                    classInstantiation.Arguments().Values()
+                                        .Aggregate(
+                                            ImmutableList<string>.Empty,
+                                            (acc, cur) =>
+                                                acc.AddRange(WithoutUnusedVariables(cur).Item1)),
                                     classInstantiation
                                 );
                             case ITypedMethodCall methodCall:

@@ -56,4 +56,9 @@ public class TypedClassInstantiation : ITypedClassInstantiation
     {
         return _arguments;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.ClassInstantiation(this).GetRepr();
+    }
 }

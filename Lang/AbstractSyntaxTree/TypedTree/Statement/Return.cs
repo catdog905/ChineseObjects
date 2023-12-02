@@ -25,4 +25,9 @@ public class TypesAwareReturn : ITypesAwareReturn
     {
         return _expression;
     }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Return(this).GetRepr();
+    }
 }

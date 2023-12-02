@@ -46,6 +46,11 @@ public class TypedParameter : ITypedParameter
         return HashCode.Combine(_name, _type);
     }
 
+    public IList<string> GetRepr()
+    {
+        return new Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter.Parameter(this).GetRepr();
+    }
+
     public static bool operator ==(TypedParameter? left, TypedParameter? right)
     {
         return Equals(left, right);

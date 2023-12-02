@@ -16,4 +16,5 @@ foreach (string s in hp.GetRepr())
 
 ScopeAwareProgram scopeAwareProgram = new ScopeAwareProgram(new Scope(), program);
 TypesAwareProgram typesAwareProgram = new TypesAwareProgram(scopeAwareProgram);
+ITypesAwareProgram programWithoutUnusedVariables = new OptimizedProgram(typesAwareProgram).WithoutUsedVariables();
 Console.WriteLine(scopeAwareProgram.Scope());

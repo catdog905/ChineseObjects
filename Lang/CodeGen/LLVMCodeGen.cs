@@ -3,6 +3,41 @@ using LLVMSharp.Interop;
 
 namespace ChineseObjects.Lang.CodeGen;
 
+/// <summary>
+/// A raw code generator that exposes its internals. It should be used to generate code for native types, then be handed
+/// to `LLVMCodeGen` and never be used again.
+/// </summary>
+public class LLVMExposingCodeGen
+{
+    /*
+     * All fields have the same meanings as in `LLVMCodeGen`
+     */
+    
+    public LLVMContextRef ctx;
+    public LLVMModuleRef module;
+    public LLVMBuilderRef builder;
+
+    public Dictionary<string, LLVMTypeRef> FuncType;
+    public Dictionary<string, LLVMTypeRef> Struct;
+
+    public readonly LLVMTypeRef OpaquePtr;
+
+    public LLVMExposingCodeGen()
+    {
+        ctx = LLVMContextRef.Create();
+        module = ctx.CreateModuleWithName("main_module");
+        builder = ctx.CreateBuilder();
+
+        FuncType = new();
+        Struct = new();
+        
+        OpaquePtr = LLVMTypeRef.CreatePointer(ctx.Int1Type, 0);
+    }
+}
+
+/// <summary>
+/// Code generator for ChineseObjects
+/// </summary>
 public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
 {
     private LLVMContextRef ctx;
@@ -14,13 +49,14 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
      * Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
      * dictionary.
      */
-    private Dictionary<string, LLVMTypeRef> funcType = new();
+    private Dictionary<string, LLVMTypeRef> FuncType;
+
     /**
      * Contains struct types declared for each of the classes, as well as structs corresponding to primitive types.
      * Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
      * dictionary.
      */
-    private Dictionary<string, LLVMTypeRef> Struct = new();
+    private Dictionary<string, LLVMTypeRef> Struct;
 
     /**
      * Generic pointer type.
@@ -47,95 +83,25 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
     {
         return AsPtr(Struct[name]);
     }
-    
-    
-    public LLVMCodeGen()
+
+
+    /// <summary>
+    /// Create the code generator on top of an "exposing" generator, which has had native types compiled with.
+    /// </summary>
+    /// <param name="g">Generator with native types compiled. Once passed to this constructor, it shall not be used
+    /// anymore</param>
+    public LLVMCodeGen(LLVMExposingCodeGen g)
     {
-        ctx = LLVMContextRef.Create();
-        module = ctx.CreateModuleWithName("main_module");
-        builder = ctx.CreateBuilder();
-        OpaquePtr = LLVMTypeRef.CreatePointer(ctx.Int1Type, 0);
-
-        // TODO: move native methods implementation to a separate class
-
-        funcType.Add("malloc",
-            LLVMTypeRef.CreateFunction(LLVMTypeRef.CreatePointer(ctx.Int8Type, 0), new[] { ctx.Int32Type }));
-        var malloc = module.AddFunction("malloc", funcType["malloc"]);
-        malloc.Linkage = LLVMLinkage.LLVMExternalLinkage;
-
-        funcType.Add("exit", LLVMTypeRef.CreateFunction(ctx.VoidType, new[] { ctx.Int32Type }));
-        var exit = module.AddFunction("exit", funcType["exit"]);
-        exit.Linkage = LLVMLinkage.LLVMExternalLinkage;
-        
-        // Build the primitive Bool type (available globally)
-        var Bool = Struct["Bool"] = ctx.CreateNamedStruct("Bool");
-        Bool.StructSetBody(new []{LLVMTypeRef.Int1}, false);
-        
-        LLVMTypeRef PBool = LLVMTypeRef.CreatePointer(Bool, 0);
-        
-        // Compile `Bool.And`
-
-        string funcName = "Bool.And..Bool";
-        LLVMValueRef func = module.GetNamedFunction(funcName);
-        if (func.BasicBlocks.Length != 0)
-        {
-            throw new LLVMGenException("Function " + funcName + " already has a body");
-        }
-
-        var parames = new LLVMTypeRef[]
-        {
-            /*this*/PBool,
-            /*other*/PBool
-        };
-
-        funcType[funcName] = LLVMTypeRef.CreateFunction(PBool, parames);
-        func = module.AddFunction(funcName, funcType[funcName]);
-        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
-        var pThis = func.GetParam(0);
-        var pOther = func.GetParam(1);
-        pThis.Name = "this";
-        pOther.Name = "other";
-        
-        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
-        var u1 = builder.BuildStructGEP2(Bool, pThis, 0, "unbox1");
-        var u2 = builder.BuildStructGEP2(Bool, pOther, 0, "unbox2");
-        var v1 = builder.BuildLoad2(ctx.Int1Type, u1, "val1");
-        var v2 = builder.BuildLoad2(ctx.Int1Type, u2, "val2");
-        LLVMValueRef res = builder.BuildAnd(v1, v2, "and");
-        /* resptr points both to the structure and to its initial field */
-        LLVMValueRef resptr = builder.BuildMalloc(Bool, "resptr");
-        builder.BuildStore(res, resptr);
-
-        builder.BuildRet(resptr);
-
-        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
-
-        // Compile `Bool.TerminateExecution`
-
-        funcName = "Bool.TerminateExecution..";
-        func = module.GetNamedFunction(funcName);
-        if (func.BasicBlocks.Length != 0)
-        {
-            throw new LLVMGenException("Function " + funcName + " already has a body");
-        }
-
-        parames = new LLVMTypeRef[]
-        {
-            /*this*/PBool
-        };
-
-        funcType[funcName] = LLVMTypeRef.CreateFunction(PBool, parames);
-        func = module.AddFunction(funcName, funcType[funcName]);
-        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
-        pThis = func.GetParam(0);
-        pThis.Name = "this";
-
-        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
-        var unboxed = builder.BuildStructGEP2(Bool, pThis, 0, "unboxed");
-        builder.BuildCall2(funcType["exit"], exit,
-            new[] { builder.BuildIntCast(builder.BuildLoad2(ctx.Int1Type, unboxed), ctx.Int32Type) });
-        builder.BuildRet(LLVMValueRef.CreateConstPointerNull(PBool));
-        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+        /*
+         * Native types were generated with `g`. Now we can access the environment prepared for us
+         * (and `g` shall not be used by anyone anymore).
+         */ 
+        ctx = g.ctx;
+        module = g.module;
+        builder = g.builder;
+        FuncType = g.FuncType;
+        Struct = g.Struct;
+        OpaquePtr = g.OpaquePtr;
     }
 
     public void CheckAndDump()
@@ -164,12 +130,12 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         }
 
         string entrypointName = "_CO_entrypoint";
-        funcType[entrypointName] = LLVMTypeRef.CreateFunction(ctx.VoidType, new LLVMTypeRef[] { });
-        LLVMValueRef co_entry = module.AddFunction(entrypointName, funcType[entrypointName]);
+        FuncType[entrypointName] = LLVMTypeRef.CreateFunction(ctx.VoidType, new LLVMTypeRef[] { });
+        LLVMValueRef co_entry = module.AddFunction(entrypointName, FuncType[entrypointName]);
         co_entry.Linkage = LLVMLinkage.LLVMExternalLinkage;
         builder.PositionAtEnd(co_entry.AppendBasicBlock("entry"));
         // TODO: first construct an object of type `Main` and call the method with that value rather than a null pointer
-        builder.BuildCall2(funcType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
+        builder.BuildCall2(FuncType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
         builder.BuildRetVoid();
     }
 
@@ -184,9 +150,9 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
             string retName = method.ReturnType().TypeName().Value();
             var retT = StructPtr(retName);  // Pointer to struct will be returned
-            funcType[funcName] = LLVMTypeRef.CreateFunction(retT,
+            FuncType[funcName] = LLVMTypeRef.CreateFunction(retT,
                 Enumerable.Repeat(OpaquePtr, 1 + method.Parameters().GetParameters().Count()).ToArray());
-            var func = module.AddFunction(funcName, funcType[funcName]);
+            var func = module.AddFunction(funcName, FuncType[funcName]);
             func.Linkage = LLVMLinkage.LLVMExternalLinkage;
 
             uint i = 0;
@@ -245,7 +211,7 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         string funcName = methodCall.Caller().Type().TypeName().Value() + "." + methodCall.MethodName() + ".." +
                           String.Join('.',
                               methodCall.Arguments().Values().Select(arg => arg.Value().Type().TypeName().Value()));
-        if (!funcType.ContainsKey(funcName))
+        if (!FuncType.ContainsKey(funcName))
         {
             throw new LLVMGenException("Function " + funcName + " is not declared");
         }
@@ -257,7 +223,7 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         // The caller itself (aka "this") is an implicit first argument to every method call:
         args = args.Prepend(methodCall.Caller().AcceptVisitor(this));
         // Build the method call
-        return builder.BuildCall2(funcType[funcName], func, args.ToArray());
+        return builder.BuildCall2(FuncType[funcName], func, args.ToArray());
     }
 
     public LLVMValueRef Visit(ITypedReference tRef)

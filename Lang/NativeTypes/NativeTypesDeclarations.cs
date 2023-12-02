@@ -2,7 +2,10 @@ using System.Collections.Immutable;
 
 namespace ChineseObjects.Lang;
 
-public static class NativeTypes
+/// <summary>
+/// Declares native types.
+/// </summary>
+public static class NativeTypesDeclarations
 {
     private class NativeMethod : IStatementsBlock
     {
@@ -20,11 +23,12 @@ public static class NativeTypes
     private static readonly ClassDeclaration BoolDeclaration = new ClassDeclaration(new Identifier("Bool"),
         ImmutableList<IIdentifier>.Empty, ImmutableList<IConstructorDeclaration>.Empty,
         ImmutableList<IVariableDeclaration>.Empty, new []{BoolAnd, BoolTerminateExecution});
-    
-    // private static readonly MethodDeclaration
 
     public static readonly Type Bool = new Type(BoolDeclaration);
 
+    /// <summary>
+    /// Scope that contains all native types.
+    /// </summary>
     public static readonly Scope GlobalScope = new Scope(ImmutableDictionary<string, Type>.Empty.Add("Bool", Bool),
         ImmutableDictionary<string, Entity>.Empty);
 }

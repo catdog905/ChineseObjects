@@ -2,14 +2,14 @@ namespace ChineseObjects.Lang.CodeGen;
 
 public interface ITypesAwareStatementVisitor<T>
 {
-    T Visit(TypedParameter _);
-    T Visit(Declaration.TypedVariable _);
-    T Visit(TypedArgument _);
-    T Visit(TypedBoolLiteral _);
-    T Visit(TypedClassInstantiation _);
-    T Visit(TypedMethodCall _);
-    T Visit(TypedNumLiteral _);
-    T Visit(TypedReference _);
+    T Visit(ITypedParameter _);
+    T Visit(Declaration.ITypedVariable _);
+    T Visit(ITypedArgument _);
+    T Visit(ITypedBoolLiteral _);
+    T Visit(ITypedClassInstantiation _);
+    T Visit(ITypedMethodCall _);
+    T Visit(ITypedNumLiteral _);
+    T Visit(ITypedReference _);
     T Visit(ITypesAwareReturn _);
     T Visit(ITypesAwareWhile _);
     T Visit(ITypesAwareIfElse _);

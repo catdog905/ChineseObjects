@@ -144,7 +144,7 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 
-    public void Compile(TypesAwareProgram program)
+    public void Compile(ITypesAwareProgram program)
     {
         foreach (ITypesAwareClassDeclaration cls in program.ClassDeclarations())
         {
@@ -224,7 +224,7 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         }
     }
     
-    public LLVMValueRef Visit(TypedBoolLiteral boolLit)
+    public LLVMValueRef Visit(ITypedBoolLiteral boolLit)
     {
         var Bool = Struct["Bool"];
         var boxed = builder.BuildMalloc(Bool, "boxed");
@@ -233,14 +233,14 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         return boxed;
     }
 
-    public LLVMValueRef Visit(TypedNumLiteral numLit)
+    public LLVMValueRef Visit(ITypedNumLiteral numLit)
     {
         throw new NotImplementedException();
         // TODO: should be boxed (allocated on heap)
         return LLVMValueRef.CreateConstReal(ctx.DoubleType, numLit.Value());
     }
 
-    public LLVMValueRef Visit(TypedMethodCall methodCall)
+    public LLVMValueRef Visit(ITypedMethodCall methodCall)
     {
         string funcName = methodCall.Caller().Type().TypeName().Value() + "." + methodCall.MethodName() + ".." +
                           String.Join('.',
@@ -260,7 +260,7 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         return builder.BuildCall2(funcType[funcName], func, args.ToArray());
     }
 
-    public LLVMValueRef Visit(TypedReference tRef)
+    public LLVMValueRef Visit(ITypedReference tRef)
     {
         // TODO: implement! The implementation is probably similar to that of `ITypedThis` (?)
         // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
@@ -278,22 +278,22 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         return LLVMValueRef.CreateConstNull(StructPtr(tThis.Type().TypeName().Value()));
     }
 
-    public LLVMValueRef Visit(TypedParameter _)
+    public LLVMValueRef Visit(ITypedParameter _)
     {
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(TypedVariable _)
+    public LLVMValueRef Visit(ITypedVariable _)
     {
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(TypedArgument _)
+    public LLVMValueRef Visit(ITypedArgument _)
     {
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(TypedClassInstantiation _)
+    public LLVMValueRef Visit(ITypedClassInstantiation _)
     {
         throw new NotImplementedException();
     }

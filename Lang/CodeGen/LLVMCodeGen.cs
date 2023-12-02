@@ -1,39 +1,85 @@
 using ChineseObjects.Lang.Declaration;
-using LLVMSharp;
+using LLVMSharp.Interop;
 
 namespace ChineseObjects.Lang.CodeGen;
 
 public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
 {
-    private readonly LLVMModuleRef _module = LLVM.ModuleCreateWithName("MainModule");
-    private readonly LLVMBuilderRef _builder = LLVM.CreateBuilder();
+    private LLVMContextRef ctx;
+    private LLVMModuleRef module;
+    private LLVMBuilderRef builder;
 
+    /**
+     * Contains function types for all ever _declared_ functions.
+     * Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
+     * dictionary.
+     */
+    private Dictionary<string, LLVMTypeRef> funcType = new();
+    /**
+     * Contains struct types declared for each of the classes, as well as structs corresponding to primitive types.
+     * Due to a limitation of LLVMSharp (limited access to the original LLVM API), we are forced to store them in a
+     * dictionary.
+     */
+    private Dictionary<string, LLVMTypeRef> Struct = new();
+
+    /**
+     * Generic pointer type.
+     *
+     * Represented as a pointer to the `Int1` type, as LLVMSharp does not give a way to represent an opaque pointer.
+     */
+    private readonly LLVMTypeRef OpaquePtr; // Note: can't be declared static as must be a type from the `ctx` context.
+
+    /**
+     * Convert a type to a pointer of that type.
+     *
+     * Note: unless opaque pointers are disabled (which is not possible with the current upstream version of LLVMSharp),
+     * pointers to all types appear as a universal "ptr" type.
+     */
+    private LLVMTypeRef AsPtr(LLVMTypeRef typ)
+    {
+        return LLVMTypeRef.CreatePointer(typ, 0);
+    }
+    
+    /**
+     * Get a type that is a pointer to the struct with the given name.
+     */
+    private LLVMTypeRef StructPtr(string name)
+    {
+        return AsPtr(Struct[name]);
+    }
+    
+    
     public LLVMCodeGen()
     {
+        ctx = LLVMContextRef.Create();
+        module = ctx.CreateModuleWithName("main_module");
+        builder = ctx.CreateBuilder();
+        OpaquePtr = LLVMTypeRef.CreatePointer(ctx.Int1Type, 0);
+
         // TODO: move native methods implementation to a separate class
+
+        funcType.Add("malloc",
+            LLVMTypeRef.CreateFunction(LLVMTypeRef.CreatePointer(ctx.Int8Type, 0), new[] { ctx.Int32Type }));
+        var malloc = module.AddFunction("malloc", funcType["malloc"]);
+        malloc.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+        funcType.Add("exit", LLVMTypeRef.CreateFunction(ctx.VoidType, new[] { ctx.Int32Type }));
+        var exit = module.AddFunction("exit", funcType["exit"]);
+        exit.Linkage = LLVMLinkage.LLVMExternalLinkage;
         
-        LLVMValueRef malloc = LLVM.AddFunction(_module, "malloc",
-            LLVM.FunctionType(LLVM.PointerType(LLVM.Int8Type(), 0), new[] { LLVM.Int32Type() }, false));
-        LLVM.SetLinkage(malloc, LLVMLinkage.LLVMExternalLinkage);
-        LLVMValueRef exit = LLVM.AddFunction(_module, "exit",
-            LLVM.FunctionType(LLVM.VoidType(), new[] { LLVM.Int32Type() }, false));
-        LLVM.SetLinkage(exit, LLVMLinkage.LLVMExternalLinkage);
+        // Build the primitive Bool type (available globally)
+        var Bool = Struct["Bool"] = ctx.CreateNamedStruct("Bool");
+        Bool.StructSetBody(new []{LLVMTypeRef.Int1}, false);
         
-        // Build the primitive Bool type
-        LLVMTypeRef TheBool = LLVM.StructType(new[] { LLVM.Int1Type() }, false);
-        LLVMTypeRef PBool = LLVM.PointerType(TheBool, 0);
+        LLVMTypeRef PBool = LLVMTypeRef.CreatePointer(Bool, 0);
         
         // Compile `Bool.And`
 
         string funcName = "Bool.And..Bool";
-        LLVMValueRef func = LLVM.GetNamedFunction(_module, funcName);
-        if (func.Pointer != IntPtr.Zero)
+        LLVMValueRef func = module.GetNamedFunction(funcName);
+        if (func.BasicBlocks.Length != 0)
         {
-            // Unexpected: function is already declared
-            if (LLVM.CountBasicBlocks(func) != 0)
-            {
-                throw new LLVMGenException("Function with name " + funcName + " already has a body");
-            }
+            throw new LLVMGenException("Function " + funcName + " already has a body");
         }
 
         var parames = new LLVMTypeRef[]
@@ -42,37 +88,35 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
             /*other*/PBool
         };
 
-        func = LLVM.AddFunction(_module, funcName, LLVM.FunctionType(PBool, parames, false));
-        LLVM.SetLinkage(func, LLVMLinkage.LLVMExternalLinkage);
-        LLVM.SetValueName(LLVM.GetParam(func, 0), "this");
-        LLVM.SetValueName(LLVM.GetParam(func, 1), "other");
+        funcType[funcName] = LLVMTypeRef.CreateFunction(PBool, parames);
+        func = module.AddFunction(funcName, funcType[funcName]);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+        var pThis = func.GetParam(0);
+        var pOther = func.GetParam(1);
+        pThis.Name = "this";
+        pOther.Name = "other";
         
-        LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(func, "entry"));
-        LLVMValueRef pu1 = LLVM.BuildStructGEP(_builder, LLVM.GetParam(func, 0), 0, "preunbox1");
-        LLVMValueRef pu2 = LLVM.BuildStructGEP(_builder, LLVM.GetParam(func, 1), 0, "preunbox2");
-        LLVMValueRef u1 = LLVM.BuildLoad(_builder, pu1, "unbox1");
-        LLVMValueRef u2 = LLVM.BuildLoad(_builder, pu2, "unbox2");
-        LLVMValueRef res = LLVM.BuildAnd(_builder, u1, u2, "res");
-        LLVMValueRef resptr = LLVM.BuildMalloc(_builder, TheBool, "resptr");
-        LLVMValueRef resPacked = LLVM.BuildAlloca(_builder, TheBool, "resPacked");
-        LLVM.BuildStore(_builder, res, LLVM.BuildStructGEP(_builder, resPacked, 0, ""));
-        LLVM.BuildStore(_builder, LLVM.BuildLoad(_builder, resPacked, ""), resptr);
-        
-        LLVM.BuildRet(_builder, resptr);
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+        var u1 = builder.BuildStructGEP2(Bool, pThis, 0, "unbox1");
+        var u2 = builder.BuildStructGEP2(Bool, pOther, 0, "unbox2");
+        var v1 = builder.BuildLoad2(ctx.Int1Type, u1, "val1");
+        var v2 = builder.BuildLoad2(ctx.Int1Type, u2, "val2");
+        LLVMValueRef res = builder.BuildAnd(v1, v2, "and");
+        /* resptr points both to the structure and to its initial field */
+        LLVMValueRef resptr = builder.BuildMalloc(Bool, "resptr");
+        builder.BuildStore(res, resptr);
 
-        LLVM.VerifyFunction(func, LLVMVerifierFailureAction.LLVMPrintMessageAction);
+        builder.BuildRet(resptr);
+
+        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
 
         // Compile `Bool.TerminateExecution`
 
         funcName = "Bool.TerminateExecution..";
-        func = LLVM.GetNamedFunction(_module, funcName);
-        if (func.Pointer != IntPtr.Zero)
+        func = module.GetNamedFunction(funcName);
+        if (func.BasicBlocks.Length != 0)
         {
-            // Unexpected: function is already declared
-            if (LLVM.CountBasicBlocks(func) != 0)
-            {
-                throw new LLVMGenException("Function with name " + funcName + " already has a body");
-            }
+            throw new LLVMGenException("Function " + funcName + " already has a body");
         }
 
         parames = new LLVMTypeRef[]
@@ -80,30 +124,28 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
             /*this*/PBool
         };
 
-        func = LLVM.AddFunction(_module, funcName, LLVM.FunctionType(PBool, parames, false));
-        LLVM.SetLinkage(func, LLVMLinkage.LLVMExternalLinkage);
-        LLVM.SetValueName(LLVM.GetParam(func, 0), "this");
+        funcType[funcName] = LLVMTypeRef.CreateFunction(PBool, parames);
+        func = module.AddFunction(funcName, funcType[funcName]);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+        pThis = func.GetParam(0);
+        pThis.Name = "this";
 
-        LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(func, "entry"));
-        var unboxed = LLVM.BuildStructGEP(_builder, LLVM.GetParam(func, 0), 0, "unboxed");
-        LLVM.BuildCall(_builder, exit,
-            new[] { LLVM.BuildIntCast(_builder, LLVM.BuildLoad(_builder, unboxed, ""), LLVM.Int32Type(), "") }, "");
-        LLVM.BuildRet(_builder, LLVM.ConstNull(PBool));
-        LLVM.VerifyFunction(func, LLVMVerifierFailureAction.LLVMPrintMessageAction);
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+        var unboxed = builder.BuildStructGEP2(Bool, pThis, 0, "unboxed");
+        builder.BuildCall2(funcType["exit"], exit,
+            new[] { builder.BuildIntCast(builder.BuildLoad2(ctx.Int1Type, unboxed), ctx.Int32Type) });
+        builder.BuildRet(LLVMValueRef.CreateConstPointerNull(PBool));
+        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 
     public void CheckAndDump()
     {
-        LLVM.DumpModule(_module);
-        LLVM.VerifyModule(_module, LLVMVerifierFailureAction.LLVMPrintMessageAction, out var err);
+        module.Dump();
+        module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 
     public void Compile(TypesAwareProgram program)
     {
-        LLVMTypeRef TheBool = LLVM.StructType(new[] { LLVM.Int1Type() }, false);
-        LLVMTypeRef Ptr = LLVM.PointerType(TheBool, 0);  /* In up-to-date LLVM versions pointers are generic, the
-                                                          * pointee type does not matter. */
-
         foreach (ITypesAwareClassDeclaration cls in program.ClassDeclarations())
         {
             DeclareClass(cls);
@@ -112,30 +154,27 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         {
             CompileClass(cls);
         }
-        
+
         // Compile _CO_entrypoint. This function shall be the entry point of ChineseObjects' runtime
-        LLVMValueRef main = LLVM.GetNamedFunction(_module, "Main.Main..");
-        if (main.Pointer == IntPtr.Zero)
+        string mainName = "Main.Main..";
+        LLVMValueRef main = module.GetNamedFunction(mainName);
+        if (main.BasicBlocks.Length == 0)
         {
             throw new LLVMGenException("Could not find class Main with method Main()");
         }
-        
-        LLVMValueRef co_entry = LLVM.AddFunction(_module, "_CO_entrypoint",
-            LLVM.FunctionType(LLVM.VoidType(), new LLVMTypeRef[] { }, false));
-        LLVM.SetLinkage(co_entry, LLVMLinkage.LLVMExternalLinkage);
-        LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(co_entry, "entry"));
+
+        string entrypointName = "_CO_entrypoint";
+        funcType[entrypointName] = LLVMTypeRef.CreateFunction(ctx.VoidType, new LLVMTypeRef[] { });
+        LLVMValueRef co_entry = module.AddFunction(entrypointName, funcType[entrypointName]);
+        co_entry.Linkage = LLVMLinkage.LLVMExternalLinkage;
+        builder.PositionAtEnd(co_entry.AppendBasicBlock("entry"));
         // TODO: first construct an object of type `Main` and call the method with that value rather than a null pointer
-        LLVM.BuildCall(_builder, main, new LLVMValueRef[] { LLVM.ConstNull(Ptr) }, "");
-        LLVM.BuildRetVoid(_builder);
+        builder.BuildCall2(funcType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
+        builder.BuildRetVoid();
     }
 
     private void DeclareClass(ITypesAwareClassDeclaration cls)
     {
-        LLVMTypeRef TheBool = LLVM.StructType(new[] { LLVM.Int1Type() }, false);
-        LLVMTypeRef Ptr = LLVM.PointerType(TheBool, 0);  /* In up-to-date LLVM versions pointers are generic, the
-                                                          * pointee type does not matter. */
-
-        
         // TODO: Declare the type with the appropriate name and the right number of pointers
 
         
@@ -144,28 +183,26 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Name()));
             string retName = method.ReturnType().TypeName().Value();
-            LLVMTypeRef retT = Ptr;  // TODO: use the right return name based on `retName`
-            LLVMValueRef func = LLVM.AddFunction(_module, funcName,
-                LLVM.FunctionType(retT, Enumerable.Repeat(Ptr, 1+method.Parameters().GetParameters().Count()).ToArray(),
-                    false));
-            LLVM.SetLinkage(func, LLVMLinkage.LLVMExternalLinkage);
+            var retT = StructPtr(retName);  // Pointer to struct will be returned
+            funcType[funcName] = LLVMTypeRef.CreateFunction(retT,
+                Enumerable.Repeat(OpaquePtr, 1 + method.Parameters().GetParameters().Count()).ToArray());
+            var func = module.AddFunction(funcName, funcType[funcName]);
+            func.Linkage = LLVMLinkage.LLVMExternalLinkage;
 
             uint i = 0;
-            LLVM.SetValueName(LLVM.GetParam(func, 0), "this");
+            var fparam = func.GetParam(0);
+            fparam.Name = "this";
             foreach (ITypedParameter param in method.Parameters().GetParameters())
             {
                 ++i;
-                LLVM.SetValueName(LLVM.GetParam(func, i), param.Name());
+                fparam = func.GetParam(i);
+                fparam.Name = param.Name();
             }
         }
     }
 
     private void CompileClass(ITypesAwareClassDeclaration cls)
     {
-        LLVMTypeRef TheBool = LLVM.StructType(new[] { LLVM.Int1Type() }, false);
-        LLVMTypeRef Ptr = LLVM.PointerType(TheBool, 0);  /* In up-to-date LLVM versions pointers are generic, the
-                                                          * pointee type does not matter. */
-        // TODO 1: compile methods
         // TODO 2: compile constructors
         // TODO 3: support inheritance
 
@@ -173,8 +210,8 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         {
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Name()));
-            LLVMValueRef func = LLVM.GetNamedFunction(_module, funcName);
-            LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(func, "entry"));
+            LLVMValueRef func = module.GetNamedFunction(funcName);
+            builder.PositionAtEnd(func.AppendBasicBlock("entry"));
             foreach (ITypesAwareStatement statement in method.Body().Statements())
             {
                 // Build the statement. It is built and inserted to the builder position, which should remain
@@ -183,53 +220,24 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
             }
 
             // Return a nil reference in case the execution did not reach a return statement.
-            LLVM.BuildRet(_builder, LLVM.ConstNull(Ptr));
+            builder.BuildRet(LLVMValueRef.CreateConstNull(OpaquePtr));
         }
-    }
-
-    // TODO: remove this method
-    public LLVMValueRef AddTrivialMethod(string className, string methodName, LLVMValueRef doubleToReturn)
-    {
-        string funcName = className + "::" + methodName;
-        LLVMValueRef func = LLVM.GetNamedFunction(_module, funcName);
-        if (func.Pointer != IntPtr.Zero)
-        {
-            // Unexpected: function is already declared
-            if (LLVM.CountBasicBlocks(func) != 0)
-            {
-                throw new LLVMGenException("Function with name " + funcName + " already has a body");
-            }
-        }
-        // TODO: build `LLVMTypeRef`s for types. For now, using argless functions that return doubles
-        func = LLVM.AddFunction(_module, funcName,
-            LLVM.FunctionType(LLVM.DoubleType(), Array.Empty<LLVMTypeRef>(), false));
-        LLVM.SetLinkage(func, LLVMLinkage.LLVMExternalLinkage);
-        // set params names here
-
-        LLVM.PositionBuilderAtEnd(_builder, LLVM.AppendBasicBlock(func, "entry"));
-        LLVM.BuildRet(_builder, doubleToReturn);
-
-        LLVM.VerifyFunction(func, LLVMVerifierFailureAction.LLVMPrintMessageAction);
-
-        func = LLVM.GetNamedFunction(_module, funcName);
-        return func;
     }
     
     public LLVMValueRef Visit(TypedBoolLiteral boolLit)
     {
-        // TODO: refer to the struct by name...
-        LLVMTypeRef Bool = LLVM.StructType(new[] { LLVM.Int1Type() }, false);
-        LLVMValueRef boxed = LLVM.BuildMalloc(_builder, Bool, "boxed");
-        LLVMValueRef direct = LLVM.BuildStructGEP(_builder, boxed, 0, "direct");
-        LLVM.BuildStore(_builder, LLVM.ConstInt(LLVM.Int1Type(), boolLit.Value() ? 1UL : 0, false), direct);
+        var Bool = Struct["Bool"];
+        var boxed = builder.BuildMalloc(Bool, "boxed");
+        var direct = builder.BuildStructGEP2(Bool, boxed, 0, "direct");
+        builder.BuildStore(LLVMValueRef.CreateConstInt(ctx.Int1Type, boolLit.Value() ? 1UL : 0), direct);
         return boxed;
     }
 
     public LLVMValueRef Visit(TypedNumLiteral numLit)
     {
         throw new NotImplementedException();
-        // Should be boxed (allocated on heap)
-        return LLVM.ConstReal(LLVM.DoubleType(), numLit.Value());
+        // TODO: should be boxed (allocated on heap)
+        return LLVMValueRef.CreateConstReal(ctx.DoubleType, numLit.Value());
     }
 
     public LLVMValueRef Visit(TypedMethodCall methodCall)
@@ -237,24 +245,19 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         string funcName = methodCall.Caller().Type().TypeName().Value() + "." + methodCall.MethodName() + ".." +
                           String.Join('.',
                               methodCall.Arguments().Values().Select(arg => arg.Value().Type().TypeName().Value()));
-        LLVMValueRef func = LLVM.GetNamedFunction(_module, funcName);
-        if (func.Pointer == IntPtr.Zero)
+        if (!funcType.ContainsKey(funcName))
         {
             throw new LLVMGenException("Function " + funcName + " is not declared");
         }
-        if (LLVM.CountBasicBlocks(func) == 0)
-        {
-            // TODO: Empty methods will trigger this exception. This is just a temporary check for while we're building
-            // the compiler, later this whole check should be removed.
-            throw new LLVMGenException("Function " + funcName + " has empty body. Was it ever defined?");
-        }
+
+        LLVMValueRef func = module.GetNamedFunction(funcName);
         
         // Compile all arguments' values (other than "this")
         IEnumerable<LLVMValueRef> args = methodCall.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this));
         // The caller itself (aka "this") is an implicit first argument to every method call:
         args = args.Prepend(methodCall.Caller().AcceptVisitor(this));
         // Build the method call
-        return LLVM.BuildCall(_builder, func, args.ToArray(), "");
+        return builder.BuildCall2(funcType[funcName], func, args.ToArray());
     }
 
     public LLVMValueRef Visit(TypedParameter _)

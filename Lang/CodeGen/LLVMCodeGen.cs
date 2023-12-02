@@ -175,13 +175,13 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
 
     private void DeclareClass(ITypesAwareClassDeclaration cls)
     {
-        // TODO: Declare the type with the appropriate name and the right number of pointers
-
+        var Class = Struct[cls.ClassName()] = ctx.CreateNamedStruct(cls.ClassName());
+        Class.StructSetBody(Enumerable.Repeat(OpaquePtr, cls.VariableDeclarations().Count()).ToArray(), Packed: false);
         
         foreach (ITypesAwareMethod method in cls.MethodDeclarations())
         {
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
-                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Name()));
+                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
             string retName = method.ReturnType().TypeName().Value();
             var retT = StructPtr(retName);  // Pointer to struct will be returned
             funcType[funcName] = LLVMTypeRef.CreateFunction(retT,
@@ -209,7 +209,7 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         foreach (ITypesAwareMethod method in cls.MethodDeclarations())
         {
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
-                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Name()));
+                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
             LLVMValueRef func = module.GetNamedFunction(funcName);
             builder.PositionAtEnd(func.AppendBasicBlock("entry"));
             foreach (ITypesAwareStatement statement in method.Body().Statements())
@@ -260,6 +260,24 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         return builder.BuildCall2(funcType[funcName], func, args.ToArray());
     }
 
+    public LLVMValueRef Visit(TypedReference tRef)
+    {
+        // TODO: implement! The implementation is probably similar to that of `ITypedThis` (?)
+        // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
+        // passed around in the code are **always** boxed, so they come in forms of pointers to structs allocated on
+        // heap.
+        return LLVMValueRef.CreateConstNull(StructPtr(tRef.Type().TypeName().Value()));
+    }
+
+    public LLVMValueRef Visit(ITypedThis tThis)
+    {
+        // TODO: implement! The implementation is probably similar to that of `TypedReference` (?)
+        // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
+        // passed around in the code are **always** boxed, so they come in forms of pointers to structs allocated on
+        // heap.
+        return LLVMValueRef.CreateConstNull(StructPtr(tThis.Type().TypeName().Value()));
+    }
+
     public LLVMValueRef Visit(TypedParameter _)
     {
         throw new NotImplementedException();
@@ -276,11 +294,6 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
     }
 
     public LLVMValueRef Visit(TypedClassInstantiation _)
-    {
-        throw new NotImplementedException();
-    }
-
-    public LLVMValueRef Visit(TypedReference _)
     {
         throw new NotImplementedException();
     }

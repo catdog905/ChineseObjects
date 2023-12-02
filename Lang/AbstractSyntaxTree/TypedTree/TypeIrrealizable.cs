@@ -11,6 +11,7 @@ public class TypeIrrealizable
             IScopeAwareReference identifier => new TypedReference(identifier),
             IScopeAwareMethodCall methodCall => new TypedMethodCall(methodCall),
             IScopeAwareNumLiteral numLiteral => new TypedNumLiteral(numLiteral),
+            IScopeAwareThis @this => new Declaration.TypedThis(@this),
             _ => throw new NotImplementedException("Implementation of expression not found")
         };
     }

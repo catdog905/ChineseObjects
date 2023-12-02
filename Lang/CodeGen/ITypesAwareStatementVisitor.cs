@@ -14,4 +14,5 @@ public interface ITypesAwareStatementVisitor<T>
     T Visit(ITypesAwareWhile _);
     T Visit(ITypesAwareIfElse _);
     T Visit(ITypesAwareAssignment _);
+    T Visit(Declaration.ITypedThis _);
 }

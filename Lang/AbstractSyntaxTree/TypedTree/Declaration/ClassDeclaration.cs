@@ -85,6 +85,28 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
     
 }
 
+public interface ITypedThis : ITypedExpression {}
+
+public class TypedThis : ITypedThis
+{
+    private readonly Type _type;
+    
+    public TypedThis(Type type)
+    {
+        _type = type;
+    }
+    
+    public TypedThis(IScopeAwareThis sThis) : this(sThis.Scope().GetValue("this").Type()) {}
+
+    public Type Type() => _type;
+    
+    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
+    {
+        return visitor.Visit(this);
+    }
+}
+
+
 public class DuplicatedConstructorException : Exception
 {
     public DuplicatedConstructorException(string className) : 

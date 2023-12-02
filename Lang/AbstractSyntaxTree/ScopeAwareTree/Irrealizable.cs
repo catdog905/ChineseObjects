@@ -11,6 +11,7 @@ public class Irrealizable
             Reference reference => new ScopeAwareReference(scope, reference),
             IMethodCall methodCall => new ScopeAwareMethodCall(scope, methodCall),
             INumLiteral numLiteral => new ScopeAwareNumLiteral(scope, numLiteral),
+            IThis _ => new ScopeAwareThis(scope),
             _ => throw new NotImplementedException("Implementation of expression not found")
         };
     }

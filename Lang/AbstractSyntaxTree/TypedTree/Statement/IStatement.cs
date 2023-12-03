@@ -3,7 +3,7 @@ namespace ChineseObjects.Lang;
 public interface ITypesAwareStatement : ITypesAwareAstNode
 {
     // `ITypesAwareStatementVisitor` is a general visitor interface to implement operations on `ITypesAwareStatement`s.
-    // For instance, `LLVMCodeGen` compiles statements by visiting them.
+    // For instance, `CompiledProgram` compiles statements by visiting them.
     public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor);
 }
 

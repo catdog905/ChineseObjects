@@ -4,41 +4,9 @@ using LLVMSharp.Interop;
 namespace ChineseObjects.Lang.CodeGen;
 
 /// <summary>
-/// A raw code generator that exposes its internals. It should be used to generate code for native types, then be handed
-/// to `LLVMCodeGen` and never be used again.
-/// </summary>
-public class LLVMExposingCodeGen
-{
-    /*
-     * All fields have the same meanings as in `LLVMCodeGen`
-     */
-    
-    public LLVMContextRef ctx;
-    public LLVMModuleRef module;
-    public LLVMBuilderRef builder;
-
-    public Dictionary<string, LLVMTypeRef> FuncType;
-    public Dictionary<string, LLVMTypeRef> Struct;
-
-    public readonly LLVMTypeRef OpaquePtr;
-
-    public LLVMExposingCodeGen()
-    {
-        ctx = LLVMContextRef.Create();
-        module = ctx.CreateModuleWithName("main_module");
-        builder = ctx.CreateBuilder();
-
-        FuncType = new();
-        Struct = new();
-        
-        OpaquePtr = LLVMTypeRef.CreatePointer(ctx.Int1Type, 0);
-    }
-}
-
-/// <summary>
 /// Code generator for ChineseObjects
 /// </summary>
-public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
+public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 {
     private LLVMContextRef ctx;
     private LLVMModuleRef module;
@@ -90,11 +58,12 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
 
 
     /// <summary>
-    /// Create the code generator on top of an "exposing" generator, which has had native types compiled with.
+    /// Compile a type aware program, given an `LLVMExposingCodeGen` with compiled native types.
     /// </summary>
     /// <param name="g">Generator with native types compiled. Once passed to this constructor, it shall not be used
     /// anymore</param>
-    public LLVMCodeGen(LLVMExposingCodeGen g)
+    /// <param name="program">Program to compile</param>
+    public CompiledProgram(LLVMExposingCodeGen g, ITypesAwareProgram program)
     {
         /*
          * Native types were generated with `g`. Now we can access the environment prepared for us
@@ -106,15 +75,11 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         FuncType = g.FuncType;
         Struct = g.Struct;
         OpaquePtr = g.OpaquePtr;
+
+        CompileProgram(program);
     }
 
-    public void CheckAndDump()
-    {
-        module.Dump();
-        module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
-    }
-
-    public void Compile(ITypesAwareProgram program)
+    private void CompileProgram(ITypesAwareProgram program)
     {
         foreach (ITypesAwareClassDeclaration cls in program.ClassDeclarations())
         {
@@ -141,6 +106,9 @@ public class LLVMCodeGen : ITypesAwareStatementVisitor<LLVMValueRef>
         // TODO: first construct an object of type `Main` and call the method with that value rather than a null pointer
         builder.BuildCall2(FuncType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
         builder.BuildRetVoid();
+        
+        module.Dump();
+        module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 
     private void DeclareClass(ITypesAwareClassDeclaration cls)

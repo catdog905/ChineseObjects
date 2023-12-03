@@ -21,6 +21,4 @@ var nativeGen = new LLVMExposingCodeGen();
 new LibC().CompileWith(nativeGen);
 new Bool().CompileWith(nativeGen);
 
-var gen = new LLVMCodeGen(nativeGen);
-gen.Compile(typesAwareProgram);
-gen.CheckAndDump();
+var gen = new CompiledProgram(nativeGen, typesAwareProgram);

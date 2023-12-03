@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ChineseObjects.Lang.Declaration;
 using LLVMSharp.Interop;
 
@@ -68,7 +69,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         /*
          * Native types were generated with `g`. Now we can access the environment prepared for us
          * (and `g` shall not be used by anyone anymore).
-         */ 
+         */
         ctx = g.ctx;
         module = g.module;
         builder = g.builder;
@@ -77,6 +78,42 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         OpaquePtr = g.OpaquePtr;
 
         CompileProgram(program);
+    }
+
+    public int MakeExecutable()
+    {
+        //module.Dump();
+        module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+        
+        LLVM.InitializeAllTargetInfos();
+        LLVM.InitializeAllTargets();
+        LLVM.InitializeAllTargetMCs();
+        LLVM.InitializeAllAsmParsers();
+        LLVM.InitializeAllAsmPrinters();
+        var trpl = LLVMTargetRef.GetTargetFromTriple(LLVMTargetRef.DefaultTriple);
+        var machine = trpl.CreateTargetMachine(LLVMTargetRef.DefaultTriple, "", "",
+            LLVMCodeGenOptLevel.LLVMCodeGenLevelNone, LLVMRelocMode.LLVMRelocDefault,
+            LLVMCodeModel.LLVMCodeModelDefault);
+        const string objName = "CO_user.o";
+        const string exeName = "run.out";
+        machine.EmitToFile(module, objName, LLVMCodeGenFileType.LLVMObjectFile);
+
+        const string cmain = "extern void _CO_entrypoint();int main(){_CO_entrypoint();}";
+        
+        string fname = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(fname + ".c", cmain);
+            var gcc = Process.Start("gcc", new[] { "-o", exeName, fname + ".c", objName });
+            gcc.WaitForExit();
+            return gcc.ExitCode;
+        }
+        finally
+        {
+            // Try to delete the temporary files. Ignore whatever errors might appear
+            try { File.Delete(fname); } catch {}
+            try { File.Delete(fname + ".c"); } catch {}
+        }
     }
 
     private void CompileProgram(ITypesAwareProgram program)
@@ -107,7 +144,6 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         builder.BuildCall2(FuncType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
         builder.BuildRetVoid();
         
-        module.Dump();
         module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 

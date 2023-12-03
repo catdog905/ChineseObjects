@@ -22,3 +22,4 @@ new LibC().CompileWith(nativeGen);
 new Bool().CompileWith(nativeGen);
 
 var gen = new CompiledProgram(nativeGen, typesAwareProgram);
+gen.MakeExecutable();

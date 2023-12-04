@@ -233,9 +233,9 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(ITypedArgument _)
+    public LLVMValueRef Visit(ITypedArgument arg)
     {
-        throw new NotImplementedException();
+        return arg.Value().AcceptVisitor(this);
     }
 
     public LLVMValueRef Visit(ITypedClassInstantiation _)
@@ -243,9 +243,9 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(ITypesAwareReturn _)
+    public LLVMValueRef Visit(ITypesAwareReturn val)
     {
-        throw new NotImplementedException();
+        return builder.BuildRet(val.AcceptVisitor(this));
     }
 
     public LLVMValueRef Visit(ITypesAwareWhile _)

@@ -10,7 +10,7 @@ public class Bool : INativeEntityCompiler
         var Struct = g.Struct;
 
         var Bool = Struct["Bool"] = ctx.CreateNamedStruct("Bool");
-        Bool.StructSetBody(new[] { ctx.Int1Type }, false);
+        Bool.StructSetBody(new[] { ctx.Int1Type }, Packed: false);
 
         BuildAnd(g);
         BuildTerminateExecution(g);

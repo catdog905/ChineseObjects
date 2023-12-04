@@ -118,6 +118,14 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         
         foreach (ITypesAwareMethod method in cls.MethodDeclarations())
         {
+            /*
+             * The name of the compiled method is formed as [ClassName].[MethodName]..[Param1TypeName].[Param2TypeName]...
+             * For instance, a method `Hello` of class `Abc` that explicitly accepts two parameters of types `Bool` and
+             * `Abc` respectively will be called "Abc.Hello..Bool.Abc". Note that all methods also implicitly accept
+             * the object method is called on as their initial argument. Thus, the method that is compiled into
+             * a routine called "Abc.Hello..Bool.Abc" shall be called with three arguments: of types `Abc`, `Bool`, and
+             * `Abc` respectively (the object itself and two parameters).
+             */
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
             string retName = method.ReturnType().TypeName().Value();

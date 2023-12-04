@@ -1,3 +1,5 @@
+using ChineseObjects.Lang.Declaration;
+
 namespace ChineseObjects.Lang;
 
 public class Type
@@ -63,31 +65,56 @@ public class Type
         }
     }
     
+    public static bool ConstructorSignatureCheck(
+        IConstructorDeclaration constructorDeclaration, 
+        ITypesAwareArguments constructorCallArguments)
+    {
+        if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
+            return false;
+        foreach (var parameter in constructorDeclaration.Parameters().GetParameters()) 
+        {
+            if (constructorCallArguments
+                    .Values()
+                    .Count(arg => 
+                        arg.Type().TypeName().Value()
+                            .Equals(
+                                parameter.TypeName().Value())
+                    ) != 1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    public static bool ConstructorSignatureCheck(
+        ITypesAwareConstructor constructorDeclaration, 
+        ITypesAwareArguments constructorCallArguments)
+    {
+        if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
+            return false;
+        foreach (var parameter in constructorDeclaration.Parameters().GetParameters()) 
+        {
+            if (constructorCallArguments
+                    .Values()
+                    .Count(arg => 
+                        arg.Type().TypeName().Value()
+                            .Equals(
+                                parameter.Type().TypeName().Value())
+                    ) != 1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
     public void ConstructorCallCheck(ITypesAwareArguments arguments)
     {
-        ITypesAwareArguments constructorCallArguments = arguments;
-        bool ConstructorSignatureCheck(IConstructorDeclaration constructorDeclaration)
-        {
-            if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
-                return false;
-            foreach (var parameter in constructorDeclaration.Parameters().GetParameters()) 
-            {
-                if (constructorCallArguments
-                        .Values()
-                        .Count(arg => 
-                            arg.Type().TypeName().Value()
-                                .Equals(
-                                    parameter.TypeName().Value())
-                        ) != 1)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
         var declarations = _classDeclaration.ConstructorDeclarations()
-            .Where(ConstructorSignatureCheck)
+            .Where(constructor => ConstructorSignatureCheck(constructor, arguments))
             .ToList();
         try
         {
@@ -96,7 +123,7 @@ public class Type
         catch (InvalidOperationException e)
         {
             throw new NoSuchConstructorException(
-                constructorCallArguments,
+                arguments,
                 _classDeclaration.ClassName().Value(), 
                 e);
         }

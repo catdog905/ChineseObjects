@@ -9,6 +9,8 @@ namespace ChineseObjects.Lang.CodeGen;
 /// </summary>
 public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 {
+    private readonly ITypesAwareProgram _program;    
+    
     private LLVMContextRef ctx;
     private LLVMModuleRef module;
     private LLVMBuilderRef builder;
@@ -76,6 +78,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         FuncType = g.FuncType;
         Struct = g.Struct;
         OpaquePtr = g.OpaquePtr;
+
+        _program = program;
 
         CompileProgram(program);
     }
@@ -180,6 +184,26 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
                 fparam.Name = param.Name();
             }
         }
+        
+        foreach (ITypesAwareConstructor constructor in cls.ConstructorDeclarations())
+        {
+            string funcName = cls.ClassName() + '.' + "ctor" + ".." +
+                              String.Join('.', constructor.Parameters().GetParameters()
+                                  .Select(x => x.Type().TypeName().Value()));
+            var retT = OpaquePtr;  // Pointer to struct will be returned
+            FuncType[funcName] = LLVMTypeRef.CreateFunction(retT,
+                Enumerable.Repeat(OpaquePtr, constructor.Parameters().GetParameters().Count()).ToArray());
+            var func = module.AddFunction(funcName, FuncType[funcName]);
+            func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+            List<ITypedParameter> parameters = constructor.Parameters().GetParameters().ToList();
+            for (int i = 0; i < parameters.Count; i++)
+            {
+                ++i;
+                var fparam = func.GetParam((uint)i);
+                fparam.Name = parameters[i].Name();
+            }
+        }
     }
 
     private void CompileClass(ITypesAwareClassDeclaration cls)
@@ -234,7 +258,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         LLVMValueRef func = module.GetNamedFunction(funcName);
         
         // Compile all arguments' values (other than "this")
-        IEnumerable<LLVMValueRef> args = methodCall.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this));
+        IEnumerable<LLVMValueRef> args = methodCall.Arguments().Values()
+            .Select(arg => arg.Value().AcceptVisitor(this));
         // The caller itself (aka "this") is an implicit first argument to every method call:
         args = args.Prepend(methodCall.Caller().AcceptVisitor(this));
         // Build the method call
@@ -274,9 +299,30 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return arg.Value().AcceptVisitor(this);
     }
 
-    public LLVMValueRef Visit(ITypedClassInstantiation _)
+    public LLVMValueRef Visit(ITypedClassInstantiation classInstantiation)
     {
-        throw new NotImplementedException();
+        ITypesAwareConstructor firstMatchedConstructor = _program
+            .ClassDeclarations()
+            .First(classDeclaration => classDeclaration.ClassName().Equals(classInstantiation.ClassName()))
+            .ConstructorDeclarations()
+            .First(decl => Type.ConstructorSignatureCheck(decl, classInstantiation.Arguments()));
+        
+        string funcName = classInstantiation.Type().TypeName().Value() + "." + "ctor" + ".." +
+                          String.Join('.',
+                              classInstantiation.Arguments().Values()
+                                  .Select(arg => arg.Value().Type().TypeName().Value()));
+        if (!FuncType.ContainsKey(funcName))
+        {
+            throw new LLVMGenException("Function " + funcName + " is not declared");
+        }
+
+        LLVMValueRef func = module.GetNamedFunction(funcName);
+        
+        // Compile all arguments' values (other than "this")
+        IEnumerable<LLVMValueRef> args = classInstantiation.Arguments().Values()
+            .Select(arg => arg.Value().AcceptVisitor(this));
+        // Build the method call
+        return builder.BuildCall2(FuncType[funcName], func, args.ToArray());
     }
 
     public LLVMValueRef Visit(ITypesAwareReturn val)

@@ -1,3 +1,5 @@
+using ChineseObjects.Lang.Declaration;
+
 namespace ChineseObjects.Lang;
 
 public interface IConstructorDeclaration : IMemberDeclaration, IAstNode

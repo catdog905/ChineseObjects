@@ -128,8 +128,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
              */
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
-            string retName = method.ReturnType().TypeName().Value();
-            var retT = StructPtr(retName);  // Pointer to struct will be returned
+            var retT = OpaquePtr;  // Pointer to struct will be returned
             FuncType[funcName] = LLVMTypeRef.CreateFunction(retT,
                 Enumerable.Repeat(OpaquePtr, 1 + method.Parameters().GetParameters().Count()).ToArray());
             var func = module.AddFunction(funcName, FuncType[funcName]);

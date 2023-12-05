@@ -13,6 +13,9 @@ public class Bool : INativeEntityCompiler
         Bool.StructSetBody(new[] { ctx.Int1Type }, Packed: false);
 
         BuildAnd(g);
+        BuildOr(g);
+        BuildXor(g);
+        BuildNot(g);
         BuildTerminateExecution(g);
     }
 
@@ -63,6 +66,142 @@ public class Bool : INativeEntityCompiler
         func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 
+    private void BuildOr(CodeGen.LLVMExposingCodeGen g)
+    {
+        var ctx = g.ctx;
+        var module = g.module;
+        var builder = g.builder;
+        var FuncType = g.FuncType;
+        var Struct = g.Struct;
+
+        var Bool = Struct["Bool"];
+        var PBool = LLVMTypeRef.CreatePointer(Bool, 0);
+
+        const string funcN = "Bool.Or..Bool";
+        LLVMValueRef func = module.GetNamedFunction(funcN);
+        if (func.BasicBlocks.Length != 0)
+        {
+            throw new CodeGen.LLVMGenException("Function " + funcN + " already has a body");
+        }
+
+        var parames = new LLVMTypeRef[]
+        {
+            /*this*/PBool,
+            /*other*/PBool
+        };
+
+        var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(PBool, parames);
+        func = module.AddFunction(funcN, funcT);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+        var pThis = func.GetParam(0);
+        pThis.Name = "this";
+        var pOther = func.GetParam(1);
+        pOther.Name = "other";
+
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+        var u1 = builder.BuildStructGEP2(Bool, pThis, 0, "unbox1");
+        var u2 = builder.BuildStructGEP2(Bool, pOther, 0, "unbox2");
+        var v1 = builder.BuildLoad2(ctx.Int1Type, u1, "val1");
+        var v2 = builder.BuildLoad2(ctx.Int1Type, u2, "val2");
+        LLVMValueRef res = builder.BuildOr(v1, v2, "or");
+        /* resptr points both to the structure and to its initial field */
+        LLVMValueRef resptr = builder.BuildMalloc(Bool, "resptr");
+        builder.BuildStore(res, resptr);
+        builder.BuildRet(resptr);
+
+        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+    }
+
+    private void BuildXor(CodeGen.LLVMExposingCodeGen g)
+    {
+        var ctx = g.ctx;
+        var module = g.module;
+        var builder = g.builder;
+        var FuncType = g.FuncType;
+        var Struct = g.Struct;
+
+        var Bool = Struct["Bool"];
+        var PBool = LLVMTypeRef.CreatePointer(Bool, 0);
+
+        const string funcN = "Bool.Xor..Bool";
+        LLVMValueRef func = module.GetNamedFunction(funcN);
+        if (func.BasicBlocks.Length != 0)
+        {
+            throw new CodeGen.LLVMGenException("Function " + funcN + " already has a body");
+        }
+
+        var parames = new LLVMTypeRef[]
+        {
+            /*this*/PBool,
+            /*other*/PBool
+        };
+
+        var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(PBool, parames);
+        func = module.AddFunction(funcN, funcT);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+        var pThis = func.GetParam(0);
+        pThis.Name = "this";
+        var pOther = func.GetParam(1);
+        pOther.Name = "other";
+
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+        var u1 = builder.BuildStructGEP2(Bool, pThis, 0, "unbox1");
+        var u2 = builder.BuildStructGEP2(Bool, pOther, 0, "unbox2");
+        var v1 = builder.BuildLoad2(ctx.Int1Type, u1, "val1");
+        var v2 = builder.BuildLoad2(ctx.Int1Type, u2, "val2");
+        LLVMValueRef res = builder.BuildXor(v1, v2, "xor");
+        /* resptr points both to the structure and to its initial field */
+        LLVMValueRef resptr = builder.BuildMalloc(Bool, "resptr");
+        builder.BuildStore(res, resptr);
+        builder.BuildRet(resptr);
+
+        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+    }
+
+    private void BuildNot(CodeGen.LLVMExposingCodeGen g)
+    {
+        var ctx = g.ctx;
+        var module = g.module;
+        var builder = g.builder;
+        var FuncType = g.FuncType;
+        var Struct = g.Struct;
+
+        var Bool = Struct["Bool"];
+        var PBool = LLVMTypeRef.CreatePointer(Bool, 0);
+
+        const string funcN = "Bool.Not..Bool";
+        LLVMValueRef func = module.GetNamedFunction(funcN);
+        if (func.BasicBlocks.Length != 0)
+        {
+            throw new CodeGen.LLVMGenException("Function " + funcN + " already has a body");
+        }
+
+        var parames = new LLVMTypeRef[]
+        {
+            /*this*/PBool
+        };
+
+        var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(PBool, parames);
+        func = module.AddFunction(funcN, funcT);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+        var pThis = func.GetParam(0);
+        pThis.Name = "this";
+
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+        var u1 = builder.BuildStructGEP2(Bool, pThis, 0, "unbox1");
+        var v1 = builder.BuildLoad2(ctx.Int1Type, u1, "val1");
+        LLVMValueRef res = builder.BuildNot(v1, "not");
+        /* resptr points both to the structure and to its initial field */
+        LLVMValueRef resptr = builder.BuildMalloc(Bool, "resptr");
+        builder.BuildStore(res, resptr);
+        builder.BuildRet(resptr);
+
+        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+    }
+
     private void BuildTerminateExecution(CodeGen.LLVMExposingCodeGen g)
     {
         var ctx = g.ctx;
@@ -96,7 +235,7 @@ public class Bool : INativeEntityCompiler
         builder.BuildCall2(FuncType["exit"], module.GetNamedFunction("exit"),
             new[] { builder.BuildIntCast(builder.BuildLoad2(ctx.Int1Type, unboxed), ctx.Int32Type) });
         builder.BuildRet(LLVMValueRef.CreateConstPointerNull(PBool));
-       
+
         func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }
 }

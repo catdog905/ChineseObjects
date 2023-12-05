@@ -16,6 +16,8 @@ namespace ChineseObjects.Lang.CodeGen;
 /// </summary>
 public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 {
+    private readonly ITypesAwareProgram _program;
+    
     private LLVMContextRef ctx;
     private LLVMModuleRef module;
     private LLVMBuilderRef builder;
@@ -64,6 +66,24 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return AsPtr(Struct[name]);
     }
 
+    /// <param name="cls">Class where the method is defined</param>
+    /// <param name="method">Method to get name of</param>
+    /// <returns>The name that the method will have in LLVM IR</returns>
+    private static string FuncName(ITypesAwareClassDeclaration cls, ITypesAwareMethod method)
+    {
+        return cls.ClassName() + '.' + method.MethodName() + ".." + String.Join('.',
+            method.Parameters().GetParameters().Select(p => p.Type().TypeName().Value()));
+    }
+
+    /// <param name="type">Type corresponding to the class where the method is defined</param>
+    /// <param name="method">Method to get name of</param>
+    /// <returns>The name that the method will have in LLVM IR</returns>
+    private static string FuncName(Type type, ITypedMethodCall method)
+    {
+        return type.TypeName().Value() + '.' + method.MethodName() + ".." + String.Join('.',
+            method.Arguments().Values().Select(p => p.Type().TypeName().Value()));
+    }
+
     /// <summary>
     /// Represents constructor of a class as its method that has the same parameters, an empty name, and a body
     /// of the constructor followed by a "return this" statement
@@ -87,6 +107,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     /// <param name="program">Program to compile</param>
     public CompiledProgram(LLVMExposingCodeGen g, ITypesAwareProgram program)
     {
+        _program = program;
+
         /*
          * Native types were generated with `g`. Now we can access the environment prepared for us
          * (and `g` shall not be used by anyone anymore).
@@ -189,8 +211,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
              *
              * Constructors are treated like methods with empty names.
              */
-            string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
-                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
+            string funcName = FuncName(cls, method);
             var retT = OpaquePtr;  // Pointer to struct will be returned
             FuncType[funcName] = LLVMTypeRef.CreateFunction(retT,
                 Enumerable.Repeat(OpaquePtr, 1 + method.Parameters().GetParameters().Count()).ToArray());
@@ -238,8 +259,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
         foreach (ITypesAwareMethod method in methods)
         {
-            string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
-                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
+            string funcName = FuncName(cls, method);
             LLVMValueRef func = module.GetNamedFunction(funcName);
             builder.PositionAtEnd(func.AppendBasicBlock("entry"));
             foreach (ITypesAwareStatement statement in method.Body().Statements())
@@ -276,9 +296,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypedMethodCall methodCall)
     {
-        string funcName = methodCall.Caller().Type().TypeName().Value() + "." + methodCall.MethodName() + ".." +
-                          String.Join('.',
-                              methodCall.Arguments().Values().Select(arg => arg.Value().Type().TypeName().Value()));
+        string funcName = FuncName(methodCall.Caller().Type(), methodCall);
         if (!FuncType.ContainsKey(funcName))
         {
             throw new LLVMGenException("Function " + funcName + " is not declared");
@@ -328,9 +346,32 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return arg.Value().AcceptVisitor(this);
     }
 
-    public LLVMValueRef Visit(ITypedClassInstantiation _)
+    public LLVMValueRef Visit(ITypedClassInstantiation classInstantiation)
     {
-        throw new NotImplementedException();
+        ITypesAwareClassDeclaration cls = _program
+            .ClassDeclarations()
+            .First(classDeclaration => classDeclaration.ClassName().Equals(classInstantiation.ClassName()));
+        ITypesAwareConstructor firstMatchedConstructor = cls
+            .ConstructorDeclarations()
+            .First(decl => Type.ConstructorSignatureCheck(decl, classInstantiation.Arguments()));
+        
+        ITypesAwareMethod asMethod = ConstructorAsMethod(cls, firstMatchedConstructor);
+        string funcName = FuncName(cls, asMethod);
+        if (!FuncType.ContainsKey(funcName))
+        {
+            throw new LLVMGenException("Function " + funcName + " is note declared");
+        }
+
+        LLVMValueRef func = module.GetNamedFunction(funcName);
+
+        LLVMValueRef alloc = builder.BuildMalloc(Struct[cls.ClassName()]);
+        
+        List<LLVMValueRef> args = classInstantiation.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this))
+            .ToList();
+        // Add implicit initial argument "this"
+        args = args.Prepend(alloc).ToList();
+
+        return builder.BuildCall2(FuncType[funcName], func, args.ToArray(), "new");
     }
 
     public LLVMValueRef Visit(ITypesAwareReturn val)

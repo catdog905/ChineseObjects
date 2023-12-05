@@ -44,6 +44,25 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     private readonly LLVMTypeRef OpaquePtr; // Note: can't be declared static as must be a type from the `ctx` context.
 
     /// <summary>
+    /// Mapping (for current method's scope) from name (of either a local variable or a class field) to a pointer value
+    /// that stores a reference to the corresponding object.
+    /// </summary>
+    ///
+    /// <example>
+    /// <code>
+    /// LLVMTypeRef varType = ...;  // Type of the _object_ that variable is supposed to reference
+    /// LLVMTypeRef varPtr = LLVMTypeRef.CreatePointer(varType, 0);
+    /// string varName = "abc";  // Original variable name
+    ///
+    /// LLVMValueRef refer = nameToReferencer[varName];  // Points to where object reference is
+    /// LLVMValueRef obj = builder.BuildLoad(varPtr, refer, "objRef");  // Pointer to the structure
+    /// int fieldN = 123;  // Index of the field to access
+    /// LLVMValueRef field = builder.BuildStructGEP2(varType, obj, fieldN, "field");  // Pointer to the field
+    /// </code>
+    /// </example>
+    private Dictionary<string, LLVMValueRef> nameToReferencer = new();
+
+    /// <summary>
     /// Convert a type to a pointer of that type.
     ///
     /// Note: unless opaque pointers are disabled (which is not possible with the current upstream version of LLVMSharp),
@@ -246,6 +265,31 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
             string funcName = FuncName(cls, method);
             LLVMValueRef func = module.GetNamedFunction(funcName);
             builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+            
+            // `nameToReferencer` keeps fields and local variables in the current scope. Initially set it up with
+            // class fields and method parameters.
+            //
+            // **The order is important**: method parameters shadow fields, not vice versa.
+            nameToReferencer.Clear();
+
+            LLVMValueRef self = func.GetParam(0);
+            nameToReferencer["this"] = self;
+            uint fieldN = 0;
+            foreach (ITypedVariable field in cls.VariableDeclarations())
+            {
+                nameToReferencer[field.Name()] =
+                    builder.BuildStructGEP2(Struct[cls.ClassName()], self, fieldN, field.Name());
+                ++fieldN;
+            }
+
+            uint paramN = 1;  // Start with 1 because of implicit "this"
+            foreach (ITypedParameter param in method.Parameters().GetParameters())
+            {
+                nameToReferencer[param.Name()] = func.GetParam(paramN);
+                ++paramN;
+            }
+            
+            // Now compile statements
             foreach (ITypesAwareStatement statement in method.Body().Statements())
             {
                 // Build the statement. It is built and inserted to the builder position, which should remain
@@ -299,28 +343,15 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypedReference tRef)
     {
-        // TODO: implement! The implementation is probably similar to that of `ITypedThis` (?)
-        // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
-        // passed around in the code are **always** boxed, so they come in forms of pointers to structs allocated on
-        // heap.
-        return LLVMValueRef.CreateConstNull(StructPtr(tRef.Type().TypeName().Value()));
+        return builder.BuildLoad2(OpaquePtr, nameToReferencer[tRef.Name()]);
     }
 
     public LLVMValueRef Visit(ITypedThis tThis)
     {
-        // TODO: implement! The implementation is probably similar to that of `TypedReference` (?)
-        // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
-        // passed around in the code are **always** boxed, so they come in forms of pointers to structs allocated on
-        // heap.
-        return LLVMValueRef.CreateConstNull(StructPtr(tThis.Type().TypeName().Value()));
+        return nameToReferencer["this"];
     }
 
     public LLVMValueRef Visit(ITypedParameter _)
-    {
-        throw new NotImplementedException();
-    }
-
-    public LLVMValueRef Visit(ITypedVariable _)
     {
         throw new NotImplementedException();
     }

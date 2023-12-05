@@ -12,7 +12,7 @@ class Main is
     end
     
     method f2(b: Bool, a: Bool) : Bool is
-        this.f3(a, b)
+        this.f3(b, a)
     end
     
     method f3(a: Bool, b: Bool) : Bool is

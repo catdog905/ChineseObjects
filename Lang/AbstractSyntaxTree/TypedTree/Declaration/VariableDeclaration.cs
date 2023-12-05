@@ -30,9 +30,4 @@ public class TypedVariable : ITypedVariable
     {
         return _type;
     }
-
-    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
-    {
-        return visitor.Visit(this);
-    }
 }

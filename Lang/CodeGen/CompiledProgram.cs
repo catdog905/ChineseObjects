@@ -4,6 +4,13 @@ using LLVMSharp.Interop;
 
 namespace ChineseObjects.Lang.CodeGen;
 
+/*
+ * WARNING: avoid using potentially lazy containers (such as `IEnumerable`) when working with llvm objects that need to
+ * be built. Builder heavily relies on the order of instruction builds and its consistency with other builder operations
+ * (such as changing its position).
+ * Instead use structures that use strict evaluation (such as `List`)
+ */
+
 /// <summary>
 /// Code generator for ChineseObjects
 /// </summary>
@@ -280,9 +287,10 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         LLVMValueRef func = module.GetNamedFunction(funcName);
         
         // Compile all arguments' values (other than "this")
-        IEnumerable<LLVMValueRef> args = methodCall.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this));
+        List<LLVMValueRef> args = methodCall.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this))
+            .ToList();
         // The caller itself (aka "this") is an implicit first argument to every method call:
-        args = args.Prepend(methodCall.Caller().AcceptVisitor(this));
+        args = args.Prepend(methodCall.Caller().AcceptVisitor(this)).ToList();
         // Build the method call
         return builder.BuildCall2(FuncType[funcName], func, args.ToArray());
     }

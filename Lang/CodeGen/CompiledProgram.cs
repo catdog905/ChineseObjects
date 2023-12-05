@@ -171,11 +171,11 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         }
 
         // Compile _CO_entrypoint. This function shall be the entry point of ChineseObjects' runtime
-        string mainName = "Main.Main..";
+        string mainName = "Main...";
         LLVMValueRef main = module.GetNamedFunction(mainName);
         if (main.BasicBlocks.Length == 0)
         {
-            throw new LLVMGenException("Could not find class Main with method Main()");
+            throw new LLVMGenException("Could not find class Main with parameterless constructor");
         }
 
         string entrypointName = "_CO_entrypoint";
@@ -183,8 +183,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         LLVMValueRef co_entry = module.AddFunction(entrypointName, FuncType[entrypointName]);
         co_entry.Linkage = LLVMLinkage.LLVMExternalLinkage;
         builder.PositionAtEnd(co_entry.AppendBasicBlock("entry"));
-        // TODO: first construct an object of type `Main` and call the method with that value rather than a null pointer
-        builder.BuildCall2(FuncType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
+        builder.BuildCall2(FuncType[mainName], main, new[] { builder.BuildMalloc(Struct["Main"], "mainObj") });
         builder.BuildRetVoid();
         
         module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);

@@ -5,12 +5,12 @@ class Other is
 end
 
 class Main is
+    this() is
+        this.terminateIgnoreArg(false.And(true))
+    end
+
     method terminateIgnoreArg(arg: Bool) : Bool is
         new Other()
         true.And(true).TerminateExecution()
-    end
-
-    method Main() : Bool is
-        this.terminateIgnoreArg(false.And(true))
     end
 end

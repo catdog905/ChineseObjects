@@ -8,6 +8,7 @@ public interface IMethodDeclaration : IMemberDeclaration, IAstNode
     public IParameters Parameters();
     public IIdentifier ReturnTypeName();
     public IStatementsBlock Body();
+    public string Signature();
 }
 
 public class MethodDeclaration : IMethodDeclaration, IHumanReadable
@@ -32,6 +33,11 @@ public class MethodDeclaration : IMethodDeclaration, IHumanReadable
     public override string ToString()
     {
         return _methodName + "(" + _parameters + "):" + _returnTypeName + "{" + _body + "}";
+    }
+
+    public string Signature()
+    {
+        return _methodName + "(" + String.Join(",", _parameters.GetParameters().Select(parameter => parameter.TypeName()))  + ")";
     }
 
     public IList<string> GetRepr()

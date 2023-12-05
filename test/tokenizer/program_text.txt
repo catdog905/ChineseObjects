@@ -1,7 +1,43 @@
-class Empty is end
-
-class Main is
+class ParentOther is
     this() is
-        new Empty()
+        false.TerminateExecution()
+    end
+    
+    method f3(b: Bool, a: Bool, c: Bool) : Bool is
+            this.f3(a, b)
+        end
+    
+    method f3(b: Bool, a: Bool) : Bool is
+        this.f3(a, b)
+    end
+        
+    method f8(a: Bool, b: Bool) : Bool is
+        a.TerminateExecution()
+    end
+end
+
+class Other extends ParentOther is
+    this() is
+        false.TerminateExecution()
+    end
+    
+    method f2(b: Bool, a: Bool) : Bool is
+        this.f3(a, b)
+    end
+        
+    method f3(a: Bool, b: Bool) : Bool is
+        a.TerminateExecution()
+    end
+end
+
+class Main extends Other is
+    var x : Other
+    
+    method f1(a: Bool, b: Bool) : Bool is
+        this.f2(a, b)
+    end
+
+    this() is
+        this.f1(false, true)
     end
 end

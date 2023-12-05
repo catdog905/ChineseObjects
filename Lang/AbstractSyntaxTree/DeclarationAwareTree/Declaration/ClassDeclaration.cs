@@ -5,10 +5,10 @@ namespace ChineseObjects.Lang;
 public interface IClassDeclaration : IAstNode
 {
     public IIdentifier ClassName();
-    public IEnumerable<IIdentifier> ParentClassNames();
-    public IEnumerable<IConstructorDeclaration> ConstructorDeclarations();
-    public IEnumerable<IVariableDeclaration> VariableDeclarations();
-    public IEnumerable<IMethodDeclaration> MethodDeclarations();
+    public ImmutableList<IIdentifier> ParentClassNames();
+    public ImmutableList<IConstructorDeclaration> ConstructorDeclarations();
+    public ImmutableList<IVariableDeclaration> VariableDeclarations();
+    public ImmutableList<IMethodDeclaration> MethodDeclarations();
 }
 
 public class ClassDeclaration : IClassDeclaration, IHumanReadable
@@ -126,25 +126,79 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
         return _className;
     }
 
-    public IEnumerable<IIdentifier> ParentClassNames()
+    public ImmutableList<IIdentifier> ParentClassNames()
     {
         return _parentClassNames;
     }
 
-    public IEnumerable<IConstructorDeclaration> ConstructorDeclarations()
+    public ImmutableList<IConstructorDeclaration> ConstructorDeclarations()
     {
         return _constructorDeclarations;
     }
 
-    public IEnumerable<IVariableDeclaration> VariableDeclarations()
+    public ImmutableList<IVariableDeclaration> VariableDeclarations()
     {
         return _variableDeclarations;
     }
 
-    public IEnumerable<IMethodDeclaration> MethodDeclarations()
+    public ImmutableList<IMethodDeclaration> MethodDeclarations()
     {
         return _methodDeclarations;
     }
+    
+    public static IClassDeclaration WithInheritedMethods(IClassDeclaration classDeclaration, Scope scope)
+    {
+        return new ClassDeclaration(
+            classDeclaration.ClassName(),
+            classDeclaration.ParentClassNames(),
+            classDeclaration.ConstructorDeclarations(),
+            classDeclaration.VariableDeclarations(),
+            WithInheritedMethods(
+                classDeclaration,
+                ImmutableList<string>.Empty,
+                scope).Values);
+    }
+
+    public static ImmutableDictionary<string, MethodDeclaration> WithInheritedMethods(
+            IClassDeclaration classDeclaration,
+            ImmutableList<string> childrenNames,
+            Scope scope)
+        {
+            ImmutableList<string> parentNames = classDeclaration.ParentClassNames()
+                .Select(parentClassName =>
+                    scope.GetType(parentClassName.Value()).TypeName().Value())
+                .ToImmutableList();
+            if (parentNames.Distinct().Count() != parentNames.Count)
+                throw new DuplicatedParentsException();
+            if (childrenNames.Contains(classDeclaration.ClassName().Value()))
+                throw new CyclicInheritanceException();
+            
+            ImmutableList<IClassDeclaration> parentClasses = classDeclaration.ParentClassNames()
+                .Select(parentClassName =>
+                    scope.GetType(parentClassName.Value()).ClassDeclaration())
+                .ToImmutableList();
+            
+            ImmutableDictionary<string, MethodDeclaration> parentMethods = parentClasses.Aggregate(
+                ImmutableDictionary<string, MethodDeclaration>.Empty,
+                (dict, declaration) =>
+                {
+                    ImmutableDictionary<string, MethodDeclaration> parentMethods = WithInheritedMethods(
+                        declaration, 
+                        childrenNames.Add(classDeclaration.ClassName().Value()),
+                        scope);
+                    return dict
+                        .RemoveRange(parentMethods.Keys)
+                        .AddRange(WithInheritedMethods(
+                            declaration, 
+                            childrenNames.Add(classDeclaration.ClassName().Value()),
+                            scope));
+                });
+            ImmutableDictionary<string, MethodDeclaration> currentMethods = classDeclaration.MethodDeclarations()
+                .ToImmutableDictionary(
+                    elem => elem.Signature(),
+                    elem => (MethodDeclaration)elem);
+            return parentMethods.RemoveRange(currentMethods.Keys).AddRange(currentMethods);
+        }
 }
 
 public interface IThis : IExpression {}
@@ -161,3 +215,6 @@ public class This : IThis
         return new List<string> {"THIS"};
     }
 }
+
+class CyclicInheritanceException : Exception { }
+class DuplicatedParentsException : Exception { }

@@ -146,6 +146,8 @@ public class Type
     {
         return $"{_classDeclaration.GetHashCode()}";
     }
+
+    public IClassDeclaration ClassDeclaration() => _classDeclaration;
 }
 
 public class NoSuchMethodException : Exception

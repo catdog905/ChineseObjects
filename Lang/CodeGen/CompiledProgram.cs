@@ -273,10 +273,14 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
             nameToReferencer.Clear();
 
             LLVMValueRef self = func.GetParam(0);
-            nameToReferencer["this"] = self;
+            nameToReferencer["this"] = self;  // "this" is a special case: unlike all others, which are pointers to
+                                             // pointers, "this" is a direct pointer (as it can't be assigned and is
+                                             // anyway handled separately everywhere.
             uint fieldN = 0;
             foreach (ITypedVariable field in cls.VariableDeclarations())
             {
+                // As all fields of structs are pointers to other objects, the result of `GEP` is already a pointer
+                // to pointer, don't need to do anything additionally.
                 nameToReferencer[field.Name()] =
                     builder.BuildStructGEP2(Struct[cls.ClassName()], self, fieldN, field.Name());
                 ++fieldN;
@@ -285,7 +289,12 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
             uint paramN = 1;  // Start with 1 because of implicit "this"
             foreach (ITypedParameter param in method.Parameters().GetParameters())
             {
-                nameToReferencer[param.Name()] = func.GetParam(paramN);
+                // The value returned by `func.GetParam()` is a direct pointer but a name should be dynamically bound
+                // to a reference, so an additional layer of indirection is needed. The "l_*" nodes are this additional
+                // layer of indirection.
+                LLVMValueRef referer = builder.BuildAlloca(OpaquePtr, "l_" + param.Name());
+                builder.BuildStore(func.GetParam(paramN), referer);
+                nameToReferencer[param.Name()] = referer;
                 ++paramN;
             }
             
@@ -348,6 +357,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypedThis tThis)
     {
+        // Unlike all other names, which are indirect pointers, "this" is a direct pointer
         return nameToReferencer["this"];
     }
 
@@ -404,8 +414,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(ITypesAwareAssignment _)
+    public LLVMValueRef Visit(ITypesAwareAssignment asgn)
     {
-        throw new NotImplementedException();
+        return builder.BuildStore(asgn.Expr().AcceptVisitor(this), nameToReferencer[asgn.Name()]);
     }
 }

@@ -66,15 +66,10 @@ public class Type
     {
         if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
             return false;
-        foreach (IParameterDeclaration parameter in constructorDeclaration.Parameters().GetParameters()) 
+        foreach (var (parameter, argument) in constructorDeclaration.Parameters().GetParameters()
+                     .Zip(constructorCallArguments.Values())) 
         {
-            if (constructorCallArguments
-                    .Values()
-                    .Count(arg => 
-                        arg.Type().TypeName().Value()
-                            .Equals(
-                                parameter.TypeName().Value())
-                    ) != 1)
+            if (!parameter.TypeName().Equals(argument.Type().TypeName()))
             {
                 return false;
             }
@@ -89,15 +84,10 @@ public class Type
     {
         if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
             return false;
-        foreach (ITypedParameter parameter in constructorDeclaration.Parameters().GetParameters()) 
+        foreach (var (parameter, argument) in constructorDeclaration.Parameters().GetParameters()
+                     .Zip(constructorCallArguments.Values())) 
         {
-            if (constructorCallArguments
-                    .Values()
-                    .Count(arg => 
-                        arg.Type().TypeName().Value()
-                            .Equals(
-                                parameter.Type().TypeName().Value())
-                    ) != 1)
+            if (!parameter.Type().TypeName().Equals(argument.Type().TypeName()))
             {
                 return false;
             }

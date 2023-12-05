@@ -1,25 +1,7 @@
-class Other is
-    this() is
-        false.TerminateExecution()
-    end
-end
+class Empty is end
 
 class Main is
-    var x : Other
-    
-    method f1(a: Bool, b: Bool) : Bool is
-        this.f2(a, b)
-    end
-    
-    method f2(b: Bool, a: Bool) : Bool is
-        this.f3(a, b)
-    end
-    
-    method f3(a: Bool, b: Bool) : Bool is
-        a.TerminateExecution()
-    end
-
     this() is
-        this.f1(false, true)
+        new Empty()
     end
 end

@@ -28,9 +28,15 @@ public class ClassDeclaration : IClassDeclaration, IHumanReadable
     {
         _className = className;
         _parentClassNames = parentClassNames;
-        _constructorDeclarations = constructorDeclarations;
         _variableDeclarations = variableDeclarations;
         _methodDeclarations = methodDeclarations;
+        
+        if (constructorDeclarations.Count() == 0)
+        {
+            constructorDeclarations = constructorDeclarations.Add(
+                new ConstructorDeclaration());
+        }
+        _constructorDeclarations = constructorDeclarations;
     }
     
     public ClassDeclaration(

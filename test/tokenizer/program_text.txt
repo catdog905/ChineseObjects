@@ -1,4 +1,9 @@
-class Number is end
+class Other is
+    this() is
+        false.TerminateExecution()
+    end
+end
+
 class Main is
     method terminateIgnoreArg(arg: Bool) : Bool is
         true.And(true).TerminateExecution()

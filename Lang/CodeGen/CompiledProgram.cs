@@ -57,6 +57,20 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return AsPtr(Struct[name]);
     }
 
+    /// <summary>
+    /// Represents constructor of a class as its method that has the same parameters, an empty name, and a body
+    /// of the constructor followed by a "return this" statement
+    /// </summary>
+    /// <param name="cls">Class</param>
+    /// <param name="ctor">Constructor of the class</param>
+    /// <returns>Pseudo method of the class</returns>
+    private static ITypesAwareMethod ConstructorAsMethod(ITypesAwareClassDeclaration cls, ITypesAwareConstructor ctor)
+    {
+        Type type = cls.SelfType();
+        return new TypesAwareMethod("", ctor.Parameters(), type,
+            new TypesAwareStatementsBlock(ctor.Body().Statements().Append(new TypesAwareReturn(new TypedThis(type)))));
+    }
+
 
     /// <summary>
     /// Compile a type aware program, given an `LLVMExposingCodeGen` with compiled native types.
@@ -151,8 +165,12 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     {
         var Class = Struct[cls.ClassName()] = ctx.CreateNamedStruct(cls.ClassName());
         Class.StructSetBody(Enumerable.Repeat(OpaquePtr, cls.VariableDeclarations().Count()).ToArray(), Packed: false);
+
+        // Collect normal methods and pseudo-methods generated from constructors. Declare them with the same rule
+        List<ITypesAwareMethod> methods = cls.MethodDeclarations()
+            .Concat(cls.ConstructorDeclarations().Select(c => ConstructorAsMethod(cls, c))).ToList();
         
-        foreach (ITypesAwareMethod method in cls.MethodDeclarations())
+        foreach (ITypesAwareMethod method in methods)
         {
             /*
              * The name of the compiled method is formed as [ClassName].[MethodName]..[Param1TypeName].[Param2TypeName]...
@@ -161,6 +179,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
              * the object method is called on as their initial argument. Thus, the method that is compiled into
              * a routine called "Abc.Hello..Bool.Abc" shall be called with three arguments: of types `Abc`, `Bool`, and
              * `Abc` respectively (the object itself and two parameters).
+             *
+             * Constructors are treated like methods with empty names.
              */
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
@@ -184,10 +204,32 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     private void CompileClass(ITypesAwareClassDeclaration cls)
     {
-        // TODO 2: compile constructors
         // TODO 3: support inheritance
 
-        foreach (ITypesAwareMethod method in cls.MethodDeclarations())
+        List<ITypesAwareConstructor> ctors;
+        if (cls.ConstructorDeclarations().Any())
+        {
+            ctors = cls.ConstructorDeclarations().ToList();
+        }
+        else
+        {
+            // If there are no constructors, add a trivial empty constructor
+            ctors = new List<ITypesAwareConstructor>
+            {
+                new TypesAwareConstructor(new TypesAwareParameters(new ITypedParameter[] { }),
+                    new TypesAwareStatementsBlock(new ITypesAwareStatement[] { }))
+            };
+        }
+        
+        /*
+         * Now a constructor is essentially a method that is run on a newly allocated memory and returns the value of
+         * "this". So let's treat them as methods!
+         */
+        List<ITypesAwareMethod> methods = cls.MethodDeclarations()
+            .Concat(ctors.Select(ctor => ConstructorAsMethod(cls, ctor))).ToList();
+
+
+        foreach (ITypesAwareMethod method in methods)
         {
             string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
                               String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
@@ -200,11 +242,15 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
                 statement.AcceptVisitor(this);
             }
 
-            // Return a nil reference in case the execution did not reach a return statement.
-            builder.BuildRet(LLVMValueRef.CreateConstNull(OpaquePtr));
+            // Every basic block must end with a terminator instruction. If the function does not return, return a
+            // nil ref
+            if (builder.InsertBlock.LastInstruction.IsATerminatorInst.Handle == IntPtr.Zero)
+            {
+                builder.BuildRet(LLVMValueRef.CreateConstNull(OpaquePtr));
+            }
         }
     }
-    
+
     public LLVMValueRef Visit(ITypedBoolLiteral boolLit)
     {
         var Bool = Struct["Bool"];
@@ -281,7 +327,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypesAwareReturn val)
     {
-        return builder.BuildRet(val.AcceptVisitor(this));
+        return builder.BuildRet(val.Expression().AcceptVisitor(this));
     }
 
     public LLVMValueRef Visit(ITypesAwareWhile _)

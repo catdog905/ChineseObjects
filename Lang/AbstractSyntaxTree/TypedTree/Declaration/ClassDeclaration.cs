@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+
 namespace ChineseObjects.Lang.Declaration;
 
 public interface ITypesAwareClassDeclaration : ITypesAwareAstNode
@@ -27,15 +29,22 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
     {
         _selfType = selfType;
         _parentClassNames = parentClassNames;
-        _constructorDeclarations = constructorDeclarations;
         _variableDeclarations = variableDeclarations;
-        _methodDeclarations = methodDeclarations;
+        var typesAwareMethods = methodDeclarations.ToList();
+        _methodDeclarations = typesAwareMethods;
 
-        if (constructorDeclarations
+        ImmutableList<ITypesAwareConstructor> typesAwareConstructors = constructorDeclarations.ToImmutableList();
+        if (typesAwareConstructors.Count() == 0)
+        {
+            typesAwareConstructors = typesAwareConstructors.Add(
+                new TypesAwareConstructor());
+        }
+        _constructorDeclarations = typesAwareConstructors;
+        if (typesAwareConstructors
                 .GroupBy(decl => decl.Parameters())
                 .Count(group => group.Count() > 1) != 0)
             throw new DuplicatedConstructorException(_selfType.TypeName().Value());
-        if (methodDeclarations
+        if (typesAwareMethods
                 .GroupBy(decl => decl.Parameters())
                 .Count(group => group.Count() > 1) != 0)
             throw new DuplicatedMethodException(_selfType.TypeName().Value());

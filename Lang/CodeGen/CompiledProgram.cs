@@ -232,29 +232,14 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     private void CompileClass(ITypesAwareClassDeclaration cls)
     {
         // TODO 3: support inheritance
-
-        List<ITypesAwareConstructor> ctors;
-        if (cls.ConstructorDeclarations().Any())
-        {
-            ctors = cls.ConstructorDeclarations().ToList();
-        }
-        else
-        {
-            // If there are no constructors, add a trivial empty constructor
-            ctors = new List<ITypesAwareConstructor>
-            {
-                new TypesAwareConstructor(new TypesAwareParameters(new ITypedParameter[] { }),
-                    new TypesAwareStatementsBlock(new ITypesAwareStatement[] { }))
-            };
-        }
         
         /*
          * Now a constructor is essentially a method that is run on a newly allocated memory and returns the value of
          * "this". So let's treat them as methods!
          */
         List<ITypesAwareMethod> methods = cls.MethodDeclarations()
-            .Concat(ctors.Select(ctor => ConstructorAsMethod(cls, ctor))).ToList();
-
+            .Concat(cls.ConstructorDeclarations()
+                .Select(ctor => ConstructorAsMethod(cls, ctor))).ToList();
 
         foreach (ITypesAwareMethod method in methods)
         {

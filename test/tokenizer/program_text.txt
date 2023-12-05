@@ -5,12 +5,21 @@ class Other is
 end
 
 class Main is
-    this() is
-        this.terminateIgnoreArg(false.And(true))
+    var x : Other
+    
+    method f1(a: Bool, b: Bool) : Bool is
+        this.f2(a, b)
+    end
+    
+    method f2(b: Bool, a: Bool) : Bool is
+        this.f3(a, b)
+    end
+    
+    method f3(a: Bool, b: Bool) : Bool is
+        a.TerminateExecution()
     end
 
-    method terminateIgnoreArg(arg: Bool) : Bool is
-        new Other()
-        true.And(true).TerminateExecution()
+    this() is
+        this.f1(false, true)
     end
 end

@@ -32,6 +32,34 @@ public class Identifier : IIdentifier {
     {
         return new List<string> {"IDENTIFIER " + _name};
     }
+
+    protected bool Equals(Identifier other)
+    {
+        return _name == other._name;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((Identifier)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return _name.GetHashCode();
+    }
+
+    public static bool operator ==(Identifier? left, Identifier? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(Identifier? left, Identifier? right)
+    {
+        return !Equals(left, right);
+    }
 }
 
 public interface IIdentifiers : IAstNode

@@ -16,6 +16,7 @@ public class Bool : INativeEntityCompiler
         BuildOr(g);
         BuildXor(g);
         BuildNot(g);
+        BuildToInteger(g);
         BuildTerminateExecution(g);
     }
 
@@ -198,6 +199,45 @@ public class Bool : INativeEntityCompiler
         LLVMValueRef resptr = builder.BuildMalloc(Bool, "resptr");
         builder.BuildStore(res, resptr);
         builder.BuildRet(resptr);
+
+        func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+    }
+
+    private void BuildToInteger(CodeGen.LLVMExposingCodeGen g)
+    {
+        var ctx = g.ctx;
+        var module = g.module;
+        var builder = g.builder;
+        var FuncType = g.FuncType;
+        var Struct = g.Struct;
+
+        var Bool = Struct["Bool"];
+        var PBool = LLVMTypeRef.CreatePointer(Bool, 0);
+
+        const string funcN = "Bool.ToInteger..Int";
+        LLVMValueRef func = module.GetNamedFunction(funcN);
+        if (func.BasicBlocks.Length != 0)
+        {
+            throw new CodeGen.LLVMGenException("Function " + funcN + " already has a body");
+        }
+
+        var parames = new LLVMTypeRef[]
+        {
+            /*this*/PBool
+        };
+
+        var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(ctx.Int32Type, parames);
+        func = module.AddFunction(funcN, funcT);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+        var pThis = func.GetParam(0);
+        pThis.Name = "this";
+
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+        var u1 = builder.BuildStructGEP2(Bool, pThis, 0, "unbox1");
+        var v1 = builder.BuildLoad2(ctx.Int1Type, u1, "val1");
+        LLVMValueRef res = builder.BuildZExt(v1, ctx.Int32Type, "toInteger");
+        builder.BuildRet(res);
 
         func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
     }

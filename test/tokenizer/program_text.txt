@@ -1,14 +1,22 @@
 class Main is
     var x : Bool
     
+    method shortLoop(x : Bool) : Bool is
+        while x loop
+            x : Bool := false
+        end
+    end
+    
     this() is
         x : Bool := false
         x : Bool := true
+        this.shortLoop(x)
         if x then
             x : Bool := false
             if x then
                 true.TerminateExecution()
             else
+                true.TerminateExecution()
                 x : Bool := x
             end
         end

@@ -409,9 +409,36 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return builder.BuildRet(val.Expression().AcceptVisitor(this));
     }
 
-    public LLVMValueRef Visit(ITypesAwareWhile _)
+    public LLVMValueRef Visit(ITypesAwareAssignment asgn)
     {
-        throw new NotImplementedException();
+        return builder.BuildStore(asgn.Expr().AcceptVisitor(this), nameToReferencer[asgn.Name()]);
+    }
+
+    public LLVMValueRef UnboxCond(ITypedExpression expr)
+    {
+        LLVMValueRef boxedCond = expr.AcceptVisitor(this);
+        LLVMValueRef cond = builder.BuildLoad2(ctx.Int1Type, boxedCond, "cond");
+        return cond;
+    }
+
+    public LLVMValueRef Visit(ITypesAwareWhile tWhile)
+    {
+        LLVMBasicBlockRef condCheck = builder.InsertBlock.Parent.AppendBasicBlock("loop_cond");
+        LLVMBasicBlockRef lbody = builder.InsertBlock.Parent.AppendBasicBlock("loop");
+        LLVMBasicBlockRef lout = builder.InsertBlock.Parent.AppendBasicBlock("loop_out");
+
+        builder.BuildBr(condCheck);
+        builder.PositionAtEnd(condCheck);
+        LLVMValueRef cond = UnboxCond(tWhile.Condition());
+        builder.BuildCondBr(cond, lbody, lout);
+
+        builder.PositionAtEnd(lbody);
+        BuildStatements(tWhile.Body().Statements());
+        builder.BuildBr(condCheck);  /* Jumping not to the current insert block but to where loop starts */
+        lbody = builder.InsertBlock;  /* Could have been moved to another block by nested control flow! */
+
+        builder.PositionAtEnd(lout);
+        return builder.InsertBlock.LastInstruction;  /* Nothing useful we can return */
     }
 
     public LLVMValueRef Visit(ITypesAwareIfElse ife)
@@ -421,8 +448,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         mergeB = builder.InsertBlock.Parent.AppendBasicBlock("merge");
         elseB = ife.Else() is null ? mergeB : builder.InsertBlock.Parent.AppendBasicBlock("else");
 
-        LLVMValueRef boxedCond = ife.Condition().AcceptVisitor(this);
-        LLVMValueRef cond = builder.BuildLoad2(ctx.Int1Type, boxedCond, "cond");
+        LLVMValueRef cond = UnboxCond(ife.Condition());
 
         builder.BuildCondBr(cond, thenB, elseB);
 
@@ -439,10 +465,5 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         }
         builder.PositionAtEnd(mergeB);
         return builder.InsertBlock.LastInstruction;  /* Nothing useful we can return */
-    }
-
-    public LLVMValueRef Visit(ITypesAwareAssignment asgn)
-    {
-        return builder.BuildStore(asgn.Expr().AcceptVisitor(this), nameToReferencer[asgn.Name()]);
     }
 }

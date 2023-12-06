@@ -1,7 +1,8 @@
 class Number is end
 class Main is
+    var x : Number
     method terminateIgnoreArg(arg: Bool) : Bool is
-        true.And(true).TerminateExecution()
+        false.Not().TerminateExecution()
     end
 
     method Main() : Bool is

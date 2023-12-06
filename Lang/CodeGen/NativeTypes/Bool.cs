@@ -172,7 +172,7 @@ public class Bool : INativeEntityCompiler
         var Bool = Struct["Bool"];
         var PBool = LLVMTypeRef.CreatePointer(Bool, 0);
 
-        const string funcN = "Bool.Not..Bool";
+        const string funcN = "Bool.Not..";
         LLVMValueRef func = module.GetNamedFunction(funcN);
         if (func.BasicBlocks.Length != 0)
         {
@@ -226,6 +226,7 @@ public class Bool : INativeEntityCompiler
             /*this*/PBool
         };
 
+        //TODO: return a pointer to a Number struct
         var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(ctx.Int32Type, parames);
         func = module.AddFunction(funcN, funcT);
         func.Linkage = LLVMLinkage.LLVMExternalLinkage;

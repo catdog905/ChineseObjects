@@ -149,7 +149,7 @@ public class OptimizedProgram
                             = WithoutUnusedVariables(assignment);
                         return
                         (
-                            tailVars.Remove(assignment.Name()).AddRange(newUsedVars),
+                            tailVars.AddRange(newUsedVars), // .Remove(assignment.Name()) deleted
                             new TypesAwareStatementsBlock(
                                 (ITypesAwareAssignment)newAssignment,
                                 tailStatementBlock

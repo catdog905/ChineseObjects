@@ -1,26 +1,25 @@
-class A is
-    method f1(b: Bool) : Bool is
-        return b
-    end
-end
-
-class Polymorph is
-    method f(x: A) : Bool is
-        return x.f1(true)
-    end
-end
-
-class B extends A is
-    method f1(b: Bool) : Bool is
-        return b
-    end
-end
-
 class Main is
-    var p : Polymorph
-
+    var x : Bool
+    
+    method shortLoop(x : Bool) : Bool is
+        while x loop
+            x : Bool := false
+        end
+    end
+    
     this() is
-        p : Polymorph := new Polymorph()
-        p.f(new B())
+        x : Bool := false
+        x : Bool := true
+        this.shortLoop(x)
+        if x then
+            x : Bool := false
+            if x then
+                true.TerminateExecution()
+            else
+                true.TerminateExecution()
+                x : Bool := x
+            end
+        end
+        x.TerminateExecution()
     end
 end

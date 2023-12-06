@@ -46,9 +46,17 @@ public static class NativeTypesDeclarations
     private static readonly MethodDeclaration NumberNegate = new MethodDeclaration(
     new Identifier("Negate"), new Parameters(), new Identifier("Number"), new NativeMethod());
 
+    private static readonly MethodDeclaration NumberPlus = new MethodDeclaration(
+    new Identifier("Plus"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
+    new Identifier("Number"), new NativeMethod());
+
+    private static readonly MethodDeclaration NumberMinus = new MethodDeclaration(
+    new Identifier("Minus"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
+    new Identifier("Number"), new NativeMethod());
+    
     private static readonly ClassDeclaration NumberDeclaration = new ClassDeclaration(new Identifier("Number"),
     ImmutableList<IIdentifier>.Empty, ImmutableList<IConstructorDeclaration>.Empty,
-    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberNegate });
+    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberNegate, NumberPlus, NumberMinus });
 
     public static readonly Type Number = new Type(NumberDeclaration);
     /// <summary>

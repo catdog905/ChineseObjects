@@ -20,5 +20,6 @@ TypesAwareProgram typesAwareProgram = new TypesAwareProgram(scopeAwareProgram);
 var nativeGen = new LLVMExposingCodeGen();
 new LibC().CompileWith(nativeGen);
 new Bool().CompileWith(nativeGen);
+new Number().CompileWith(nativeGen);
 
 var gen = new CompiledProgram(nativeGen, typesAwareProgram);

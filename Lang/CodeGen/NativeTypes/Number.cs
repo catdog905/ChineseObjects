@@ -15,6 +15,7 @@ public class Number : INativeEntityCompiler
         BuildNegate(g);
         BuildPlus(g);
         BuildMinus(g);
+        BuildMult(g);
     }
 
     private void BuildNegate(CodeGen.LLVMExposingCodeGen g)

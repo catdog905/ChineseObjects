@@ -180,11 +180,10 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypedNumLiteral numLit)
     {
-        // throw new NotImplementedException();
         var Number = Struct["Number"];
         var boxed = builder.BuildMalloc(Number, "boxed");
         var direct = builder.BuildStructGEP2(Number, boxed, 0, "direct");
-        builder.BuildStore(LLVMValueRef.CreateConstReal(ctx.DoubleType, numLit.Value()), direct);
+        builder.BuildStore(LLVMValueRef.CreateConstReal(ctx.Int32Type, numLit.Value()), direct);
         
         return boxed;
         

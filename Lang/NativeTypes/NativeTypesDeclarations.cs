@@ -53,12 +53,17 @@ public static class NativeTypesDeclarations
     private static readonly MethodDeclaration NumberMinus = new MethodDeclaration(
     new Identifier("Minus"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
     new Identifier("Number"), new NativeMethod());
+
+    private static readonly MethodDeclaration NumberMult = new MethodDeclaration(
+    new Identifier("Mult"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
+    new Identifier("Number"), new NativeMethod());
     
     private static readonly ClassDeclaration NumberDeclaration = new ClassDeclaration(new Identifier("Number"),
     ImmutableList<IIdentifier>.Empty, ImmutableList<IConstructorDeclaration>.Empty,
-    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberNegate, NumberPlus, NumberMinus });
+    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberNegate, NumberPlus, NumberMinus, NumberMult });
 
     public static readonly Type Number = new Type(NumberDeclaration);
+    
     /// <summary>
     /// Scope that contains all native types.
     /// </summary>

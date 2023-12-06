@@ -32,8 +32,6 @@ public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock
             .Select(statement => TypeIrrealizable.MakeTypesAwareStatement(statement))
             .ToList()) {}
 
-    public TypesAwareStatementsBlock() :
-        this(new List<ITypesAwareStatement>()) {}
 
     public TypesAwareStatementsBlock(ITypesAwareStatement newAssignment, ITypesAwareStatementsBlock tailStatementBlock) :
         this(new List<ITypesAwareStatement>{newAssignment}.ToImmutableList().AddRange(tailStatementBlock.Statements())) {}

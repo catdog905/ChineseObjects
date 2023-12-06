@@ -1,3 +1,8 @@
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
 namespace ChineseObjects.Lang.CodeGen;
 
 public interface ITypesAwareStatementVisitor<T>
@@ -13,5 +18,5 @@ public interface ITypesAwareStatementVisitor<T>
     T Visit(ITypesAwareWhile _);
     T Visit(ITypesAwareIfElse _);
     T Visit(ITypesAwareAssignment _);
-    T Visit(Declaration.ITypedThis _);
+    T Visit(ITypedThis _);
 }

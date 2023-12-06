@@ -1,3 +1,5 @@
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
@@ -22,6 +24,7 @@ public class ExpressionWrapper : IExpression
             ITypedReference identifier => new Reference(identifier),
             ITypedMethodCall methodCall => new MethodCall(methodCall),
             ITypedNumLiteral numLiteral => new NumLiteral(numLiteral),
+            ITypedThis typedThis => new This(),
             _ => throw new NotImplementedException("Implementation of expression not found")
         })
     {}

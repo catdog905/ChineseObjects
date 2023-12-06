@@ -1,5 +1,8 @@
 using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
 
 namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
@@ -97,7 +100,7 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
     public ITypesAwareClassDeclaration WithoutVariables(IEnumerable<string> where)
     {
         return new TypesAwareClassDeclaration(
-            _className,
+            _selfType,
             _parentClassNames,
             _constructorDeclarations,
             _variableDeclarations.Where(decl => !where.ToList().Contains(decl.Name())),
@@ -129,6 +132,11 @@ public class TypedThis : ITypedThis
     public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
     {
         return visitor.Visit(this);
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new This().GetRepr();
     }
 }
 

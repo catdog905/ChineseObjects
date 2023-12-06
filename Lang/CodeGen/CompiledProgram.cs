@@ -1,5 +1,9 @@
 using System.Diagnostics;
-using ChineseObjects.Lang.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
 using LLVMSharp.Interop;
 
 namespace ChineseObjects.Lang.CodeGen;

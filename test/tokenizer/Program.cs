@@ -3,10 +3,12 @@ using ChineseObjects.Lang.AbstractSyntaxTree;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree;
 using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
+using ChineseObjects.Lang.CodeGen;
+using ChineseObjects.Lang.Native;
+using LangParser = ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.LangParser;
 
 var calculator = new LangParser();
-ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Program program = calculator.Parse(File.ReadAllText("tokenizer/program_text.txt"));
-ChineseObjects.Lang.Program program = calculator.Parse(File.ReadAllText("test/tokenizer/program_text.txt"));
+ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Program program = calculator.Parse(File.ReadAllText("test/tokenizer/program_text.txt"));
 /*
 IHumanReadable hp = program;
 foreach (string s in hp.GetRepr())
@@ -31,5 +33,5 @@ new LibC().CompileWith(nativeGen);
 new Bool().CompileWith(nativeGen);
 new Number().CompileWith(nativeGen);
 
-var gen = new CompiledProgram(nativeGen, typesAwareProgram);
+var gen = new CompiledProgram(nativeGen, programWithoutUnusedVariables);
 gen.MakeExecutable();

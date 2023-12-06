@@ -1,4 +1,8 @@
 using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 namespace ChineseObjects.Lang;
 

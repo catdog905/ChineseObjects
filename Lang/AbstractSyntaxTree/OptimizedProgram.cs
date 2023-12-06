@@ -57,7 +57,7 @@ public class OptimizedProgram
                 (
                     usedFields,
                     new TypesAwareClassDeclaration(
-                        classDeclaration.ClassName(),
+                        classDeclaration.SelfType(),
                         classDeclaration.ParentClassNames(),
                         classDeclaration.ConstructorDeclarations()
                             .Select(decl => (TypesAwareConstructor)WithoutUnusedVariables(decl).Item2),
@@ -281,6 +281,12 @@ public class OptimizedProgram
                                 (
                                     new List<string> { typedReference.Name() }.ToImmutableList(),
                                     typedReference
+                                );
+                            case TypedThis typedThis:
+                                return
+                                (
+                                    ImmutableList<string>.Empty,
+                                    typedThis
                                 );
                             default:
                                 throw new NotImplementedException();

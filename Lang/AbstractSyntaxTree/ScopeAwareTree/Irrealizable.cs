@@ -1,5 +1,7 @@
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
 using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
 

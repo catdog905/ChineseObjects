@@ -18,20 +18,34 @@ class ScopeAwareProgram : IScopeAwareProgram
         _scope = scope;
     }
 
-    private ScopeAwareProgram(ScopeWithClassDeclarations scope, IProgram program) : 
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, Scope originalScope,
+        IEnumerable<IClassDeclaration> declarationsWithInheritedMethods) : 
         this(
-            scope, 
-            program.ClassDeclarations().Select(
+            new ScopeWithClassDeclarations(scope, declarationsWithInheritedMethods), 
+            declarationsWithInheritedMethods
+                .Select(
                     decl
                         =>
-                        new ScopeAwareClass(scope, decl))
+                        new ScopeAwareClass(
+                            new ScopeWithClassDeclarations(scope, declarationsWithInheritedMethods),
+                            decl))
                 .ToList()) {}
+    
+    private ScopeAwareProgram(ScopeWithClassDeclarations scope, Scope originalScope, IProgram program) : 
+        this(
+            scope,
+            originalScope,
+            program.ClassDeclarations()
+                .Select(decl => ClassDeclaration.WithInheritedMethods(decl, scope))
+            ) {}
     
     public ScopeAwareProgram(Scope scope, IProgram program) : 
         this(
             new ScopeWithClassDeclarations(scope, program.ClassDeclarations()), 
+            scope,
             program) {}
 
+    
     class ScopeWithClassDeclarations : Scope
     {
         public ScopeWithClassDeclarations(Scope scope, IEnumerable<IClassDeclaration> classDeclarations) :

@@ -32,14 +32,9 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
         _variableDeclarations = variableDeclarations;
         var typesAwareMethods = methodDeclarations.ToList();
         _methodDeclarations = typesAwareMethods;
-
         ImmutableList<ITypesAwareConstructor> typesAwareConstructors = constructorDeclarations.ToImmutableList();
-        if (typesAwareConstructors.Count() == 0)
-        {
-            typesAwareConstructors = typesAwareConstructors.Add(
-                new TypesAwareConstructor());
-        }
         _constructorDeclarations = typesAwareConstructors;
+        
         if (typesAwareConstructors
                 .GroupBy(decl => decl.Parameters())
                 .Count(group => group.Count() > 1) != 0)

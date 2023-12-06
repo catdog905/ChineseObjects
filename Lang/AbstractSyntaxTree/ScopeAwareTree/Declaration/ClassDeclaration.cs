@@ -30,7 +30,8 @@ public class ScopeAwareClass : IScopeAwareClass
     {
         _scope = scope;
         _className = className;
-        _parentClassNames = parentClassNames;
+        var scopeAwareIdentifiers = parentClassNames.ToList();
+        _parentClassNames = scopeAwareIdentifiers;
         _constructorDeclarations = constructorDeclarations;
         _variableDeclarations = variableDeclarations;
         _methodDeclarations = methodDeclarations;

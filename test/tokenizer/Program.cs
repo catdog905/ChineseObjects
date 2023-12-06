@@ -23,3 +23,4 @@ new Bool().CompileWith(nativeGen);
 new Number().CompileWith(nativeGen);
 
 var gen = new CompiledProgram(nativeGen, typesAwareProgram);
+gen.MakeExecutable();

@@ -3,7 +3,6 @@ namespace ChineseObjects.Lang.CodeGen;
 public interface ITypesAwareStatementVisitor<T>
 {
     T Visit(ITypedParameter _);
-    T Visit(Declaration.ITypedVariable _);
     T Visit(ITypedArgument _);
     T Visit(ITypedBoolLiteral _);
     T Visit(ITypedClassInstantiation _);

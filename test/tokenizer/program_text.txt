@@ -1,10 +1,26 @@
-class Number is end
+class Other is
+    this() is
+        false.TerminateExecution()
+    end
+end
+
 class Main is
-    method terminateIgnoreArg(arg: Bool) : Bool is
-        true.And(true).TerminateExecution()
+    var x : Bool
+    
+    method f1(a: Bool, b: Bool) : Bool is
+        this.f2(a, b)
+    end
+    
+    method f2(b: Bool, a: Bool) : Bool is
+        this.f3(b, a)
+    end
+    
+    method f3(a: Bool, b: Bool) : Bool is
+        a.And(x).TerminateExecution()
     end
 
-    method Main() : Bool is
-        this.terminateIgnoreArg(false.And(true))
+    this() is
+        x : Bool := false
+        this.f1(true, false)
     end
 end

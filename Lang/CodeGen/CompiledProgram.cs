@@ -4,11 +4,20 @@ using LLVMSharp.Interop;
 
 namespace ChineseObjects.Lang.CodeGen;
 
+/*
+ * WARNING: avoid using potentially lazy containers (such as `IEnumerable`) when working with llvm objects that need to
+ * be built. Builder heavily relies on the order of instruction builds and its consistency with other builder operations
+ * (such as changing its position).
+ * Instead use structures that use strict evaluation (such as `List`)
+ */
+
 /// <summary>
 /// Code generator for ChineseObjects
 /// </summary>
 public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 {
+    private readonly ITypesAwareProgram _program;
+    
     private LLVMContextRef ctx;
     private LLVMModuleRef module;
     private LLVMBuilderRef builder;
@@ -35,6 +44,25 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     private readonly LLVMTypeRef OpaquePtr; // Note: can't be declared static as must be a type from the `ctx` context.
 
     /// <summary>
+    /// Mapping (for current method's scope) from name (of either a local variable or a class field) to a pointer value
+    /// that stores a reference to the corresponding object.
+    /// </summary>
+    ///
+    /// <example>
+    /// <code>
+    /// LLVMTypeRef varType = ...;  // Type of the _object_ that variable is supposed to reference
+    /// LLVMTypeRef varPtr = LLVMTypeRef.CreatePointer(varType, 0);
+    /// string varName = "abc";  // Original variable name
+    ///
+    /// LLVMValueRef refer = nameToReferencer[varName];  // Points to where object reference is
+    /// LLVMValueRef obj = builder.BuildLoad(varPtr, refer, "objRef");  // Pointer to the structure
+    /// int fieldN = 123;  // Index of the field to access
+    /// LLVMValueRef field = builder.BuildStructGEP2(varType, obj, fieldN, "field");  // Pointer to the field
+    /// </code>
+    /// </example>
+    private Dictionary<string, LLVMValueRef> nameToReferencer = new();
+
+    /// <summary>
     /// Convert a type to a pointer of that type.
     ///
     /// Note: unless opaque pointers are disabled (which is not possible with the current upstream version of LLVMSharp),
@@ -57,6 +85,38 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return AsPtr(Struct[name]);
     }
 
+    /// <param name="cls">Class where the method is defined</param>
+    /// <param name="method">Method to get name of</param>
+    /// <returns>The name that the method will have in LLVM IR</returns>
+    private static string FuncName(ITypesAwareClassDeclaration cls, ITypesAwareMethod method)
+    {
+        return cls.ClassName() + '.' + method.MethodName() + ".." + String.Join('.',
+            method.Parameters().GetParameters().Select(p => p.Type().TypeName().Value()));
+    }
+
+    /// <param name="type">Type corresponding to the class where the method is defined</param>
+    /// <param name="method">Method to get name of</param>
+    /// <returns>The name that the method will have in LLVM IR</returns>
+    private static string FuncName(Type type, ITypedMethodCall method)
+    {
+        return type.TypeName().Value() + '.' + method.MethodName() + ".." + String.Join('.',
+            method.Arguments().Values().Select(p => p.Type().TypeName().Value()));
+    }
+
+    /// <summary>
+    /// Represents constructor of a class as its method that has the same parameters, an empty name, and a body
+    /// of the constructor followed by a "return this" statement
+    /// </summary>
+    /// <param name="cls">Class</param>
+    /// <param name="ctor">Constructor of the class</param>
+    /// <returns>Pseudo method of the class</returns>
+    private static ITypesAwareMethod ConstructorAsMethod(ITypesAwareClassDeclaration cls, ITypesAwareConstructor ctor)
+    {
+        Type type = cls.SelfType();
+        return new TypesAwareMethod("", ctor.Parameters(), type,
+            new TypesAwareStatementsBlock(ctor.Body().Statements().Append(new TypesAwareReturn(new TypedThis(type)))));
+    }
+
 
     /// <summary>
     /// Compile a type aware program, given an `LLVMExposingCodeGen` with compiled native types.
@@ -66,6 +126,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     /// <param name="program">Program to compile</param>
     public CompiledProgram(LLVMExposingCodeGen g, ITypesAwareProgram program)
     {
+        _program = program;
+
         /*
          * Native types were generated with `g`. Now we can access the environment prepared for us
          * (and `g` shall not be used by anyone anymore).
@@ -128,11 +190,11 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         }
 
         // Compile _CO_entrypoint. This function shall be the entry point of ChineseObjects' runtime
-        string mainName = "Main.Main..";
+        string mainName = "Main...";
         LLVMValueRef main = module.GetNamedFunction(mainName);
         if (main.BasicBlocks.Length == 0)
         {
-            throw new LLVMGenException("Could not find class Main with method Main()");
+            throw new LLVMGenException("Could not find class Main with parameterless constructor");
         }
 
         string entrypointName = "_CO_entrypoint";
@@ -140,8 +202,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         LLVMValueRef co_entry = module.AddFunction(entrypointName, FuncType[entrypointName]);
         co_entry.Linkage = LLVMLinkage.LLVMExternalLinkage;
         builder.PositionAtEnd(co_entry.AppendBasicBlock("entry"));
-        // TODO: first construct an object of type `Main` and call the method with that value rather than a null pointer
-        builder.BuildCall2(FuncType[mainName], main, new[] { LLVMValueRef.CreateConstNull(OpaquePtr),  });
+        builder.BuildCall2(FuncType[mainName], main, new[] { builder.BuildMalloc(Struct["Main"], "mainObj") });
         builder.BuildRetVoid();
         
         module.Verify(LLVMVerifierFailureAction.LLVMPrintMessageAction);
@@ -151,8 +212,12 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
     {
         var Class = Struct[cls.ClassName()] = ctx.CreateNamedStruct(cls.ClassName());
         Class.StructSetBody(Enumerable.Repeat(OpaquePtr, cls.VariableDeclarations().Count()).ToArray(), Packed: false);
+
+        // Collect normal methods and pseudo-methods generated from constructors. Declare them with the same rule
+        List<ITypesAwareMethod> methods = cls.MethodDeclarations()
+            .Concat(cls.ConstructorDeclarations().Select(c => ConstructorAsMethod(cls, c))).ToList();
         
-        foreach (ITypesAwareMethod method in cls.MethodDeclarations())
+        foreach (ITypesAwareMethod method in methods)
         {
             /*
              * The name of the compiled method is formed as [ClassName].[MethodName]..[Param1TypeName].[Param2TypeName]...
@@ -161,9 +226,10 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
              * the object method is called on as their initial argument. Thus, the method that is compiled into
              * a routine called "Abc.Hello..Bool.Abc" shall be called with three arguments: of types `Abc`, `Bool`, and
              * `Abc` respectively (the object itself and two parameters).
+             *
+             * Constructors are treated like methods with empty names.
              */
-            string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
-                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
+            string funcName = FuncName(cls, method);
             var retT = OpaquePtr;  // Pointer to struct will be returned
             FuncType[funcName] = LLVMTypeRef.CreateFunction(retT,
                 Enumerable.Repeat(OpaquePtr, 1 + method.Parameters().GetParameters().Count()).ToArray());
@@ -184,15 +250,55 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     private void CompileClass(ITypesAwareClassDeclaration cls)
     {
-        // TODO 2: compile constructors
         // TODO 3: support inheritance
+        
+        /*
+         * Now a constructor is essentially a method that is run on a newly allocated memory and returns the value of
+         * "this". So let's treat them as methods!
+         */
+        List<ITypesAwareMethod> methods = cls.MethodDeclarations()
+            .Concat(cls.ConstructorDeclarations()
+                .Select(ctor => ConstructorAsMethod(cls, ctor))).ToList();
 
-        foreach (ITypesAwareMethod method in cls.MethodDeclarations())
+        foreach (ITypesAwareMethod method in methods)
         {
-            string funcName = cls.ClassName() + '.' + method.MethodName() + ".." +
-                              String.Join('.', method.Parameters().GetParameters().Select(x => x.Type().TypeName().Value()));
+            string funcName = FuncName(cls, method);
             LLVMValueRef func = module.GetNamedFunction(funcName);
             builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+            
+            // `nameToReferencer` keeps fields and local variables in the current scope. Initially set it up with
+            // class fields and method parameters.
+            //
+            // **The order is important**: method parameters shadow fields, not vice versa.
+            nameToReferencer.Clear();
+
+            LLVMValueRef self = func.GetParam(0);
+            nameToReferencer["this"] = self;  // "this" is a special case: unlike all others, which are pointers to
+                                             // pointers, "this" is a direct pointer (as it can't be assigned and is
+                                             // anyway handled separately everywhere.
+            uint fieldN = 0;
+            foreach (ITypedVariable field in cls.VariableDeclarations())
+            {
+                // As all fields of structs are pointers to other objects, the result of `GEP` is already a pointer
+                // to pointer, don't need to do anything additionally.
+                nameToReferencer[field.Name()] =
+                    builder.BuildStructGEP2(Struct[cls.ClassName()], self, fieldN, field.Name());
+                ++fieldN;
+            }
+
+            uint paramN = 1;  // Start with 1 because of implicit "this"
+            foreach (ITypedParameter param in method.Parameters().GetParameters())
+            {
+                // The value returned by `func.GetParam()` is a direct pointer but a name should be dynamically bound
+                // to a reference, so an additional layer of indirection is needed. The "l_*" nodes are this additional
+                // layer of indirection.
+                LLVMValueRef referer = builder.BuildAlloca(OpaquePtr, "l_" + param.Name());
+                builder.BuildStore(func.GetParam(paramN), referer);
+                nameToReferencer[param.Name()] = referer;
+                ++paramN;
+            }
+            
+            // Now compile statements
             foreach (ITypesAwareStatement statement in method.Body().Statements())
             {
                 // Build the statement. It is built and inserted to the builder position, which should remain
@@ -200,11 +306,15 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
                 statement.AcceptVisitor(this);
             }
 
-            // Return a nil reference in case the execution did not reach a return statement.
-            builder.BuildRet(LLVMValueRef.CreateConstNull(OpaquePtr));
+            // Every basic block must end with a terminator instruction. If the function does not return, return a
+            // nil ref
+            if (builder.InsertBlock.LastInstruction.IsATerminatorInst.Handle == IntPtr.Zero)
+            {
+                builder.BuildRet(LLVMValueRef.CreateConstNull(OpaquePtr));
+            }
         }
     }
-    
+
     public LLVMValueRef Visit(ITypedBoolLiteral boolLit)
     {
         var Bool = Struct["Bool"];
@@ -223,9 +333,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypedMethodCall methodCall)
     {
-        string funcName = methodCall.Caller().Type().TypeName().Value() + "." + methodCall.MethodName() + ".." +
-                          String.Join('.',
-                              methodCall.Arguments().Values().Select(arg => arg.Value().Type().TypeName().Value()));
+        string funcName = FuncName(methodCall.Caller().Type(), methodCall);
         if (!FuncType.ContainsKey(funcName))
         {
             throw new LLVMGenException("Function " + funcName + " is not declared");
@@ -234,34 +342,23 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         LLVMValueRef func = module.GetNamedFunction(funcName);
         
         // Compile all arguments' values (other than "this")
-        IEnumerable<LLVMValueRef> args = methodCall.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this));
+        List<LLVMValueRef> args = methodCall.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this))
+            .ToList();
         // The caller itself (aka "this") is an implicit first argument to every method call:
-        args = args.Prepend(methodCall.Caller().AcceptVisitor(this));
+        args = args.Prepend(methodCall.Caller().AcceptVisitor(this)).ToList();
         // Build the method call
         return builder.BuildCall2(FuncType[funcName], func, args.ToArray());
     }
 
     public LLVMValueRef Visit(ITypedReference tRef)
     {
-        // TODO: implement! The implementation is probably similar to that of `ITypedThis` (?)
-        // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
-        // passed around in the code are **always** boxed, so they come in forms of pointers to structs allocated on
-        // heap.
-        return LLVMValueRef.CreateConstNull(StructPtr(tRef.Type().TypeName().Value()));
+        return builder.BuildLoad2(OpaquePtr, nameToReferencer[tRef.Name()]);
     }
 
     public LLVMValueRef Visit(ITypedThis tThis)
     {
-        // TODO: implement! The implementation is probably similar to that of `TypedReference` (?)
-        // Note the returned node is a pointer (via `StructPtr`), not a struct (from `Struct`). That's because values
-        // passed around in the code are **always** boxed, so they come in forms of pointers to structs allocated on
-        // heap.
-        return LLVMValueRef.CreateConstNull(StructPtr(tThis.Type().TypeName().Value()));
-    }
-
-    public LLVMValueRef Visit(ITypedVariable _)
-    {
-        throw new NotImplementedException();
+        // Unlike all other names, which are indirect pointers, "this" is a direct pointer
+        return nameToReferencer["this"];
     }
 
     public LLVMValueRef Visit(ITypedArgument arg)
@@ -269,14 +366,37 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return arg.Value().AcceptVisitor(this);
     }
 
-    public LLVMValueRef Visit(ITypedClassInstantiation _)
+    public LLVMValueRef Visit(ITypedClassInstantiation classInstantiation)
     {
-        throw new NotImplementedException();
+        ITypesAwareClassDeclaration cls = _program
+            .ClassDeclarations()
+            .First(classDeclaration => classDeclaration.ClassName().Equals(classInstantiation.ClassName()));
+        ITypesAwareConstructor firstMatchedConstructor = cls
+            .ConstructorDeclarations()
+            .First(decl => Type.ConstructorSignatureCheck(decl, classInstantiation.Arguments()));
+        
+        ITypesAwareMethod asMethod = ConstructorAsMethod(cls, firstMatchedConstructor);
+        string funcName = FuncName(cls, asMethod);
+        if (!FuncType.ContainsKey(funcName))
+        {
+            throw new LLVMGenException("Function " + funcName + " is note declared");
+        }
+
+        LLVMValueRef func = module.GetNamedFunction(funcName);
+
+        LLVMValueRef alloc = builder.BuildMalloc(Struct[cls.ClassName()]);
+        
+        List<LLVMValueRef> args = classInstantiation.Arguments().Values().Select(arg => arg.Value().AcceptVisitor(this))
+            .ToList();
+        // Add implicit initial argument "this"
+        args = args.Prepend(alloc).ToList();
+
+        return builder.BuildCall2(FuncType[funcName], func, args.ToArray(), "new");
     }
 
     public LLVMValueRef Visit(ITypesAwareReturn val)
     {
-        return builder.BuildRet(val.AcceptVisitor(this));
+        return builder.BuildRet(val.Expression().AcceptVisitor(this));
     }
 
     public LLVMValueRef Visit(ITypesAwareWhile _)
@@ -289,8 +409,8 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         throw new NotImplementedException();
     }
 
-    public LLVMValueRef Visit(ITypesAwareAssignment _)
+    public LLVMValueRef Visit(ITypesAwareAssignment asgn)
     {
-        throw new NotImplementedException();
+        return builder.BuildStore(asgn.Expr().AcceptVisitor(this), nameToReferencer[asgn.Name()]);
     }
 }

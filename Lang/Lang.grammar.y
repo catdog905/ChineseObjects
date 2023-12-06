@@ -98,12 +98,12 @@ body : body statement             { $$.body = new StatementsBlock( $1.body, $2.s
      | statement                  { $$.body = new StatementsBlock( $1.stmt ); }
      ;
 
-// TODO: do we want to convert these to expressions?
 statement : assignment          { $$.stmt = $1.assign; }
           | whileLoop           { $$.stmt = $1.while_; }
           | ifStatement         { $$.stmt = $1.ifelse; }
           | returnStatement     { $$.stmt = $1.ret; } 
           | methodCall          { $$.stmt = $1.methodCall; }
+          | expr                { $$.stmt = $1.expr; }
           ;
 
 
@@ -121,14 +121,14 @@ ifStatement : IF expr THEN body END             { $$.ifelse = new IfElse($2.expr
 returnStatement : RETURN expr			{ $$.ret = new Return($2.expr); }
                 ;
     
-expr : methodCall           { $$.expr = $1.methodCall; }
-    | classInstantiation    { $$.expr = $1.classInstantiation; }
-    | INTEGER_LITERAL       { $$.expr = $1.num_literal; }
-    | REAL_LITERAL          { $$.expr = $1.num_literal; }
-    | BOOLEAN_LITERAL       { $$.expr = $1.bool_literal; }
-    | THIS                  { $$.expr = $1.thisRef; }
-    | IDENTIFIER            { $$.expr = new Reference($1.identifier); }
-    ;
+expr : methodCall            { $$.expr = $1.methodCall; }
+     | classInstantiation    { $$.expr = $1.classInstantiation; }
+     | INTEGER_LITERAL       { $$.expr = $1.num_literal; }
+     | REAL_LITERAL          { $$.expr = $1.num_literal; }
+     | BOOLEAN_LITERAL       { $$.expr = $1.bool_literal; }
+     | THIS                  { $$.expr = $1.thisRef; }
+     | IDENTIFIER            { $$.expr = new Reference($1.identifier); }
+     ;
 
 methodCall : expr DOT IDENTIFIER P_OPEN arguments P_CLOSE  { $$.methodCall = new MethodCall( $1.expr, $3.identifier, $5.arguments ); }
            ;

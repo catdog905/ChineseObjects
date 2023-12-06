@@ -1,8 +1,11 @@
+using System.Collections.Immutable;
+
 namespace ChineseObjects.Lang.Declaration;
 
 public interface ITypesAwareClassDeclaration : ITypesAwareAstNode
 {
     public string ClassName();
+    public Type SelfType();
     public IEnumerable<Type> ParentClassNames();
     public IEnumerable<ITypesAwareConstructor> ConstructorDeclarations();
     public IEnumerable<ITypedVariable> VariableDeclarations();
@@ -11,38 +14,45 @@ public interface ITypesAwareClassDeclaration : ITypesAwareAstNode
 
 public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
 {
-    private readonly string _className;
+    private readonly Type _selfType;
     private readonly IEnumerable<Type> _parentClassNames;
     private readonly IEnumerable<ITypesAwareConstructor> _constructorDeclarations;
     private readonly IEnumerable<ITypedVariable> _variableDeclarations;
     private readonly IEnumerable<ITypesAwareMethod> _methodDeclarations;
 
     public TypesAwareClassDeclaration(
-        string className,
+        Type selfType,
         IEnumerable<Type> parentClassNames, 
         IEnumerable<ITypesAwareConstructor> constructorDeclarations, 
         IEnumerable<ITypedVariable> variableDeclarations, 
         IEnumerable<ITypesAwareMethod> methodDeclarations)
     {
-        _className = className;
+        _selfType = selfType;
         _parentClassNames = parentClassNames;
-        _constructorDeclarations = constructorDeclarations;
         _variableDeclarations = variableDeclarations;
-        _methodDeclarations = methodDeclarations;
+        var typesAwareMethods = methodDeclarations.ToList();
+        _methodDeclarations = typesAwareMethods;
 
-        if (constructorDeclarations
+        ImmutableList<ITypesAwareConstructor> typesAwareConstructors = constructorDeclarations.ToImmutableList();
+        if (typesAwareConstructors.Count() == 0)
+        {
+            typesAwareConstructors = typesAwareConstructors.Add(
+                new TypesAwareConstructor());
+        }
+        _constructorDeclarations = typesAwareConstructors;
+        if (typesAwareConstructors
                 .GroupBy(decl => decl.Parameters())
                 .Count(group => group.Count() > 1) != 0)
-            throw new DuplicatedConstructorException(_className);
-        if (methodDeclarations
-                .GroupBy(decl => decl.Parameters())
+            throw new DuplicatedConstructorException(_selfType.TypeName().Value());
+        if (typesAwareMethods
+                .GroupBy(decl => (decl.MethodName(), decl.Parameters()))
                 .Count(group => group.Count() > 1) != 0)
-            throw new DuplicatedMethodException(_className);
+            throw new DuplicatedMethodException(_selfType.TypeName().Value());
     }
 
     public TypesAwareClassDeclaration(IScopeAwareClass scopeAwareClass) :
         this(
-            scopeAwareClass.ClassName().Value(),
+            new Type(scopeAwareClass.Scope(), scopeAwareClass.ClassName().Value()),
             scopeAwareClass.ParentClassNames()
                 .Select(parentClassName => new Type(scopeAwareClass.Scope(), parentClassName))
                 .ToList(),
@@ -59,7 +69,12 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
 
     public string ClassName()
     {
-        return _className;
+        return _selfType.TypeName().Value();
+    }
+
+    public Type SelfType()
+    {
+        return _selfType;
     }
 
     public IEnumerable<Type> ParentClassNames()

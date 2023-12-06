@@ -20,7 +20,10 @@ public class TypesAwareConstructor : ITypesAwareConstructor
     public TypesAwareConstructor(IScopeAwareConstructor scopeAwareConstructor) :
         this(new TypesAwareParameters(scopeAwareConstructor.Parameters()),
             new TypesAwareStatementsBlock(scopeAwareConstructor.Body())) {}
-    
+
+    public TypesAwareConstructor() :
+        this(new TypesAwareParameters(), new TypesAwareStatementsBlock()) {}
+
     public ITypesAwareStatementsBlock Body()
     {
         return _body;

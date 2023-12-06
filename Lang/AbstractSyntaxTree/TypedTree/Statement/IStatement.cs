@@ -26,6 +26,9 @@ public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock
             .Select(statement => TypeIrrealizable.MakeTypesAwareStatement(statement))
             .ToList()) {}
 
+    public TypesAwareStatementsBlock() :
+        this(new List<ITypesAwareStatement>()) {}
+
     public IEnumerable<ITypesAwareStatement> Statements()
     {
         return _statements;

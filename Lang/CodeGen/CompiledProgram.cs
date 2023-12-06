@@ -331,9 +331,13 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
 
     public LLVMValueRef Visit(ITypedNumLiteral numLit)
     {
-        throw new NotImplementedException();
-        // TODO: should be boxed (allocated on heap)
-        return LLVMValueRef.CreateConstReal(ctx.DoubleType, numLit.Value());
+        var Number = Struct["Number"];
+        var boxed = builder.BuildMalloc(Number, "boxed");
+        var direct = builder.BuildStructGEP2(Number, boxed, 0, "direct");
+        builder.BuildStore(LLVMValueRef.CreateConstInt(ctx.Int32Type, (ulong)numLit.Value()), direct);
+        
+        return boxed;
+        
     }
 
     public LLVMValueRef Visit(ITypedMethodCall methodCall)

@@ -17,6 +17,8 @@ public class Number : INativeEntityCompiler
         BuildPlus(g);
         BuildMinus(g);
         BuildMult(g);
+        BuildLess(g);
+        BuildEqual(g);
     }
 
     private void BuildPrint(CodeGen.LLVMExposingCodeGen g)
@@ -238,5 +240,97 @@ public class Number : INativeEntityCompiler
         builder.BuildRet(resptr);
 
         func.VerifyFunction(LLVMVerifierFailureAction.LLVMPrintMessageAction);
+    }
+
+    private void BuildLess(CodeGen.LLVMExposingCodeGen g)
+    {
+        var ctx = g.ctx;
+        var module = g.module;
+        var builder = g.builder;
+        var FuncType = g.FuncType;
+        var Struct = g.Struct;
+
+        var Number = Struct["Number"];
+        var PNumber = LLVMTypeRef.CreatePointer(Number, 0);
+
+        const string funcN = "Number.Less..Number";
+        LLVMValueRef func = module.GetNamedFunction(funcN);
+        if (func.BasicBlocks.Length != 0)
+        {
+            throw new CodeGen.LLVMGenException("Function " + funcN + " already has a body");
+        }
+
+        var parames = new LLVMTypeRef[]
+        {
+            /*this*/PNumber,
+            /*other*/PNumber
+        };
+
+        var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(PNumber, parames);
+        func = module.AddFunction(funcN, funcT);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+        
+        var pThis = func.GetParam(0);
+        pThis.Name = "this";
+        var pOther = func.GetParam(1);
+        pOther.Name = "other";
+
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+
+        var u1 = builder.BuildLoad2(ctx.Int32Type, pThis, "uThis");
+        var u2 = builder.BuildLoad2(ctx.Int32Type, pOther, "uOther");
+
+        var res = builder.BuildICmp(LLVMIntPredicate.LLVMIntSLE, u1, u2, "res");
+        
+        var resptr = builder.BuildMalloc(Struct["Bool"], "resptr");
+
+        builder.BuildStore(res, resptr);
+        builder.BuildRet(resptr);
+    }
+    
+    private void BuildEqual(CodeGen.LLVMExposingCodeGen g)
+    {
+        var ctx = g.ctx;
+        var module = g.module;
+        var builder = g.builder;
+        var FuncType = g.FuncType;
+        var Struct = g.Struct;
+
+        var Number = Struct["Number"];
+        var PNumber = LLVMTypeRef.CreatePointer(Number, 0);
+
+        const string funcN = "Number.Equal..Number";
+        LLVMValueRef func = module.GetNamedFunction(funcN);
+        if (func.BasicBlocks.Length != 0)
+        {
+            throw new CodeGen.LLVMGenException("Function " + funcN + " already has a body");
+        }
+
+        var parames = new LLVMTypeRef[]
+        {
+            /*this*/PNumber,
+            /*other*/PNumber
+        };
+
+        var funcT = FuncType[funcN] = LLVMTypeRef.CreateFunction(PNumber, parames);
+        func = module.AddFunction(funcN, funcT);
+        func.Linkage = LLVMLinkage.LLVMExternalLinkage;
+        
+        var pThis = func.GetParam(0);
+        pThis.Name = "this";
+        var pOther = func.GetParam(1);
+        pOther.Name = "other";
+
+        builder.PositionAtEnd(func.AppendBasicBlock("entry"));
+
+        var u1 = builder.BuildLoad2(ctx.Int32Type, pThis, "uThis");
+        var u2 = builder.BuildLoad2(ctx.Int32Type, pOther, "uOther");
+
+        var res = builder.BuildICmp(LLVMIntPredicate.LLVMIntEQ, u1, u2, "res");
+        
+        var resptr = builder.BuildMalloc(Struct["Bool"], "resptr");
+
+        builder.BuildStore(res, resptr);
+        builder.BuildRet(resptr);
     }
 }

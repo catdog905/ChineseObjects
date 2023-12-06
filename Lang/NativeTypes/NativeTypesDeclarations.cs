@@ -33,8 +33,9 @@ public static class NativeTypesDeclarations
     private static readonly MethodDeclaration BoolNot = new MethodDeclaration(
         new Identifier("Not"), new Parameters(), new Identifier("Bool"), new NativeMethod());
 
-    private static readonly MethodDeclaration BoolToInteger = new MethodDeclaration(
-        new Identifier("ToInteger"), new Parameters(), new Identifier("Int"), new NativeMethod());
+    // `Bool.ToInteger()` is not implemented correctly
+    /*private static readonly MethodDeclaration BoolToInteger = new MethodDeclaration(
+        new Identifier("ToInteger"), new Parameters(), new Identifier("Number"), new NativeMethod());*/
 
 
     private static readonly MethodDeclaration BoolTerminateExecution = new MethodDeclaration(
@@ -42,7 +43,7 @@ public static class NativeTypesDeclarations
 
     private static readonly ClassDeclaration BoolDeclaration = new ClassDeclaration(new Identifier("Bool"),
         ImmutableList<IIdentifier>.Empty, ImmutableList<IConstructorDeclaration>.Empty,
-        ImmutableList<IVariableDeclaration>.Empty, new[] { BoolAnd, BoolOr, BoolXor, BoolNot, BoolToInteger, BoolTerminateExecution });
+        ImmutableList<IVariableDeclaration>.Empty, new[] { BoolAnd, BoolOr, BoolXor, BoolNot, /*BoolToInteger,*/ BoolTerminateExecution });
 
     public static readonly Type Bool = new Type(BoolDeclaration);
 
@@ -64,10 +65,21 @@ public static class NativeTypesDeclarations
     private static readonly MethodDeclaration NumberMult = new MethodDeclaration(
     new Identifier("Mult"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
     new Identifier("Number"), new NativeMethod());
+
+    private static readonly MethodDeclaration NumberLess = new MethodDeclaration(
+        new Identifier("Less"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
+        new Identifier("Bool"), new NativeMethod());
+    
+    private static readonly MethodDeclaration NumberEqual = new MethodDeclaration(
+        new Identifier("Equal"), new Parameters(new Parameter(new Identifier("other"), new Identifier("Number"))),
+        new Identifier("Bool"), new NativeMethod());
     
     private static readonly ClassDeclaration NumberDeclaration = new ClassDeclaration(new Identifier("Number"),
     ImmutableList<IIdentifier>.Empty, ImmutableList<IConstructorDeclaration>.Empty,
-    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberPrint, NumberNegate, NumberPlus, NumberMinus, NumberMult });
+    ImmutableList<IVariableDeclaration>.Empty, new[]
+    {
+        NumberPrint, NumberNegate, NumberPlus, NumberMinus, NumberMult, NumberLess, NumberEqual
+    });
 
     public static readonly Type Number = new Type(NumberDeclaration);
     

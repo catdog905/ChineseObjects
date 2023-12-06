@@ -315,11 +315,6 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return LLVMValueRef.CreateConstNull(StructPtr(tThis.Type().TypeName().Value()));
     }
 
-    public LLVMValueRef Visit(ITypedParameter _)
-    {
-        throw new NotImplementedException();
-    }
-
     public LLVMValueRef Visit(ITypedVariable _)
     {
         throw new NotImplementedException();

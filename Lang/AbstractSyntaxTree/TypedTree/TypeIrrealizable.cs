@@ -1,4 +1,10 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+using TypedReference = ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression.TypedReference;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree;
 
 public class TypeIrrealizable
 {

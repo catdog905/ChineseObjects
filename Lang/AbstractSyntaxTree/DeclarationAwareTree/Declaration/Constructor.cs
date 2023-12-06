@@ -1,4 +1,8 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
 public interface IConstructorDeclaration : IMemberDeclaration, IAstNode
 {
@@ -21,6 +25,12 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
         this(new Parameters(), new StatementsBlock())
     {}
 
+    public ConstructorDeclaration(ITypesAwareConstructor constructor) :
+        this(
+            new Parameters(constructor.Parameters()),
+            new StatementsBlock(constructor.Body()))
+    {}
+
     public override string ToString()
     {
         return "This(" + _parameters + ") {" + _body + "}";
@@ -29,7 +39,7 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
     public IList<string> GetRepr()
     {
         var ans = new List<string> {"CONSTRUCTOR"};
-        foreach(Parameter param in _parameters.GetParameters())
+        foreach(Parameter.Parameter param in _parameters.GetParameters())
         {
             ans.AddRange(param.GetRepr().Select(s => "| " + s));
         }

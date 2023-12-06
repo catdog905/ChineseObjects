@@ -1,4 +1,8 @@
-namespace ChineseObjects.Lang.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 
 public interface ITypesAwareMethod : ITypesAwareAstNode
@@ -52,5 +56,10 @@ public class TypesAwareMethod : ITypesAwareMethod
     public ITypesAwareStatementsBlock Body()
     {
         return _body;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.MethodDeclaration(this).GetRepr();
     }
 }

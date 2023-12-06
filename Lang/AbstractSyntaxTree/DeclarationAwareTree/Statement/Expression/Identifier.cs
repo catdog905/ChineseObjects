@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface IIdentifier
 {
@@ -62,7 +62,7 @@ public class Identifier : IIdentifier {
     }
 }
 
-public interface IIdentifiers : IAstNode
+public interface IIdentifiers
 {
     public IEnumerable<IIdentifier> GetIdentifiers();
 }

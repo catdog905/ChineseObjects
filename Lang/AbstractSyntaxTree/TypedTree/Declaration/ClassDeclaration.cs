@@ -1,6 +1,7 @@
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
 using System.Collections.Immutable;
 
-namespace ChineseObjects.Lang.Declaration;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 public interface ITypesAwareClassDeclaration : ITypesAwareAstNode
 {
@@ -10,6 +11,7 @@ public interface ITypesAwareClassDeclaration : ITypesAwareAstNode
     public IEnumerable<ITypesAwareConstructor> ConstructorDeclarations();
     public IEnumerable<ITypedVariable> VariableDeclarations();
     public IEnumerable<ITypesAwareMethod> MethodDeclarations();
+    ITypesAwareClassDeclaration WithoutVariables(IEnumerable<string> where);
 }
 
 public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
@@ -91,8 +93,22 @@ public class TypesAwareClassDeclaration : ITypesAwareClassDeclaration
     {
         return _methodDeclarations;
     }
-    
-    
+
+    public ITypesAwareClassDeclaration WithoutVariables(IEnumerable<string> where)
+    {
+        return new TypesAwareClassDeclaration(
+            _className,
+            _parentClassNames,
+            _constructorDeclarations,
+            _variableDeclarations.Where(decl => !where.ToList().Contains(decl.Name())),
+            _methodDeclarations
+        );
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.ClassDeclaration(this).GetRepr();
+    }
 }
 
 public interface ITypedThis : ITypedExpression {}

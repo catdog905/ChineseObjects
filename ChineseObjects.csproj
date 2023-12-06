@@ -6,29 +6,21 @@
     <Nullable>enable</Nullable>
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">$(NETCoreSdkRuntimeIdentifier)</RuntimeIdentifier>
   </PropertyGroup>
-  <ItemGroup Label="Lang">
-    <YaccFile Include="Lang\Lang.grammar.y">
-      <OutputFile>Lang\Lang.Parser.Generated.cs</OutputFile>
-      <Arguments>/gplex /nolines</Arguments>
-    </YaccFile>
-    <None Include="Lang\Lang.Parser.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Lang.grammar.y</DependentUpon>
-    </None>
-    <LexFile Include="Lang\Lang.analyzer.lex">
-      <OutputFile>Lang\Lang.Scanner.Generated.cs</OutputFile>
-    </LexFile>
-    <None Include="Lang\Lang.Scanner.Generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Lang.analyzer.lex</DependentUpon>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="libclang" ChineseObjectsVersion="17.0.4" />
     <PackageReference Include="libLLVM" Version="16.0.6" />
     <PackageReference Include="llvmsharp" Version="16.0.0" />
     <PackageReference Include="YaccLexTools" Version="1.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <LexFile Include="Lang\AbstractSyntaxTree\DeclarationAwareTree\Lang.analyzer.lex">
+      <OutputFile>Lang/AbstractSyntaxTree/DeclarationAwareTree/Lang.Scanner.Generated.cs</OutputFile>
+    </LexFile>
+  </ItemGroup>
+  <ItemGroup>
+    <YaccFile Include="Lang\AbstractSyntaxTree\DeclarationAwareTree\Lang.grammar.y">
+      <OutputFile>Lang/AbstractSyntaxTree/DeclarationAwareTree/Lang.Parser.Generated.cs</OutputFile>
+      <Arguments>/gplex /nolines</Arguments>
+    </YaccFile>
   </ItemGroup>
 </Project>

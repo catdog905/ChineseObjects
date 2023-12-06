@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 
 public interface IAssignment : IStatement
 {
@@ -20,6 +23,13 @@ public class Assignment : IAssignment
         _expr = expr;
         _typeName = typeName;
     }
+
+    public Assignment(ITypesAwareAssignment assignment) :
+        this(
+            new Identifier(assignment.Name()),
+            new ExpressionWrapper(assignment.Expr()),
+            assignment.Expr().Type().TypeName())
+    {}
 
     public override string ToString()
     {

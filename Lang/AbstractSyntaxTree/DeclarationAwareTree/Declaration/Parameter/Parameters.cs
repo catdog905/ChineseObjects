@@ -1,8 +1,9 @@
 using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
 
-public interface IParameters : IAstNode
+public interface IParameters
 {
     public IEnumerable<IParameterDeclaration> GetParameters();
 }
@@ -27,6 +28,11 @@ public class Parameters : IParameters {
     ) : this(new[] {parameter}.Concat(parameters._parameters)) {}
 
     public Parameters(params Parameter[] parameters) : this(parameters.ToList()) {}
+
+    public Parameters(ITypesAwareParameters parameters) :
+        this(parameters.GetParameters()
+            .Select(parameter => new Parameter(parameter)))
+    {}
 
 
     public override string ToString()

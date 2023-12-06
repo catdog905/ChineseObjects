@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration;
 
 public interface IVariableDeclaration : IMemberDeclaration, IAstNode
 {
@@ -20,6 +23,9 @@ public class VariableDeclaration : IVariableDeclaration, IHumanReadable
         _name = name;
         _typeName = typeNameName;
     }
+
+    public VariableDeclaration(ITypedVariable decl) :
+        this(new Identifier(decl.Name()), decl.Type().TypeName()) {}
 
     public override string ToString()
     {

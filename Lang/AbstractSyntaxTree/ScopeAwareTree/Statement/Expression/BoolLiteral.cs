@@ -1,32 +1,33 @@
-namespace ChineseObjects.Lang
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+
+public interface IScopeAwareBoolLiteral : IScopeAwareExpression
 {
-    public interface IScopeAwareBoolLiteral : IScopeAwareExpression
+    public bool Value();
+}
+
+public class ScopeAwareBoolLiteral : IScopeAwareBoolLiteral
+{
+    private readonly Scope _scope;
+    private readonly bool _value;
+
+    public ScopeAwareBoolLiteral(Scope scope, bool value)
     {
-        public bool Value();
+        _scope = scope;
+        _value = value;
     }
 
-    public class ScopeAwareBoolLiteral : IScopeAwareBoolLiteral
+    public ScopeAwareBoolLiteral(Scope scope, IBoolLiteral boolLiteral)
+        : this(scope, boolLiteral.Value()) {}
+
+    public Scope Scope()
     {
-        private readonly Scope _scope;
-        private readonly bool _value;
+        return _scope;
+    }
 
-        public ScopeAwareBoolLiteral(Scope scope, bool value)
-        {
-            _scope = scope;
-            _value = value;
-        }
-
-        public ScopeAwareBoolLiteral(Scope scope, IBoolLiteral boolLiteral)
-            : this(scope, boolLiteral.Value()) {}
-
-        public Scope Scope()
-        {
-            return _scope;
-        }
-
-        public bool Value()
-        {
-            return _value;
-        }
+    public bool Value()
+    {
+        return _value;
     }
 }

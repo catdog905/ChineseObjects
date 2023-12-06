@@ -1,11 +1,13 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 public interface ITypedArgument : ITypedAstNode
 {
     public ITypedExpression Value();
 }
 
-public interface ITypesAwareArguments : ITypesAwareAstNode
+public interface ITypesAwareArguments
 {
     public IEnumerable<ITypedArgument> Values();
 }
@@ -40,6 +42,11 @@ public class TypedArgument : ITypedArgument
     public ITypedExpression Value()
     {
         return _value;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.Argument(this).GetRepr();
     }
 }
 

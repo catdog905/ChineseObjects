@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 public interface ITypedVariable : ITypedAstNode
 {
@@ -29,5 +31,10 @@ public class TypedVariable : ITypedVariable
     public Type Type()
     {
         return _type;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.VariableDeclaration(this).GetRepr();
     }
 }

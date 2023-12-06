@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface IBoolLiteral : IExpression
 {
@@ -13,6 +15,9 @@ public class BoolLiteral : IBoolLiteral {
     public BoolLiteral(bool value) {
         _value = value;
     }
+
+    public BoolLiteral(ITypedBoolLiteral boolLiteral) :
+        this(boolLiteral.Value()) {}
 
     public override string ToString()
     {

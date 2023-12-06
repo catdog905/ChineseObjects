@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 
 public interface ITypesAwareStatement : ITypesAwareAstNode
 {
@@ -20,6 +23,9 @@ public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock
     {
         _statements = statements;
     }
+    
+    public TypesAwareStatementsBlock() :
+        this(new List<ITypesAwareStatement>()) {}
 
     public TypesAwareStatementsBlock(IScopeAwareStatementsBlock statements) :
         this(statements.Statements()
@@ -29,8 +35,16 @@ public class TypesAwareStatementsBlock : ITypesAwareStatementsBlock
     public TypesAwareStatementsBlock() :
         this(new List<ITypesAwareStatement>()) {}
 
+    public TypesAwareStatementsBlock(ITypesAwareStatement newAssignment, ITypesAwareStatementsBlock tailStatementBlock) :
+        this(new List<ITypesAwareStatement>{newAssignment}.ToImmutableList().AddRange(tailStatementBlock.Statements())) {}
+
     public IEnumerable<ITypesAwareStatement> Statements()
     {
         return _statements;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.StatementsBlock(this).GetRepr();
     }
 }

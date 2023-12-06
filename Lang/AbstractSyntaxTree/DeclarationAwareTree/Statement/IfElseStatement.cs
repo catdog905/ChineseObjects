@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement;
 
 public interface IIfElse : IStatement
 {
@@ -24,6 +27,13 @@ public class IfElse : IIfElse
         
     public IfElse(IExpression cond, IStatementsBlock then) :
         this(cond, then, null) {}
+
+    public IfElse(ITypesAwareIfElse ifElse) :
+        this(
+            new ExpressionWrapper(ifElse.Condition()),
+            new StatementsBlock(ifElse.Then()),
+            ifElse.Else() == null ? null : new StatementsBlock(ifElse.Else())
+            ){}
 
     public override string ToString()
     {

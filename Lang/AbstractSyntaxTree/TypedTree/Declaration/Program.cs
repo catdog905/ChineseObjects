@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang.Declaration;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration;
 
 public interface ITypesAwareProgram : ITypesAwareAstNode
 {
@@ -25,5 +27,10 @@ public class TypesAwareProgram : ITypesAwareProgram
     public IEnumerable<ITypesAwareClassDeclaration> ClassDeclarations()
     {
         return _classDeclarations;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Declaration.Program(this).GetRepr();
     }
 }

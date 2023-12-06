@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Declaration.Parameter;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
 
 public interface ITypedParameter : ITypedAstNode
 {
@@ -42,6 +44,11 @@ public class TypedParameter : ITypedParameter
     public override int GetHashCode()
     {
         return HashCode.Combine(_name, _type);
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter.Parameter(this).GetRepr();
     }
 
     public static bool operator ==(TypedParameter? left, TypedParameter? right)

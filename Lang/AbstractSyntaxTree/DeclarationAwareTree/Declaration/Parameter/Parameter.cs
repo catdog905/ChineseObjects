@@ -1,6 +1,7 @@
-using System.Collections.Immutable;
+using ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Declaration.Parameter;
 
-namespace ChineseObjects.Lang;
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Declaration.Parameter;
 
 public interface IParameterDeclaration
 {
@@ -17,6 +18,13 @@ public class Parameter : IParameterDeclaration, IHumanReadable {
         _name = name;
         _typeName = typeName;
     }
+
+    public Parameter(TypedParameter parameter) :
+        this(new Identifier(parameter.Name()), parameter.Type().TypeName()) { }
+
+    public Parameter(ITypedParameter parameter) :
+        this(new Identifier(parameter.Name()),
+            parameter.Type().TypeName()) {}
 
     public override string ToString()
     {

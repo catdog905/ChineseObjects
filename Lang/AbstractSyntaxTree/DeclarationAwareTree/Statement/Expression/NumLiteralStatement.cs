@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface INumLiteral : IExpression
 {
@@ -13,6 +15,9 @@ public class NumLiteral : INumLiteral {
     public NumLiteral(double value) {
         _value = value;
     }
+
+    public NumLiteral(ITypedNumLiteral numLiteral) :
+        this(numLiteral.Value()) {}
 
     public override string ToString()
     {

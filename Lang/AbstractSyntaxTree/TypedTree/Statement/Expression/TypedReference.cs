@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 public interface ITypedReference : ITypedExpression
 {
@@ -35,5 +37,10 @@ public class TypedReference : ITypedReference
     public string Name()
     {
         return _name;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.Reference(this).GetRepr();
     }
 }

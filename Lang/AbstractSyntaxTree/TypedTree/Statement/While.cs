@@ -1,4 +1,7 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement;
 
 public interface ITypesAwareWhile : ITypesAwareStatement
 {
@@ -36,5 +39,10 @@ public class TypesAwareWhile : ITypesAwareWhile
     public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
     {
         return visitor.Visit(this);
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.While(this).GetRepr();
     }
 }

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ChineseObjects.Lang
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree
 {
     internal partial class LangScanner
     {

@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 public interface ITypedClassInstantiation : ITypedExpression
 {
@@ -58,5 +60,10 @@ public class TypedClassInstantiation : ITypedClassInstantiation
     public ITypesAwareArguments Arguments()
     {
         return _arguments;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.ClassInstantiation(this).GetRepr();
     }
 }

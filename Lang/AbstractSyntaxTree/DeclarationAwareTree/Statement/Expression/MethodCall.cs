@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.DeclarationAwareTree.Statement.Expression;
 
 public interface IMethodCall : IExpression
 {
@@ -19,6 +21,13 @@ public class MethodCall : IMethodCall
         _methodName = identifier;
         _arguments = arguments;
     }
+
+    public MethodCall(ITypedMethodCall method) :
+        this(
+            new ExpressionWrapper(method.Caller()),
+            new Identifier(method.MethodName()),
+            new Arguments(method.Arguments()))
+    {}
 
     public override string ToString()
     {

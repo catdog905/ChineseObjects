@@ -1,4 +1,6 @@
-namespace ChineseObjects.Lang;
+using ChineseObjects.Lang.AbstractSyntaxTree.ScopeAwareTree.Statement.Expression;
+
+namespace ChineseObjects.Lang.AbstractSyntaxTree.TypedTree.Statement.Expression;
 
 public interface ITypedBoolLiteral : ITypedExpression
 {
@@ -33,5 +35,10 @@ public class TypedBoolLiteral : ITypedBoolLiteral
     public bool Value()
     {
         return _value;
+    }
+
+    public IList<string> GetRepr()
+    {
+        return new DeclarationAwareTree.Statement.Expression.BoolLiteral(this).GetRepr();
     }
 }

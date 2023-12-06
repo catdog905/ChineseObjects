@@ -1,26 +1,17 @@
-class Other is
-    this() is
-        false.TerminateExecution()
-    end
-end
-
 class Main is
     var x : Bool
     
-    method f1(a: Bool, b: Bool) : Bool is
-        this.f2(a, b)
-    end
-    
-    method f2(b: Bool, a: Bool) : Bool is
-        this.f3(b, a)
-    end
-    
-    method f3(a: Bool, b: Bool) : Bool is
-        a.And(x).TerminateExecution()
-    end
-
     this() is
         x : Bool := false
-        this.f1(true, false)
+        x : Bool := true
+        if x then
+            x : Bool := false
+            if x then
+                true.TerminateExecution()
+            else
+                x : Bool := x
+            end
+        end
+        x.TerminateExecution()
     end
 end

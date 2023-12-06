@@ -23,5 +23,10 @@ public class LibC : INativeEntityCompiler
         var exitT = FuncType[exitN] = LLVMTypeRef.CreateFunction(ctx.VoidType, new[] { ctx.Int32Type });
         var exit = module.AddFunction(exitN, exitT);
         exit.Linkage = LLVMLinkage.LLVMExternalLinkage;
+
+        var printfN = "printf";
+        var printfT = FuncType[printfN] = LLVMTypeRef.CreateFunction(ctx.Int32Type, new[] { g.OpaquePtr }, true);
+        var printf = module.AddFunction(printfN, printfT);
+        printf.Linkage = LLVMLinkage.LLVMExternalLinkage;
     }
 }

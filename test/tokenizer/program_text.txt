@@ -25,10 +25,11 @@ class Main is
 
     this() is
         x : Bool := false
-        n : Number := 3
-        addRes : Number := n.Plus(2)
-        multRes : Number := n.Mult(1)
-        subRes : Number := n.Minus(13)
+        n : Number := 3.Print()
+        addRes : Number := n.Plus(2).Print()
+        multRes : Number := n.Mult(1).Print()
+        subRes : Number := n.Minus(13).Print()
+        subRes.Print()
 
         this.f1(true, false)
     end

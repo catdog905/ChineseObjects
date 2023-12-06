@@ -329,7 +329,7 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         var Number = Struct["Number"];
         var boxed = builder.BuildMalloc(Number, "boxed");
         var direct = builder.BuildStructGEP2(Number, boxed, 0, "direct");
-        builder.BuildStore(LLVMValueRef.CreateConstReal(ctx.DoubleType, numLit.Value()), direct);
+        builder.BuildStore(LLVMValueRef.CreateConstInt(ctx.Int32Type, (ulong)numLit.Value()), direct);
         
         return boxed;
         

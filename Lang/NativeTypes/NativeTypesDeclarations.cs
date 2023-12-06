@@ -43,6 +43,9 @@ public static class NativeTypesDeclarations
     public static readonly Type Bool = new Type(BoolDeclaration);
 
     // Number declarations
+    private static readonly MethodDeclaration NumberPrint = new MethodDeclaration(
+        new Identifier("Print"), new Parameters(), new Identifier("Number"), new NativeMethod());
+    
     private static readonly MethodDeclaration NumberNegate = new MethodDeclaration(
     new Identifier("Negate"), new Parameters(), new Identifier("Number"), new NativeMethod());
 
@@ -60,7 +63,7 @@ public static class NativeTypesDeclarations
     
     private static readonly ClassDeclaration NumberDeclaration = new ClassDeclaration(new Identifier("Number"),
     ImmutableList<IIdentifier>.Empty, ImmutableList<IConstructorDeclaration>.Empty,
-    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberNegate, NumberPlus, NumberMinus, NumberMult });
+    ImmutableList<IVariableDeclaration>.Empty, new[] { NumberPrint, NumberNegate, NumberPlus, NumberMinus, NumberMult });
 
     public static readonly Type Number = new Type(NumberDeclaration);
     

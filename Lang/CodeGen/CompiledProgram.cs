@@ -361,11 +361,6 @@ public class CompiledProgram : ITypesAwareStatementVisitor<LLVMValueRef>
         return nameToReferencer["this"];
     }
 
-    public LLVMValueRef Visit(ITypedParameter _)
-    {
-        throw new NotImplementedException();
-    }
-
     public LLVMValueRef Visit(ITypedArgument arg)
     {
         return arg.Value().AcceptVisitor(this);

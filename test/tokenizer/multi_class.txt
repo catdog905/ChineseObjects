@@ -1,0 +1,31 @@
+class Number is
+    method Mult(other: Number) : Number is
+        return 0
+    end
+    
+    method Plus(other: Number) : Number is
+        return 0
+    end
+end
+
+
+
+class Shape is
+    method area() : Number is
+        return 0
+    end
+    method perimeter() : Number is
+        return 0
+    end
+end
+
+class Rectangle extends Shape is
+    var height: Number
+    var width: Number
+    method area() : Number is
+        return height.Mult(width)
+    end
+    method perimeter() : Number is
+        return height.Plus(width)
+    end
+end

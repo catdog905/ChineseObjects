@@ -17,6 +17,10 @@ public class ConstructorDeclaration : IConstructorDeclaration, IHumanReadable
         _body = statementsBlock;
     }
 
+    public ConstructorDeclaration() :
+        this(new Parameters(), new StatementsBlock())
+    {}
+
     public override string ToString()
     {
         return "This(" + _parameters + ") {" + _body + "}";

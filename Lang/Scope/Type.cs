@@ -26,7 +26,7 @@ public class Type
     public Type MethodCallReturnType(IScopeAwareMethodCall methodCall)
     {
         ITypesAwareArguments methodCallArguments = new TypesAwareArguments(methodCall.Arguments());
-        bool MethodSignatureCheck(IMethodDeclaration methodDeclaration)
+        bool MethodSignatureCheck(IMethodDeclaration methodDeclaration, Scope scope)
         {
             if (!methodDeclaration.MethodName().Value().Equals(methodCall.MethodName().Value()))
                 return false;
@@ -35,7 +35,23 @@ public class Type
             foreach (var (parameter, argument) in methodDeclaration.Parameters().GetParameters()
                          .Zip(methodCallArguments.Values())) 
             {
-                if (!parameter.TypeName().Equals(argument.Type().TypeName()))
+                bool isParent(IClassDeclaration argumentClassDeclaration, String parameterName, Scope scope)
+                {
+                    return argumentClassDeclaration.ParentClassNames().Any(name => name.Value().Equals(parameterName)) ||
+                           argumentClassDeclaration.ParentClassNames().Aggregate(
+                               false,
+                               (flag, argumentName) =>
+                                   flag || isParent(scope.GetType(argumentName.Value()).ClassDeclaration(),
+                                       argumentName.Value(),
+                                       scope));
+                }
+                if (!(parameter.TypeName().Equals(argument.Type().TypeName()) || 
+                    isParent(
+                        argument.Type().ClassDeclaration(),
+                        parameter.TypeName().Value(),
+                        scope
+                        ))
+                    )
                 {
                     return false;
                 }
@@ -44,7 +60,7 @@ public class Type
             return true;
         }
         var declarations = _classDeclaration.MethodDeclarations()
-            .Where(MethodSignatureCheck)
+            .Where(decl => MethodSignatureCheck(decl, methodCall.Scope()))
             .ToList();
         try
         {
@@ -66,15 +82,10 @@ public class Type
     {
         if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
             return false;
-        foreach (IParameterDeclaration parameter in constructorDeclaration.Parameters().GetParameters()) 
+        foreach (var (parameter, argument) in constructorDeclaration.Parameters().GetParameters()
+                     .Zip(constructorCallArguments.Values())) 
         {
-            if (constructorCallArguments
-                    .Values()
-                    .Count(arg => 
-                        arg.Type().TypeName().Value()
-                            .Equals(
-                                parameter.TypeName().Value())
-                    ) != 1)
+            if (!parameter.TypeName().Equals(argument.Type().TypeName()))
             {
                 return false;
             }
@@ -89,15 +100,10 @@ public class Type
     {
         if (constructorDeclaration.Parameters().GetParameters().Count() != constructorCallArguments.Values().Count())
             return false;
-        foreach (ITypedParameter parameter in constructorDeclaration.Parameters().GetParameters()) 
+        foreach (var (parameter, argument) in constructorDeclaration.Parameters().GetParameters()
+                     .Zip(constructorCallArguments.Values())) 
         {
-            if (constructorCallArguments
-                    .Values()
-                    .Count(arg => 
-                        arg.Type().TypeName().Value()
-                            .Equals(
-                                parameter.Type().TypeName().Value())
-                    ) != 1)
+            if (!parameter.Type().TypeName().Equals(argument.Type().TypeName()))
             {
                 return false;
             }
@@ -156,6 +162,8 @@ public class Type
     {
         return $"{_classDeclaration.GetHashCode()}";
     }
+
+    public IClassDeclaration ClassDeclaration() => _classDeclaration;
 }
 
 public class NoSuchMethodException : Exception

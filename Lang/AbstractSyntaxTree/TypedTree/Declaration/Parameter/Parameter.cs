@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 namespace ChineseObjects.Lang;
 
 public interface ITypedParameter : ITypedAstNode
@@ -54,10 +52,5 @@ public class TypedParameter : ITypedParameter
     public static bool operator !=(TypedParameter? left, TypedParameter? right)
     {
         return !Equals(left, right);
-    }
-    
-    public T AcceptVisitor<T>(CodeGen.ITypesAwareStatementVisitor<T> visitor)
-    {
-        return visitor.Visit(this);
     }
 }

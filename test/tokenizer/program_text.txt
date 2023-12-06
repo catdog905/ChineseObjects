@@ -7,8 +7,16 @@ class Main is
         end
     end
     
+    var n : Number
+    var addRes : Number
+    var multRes : Number
+    var subRes : Number
+
+    method f1(a: Bool, b: Bool) : Bool is
+        return a
+    end
+    
     this() is
-        x : Bool := false
         x : Bool := true
         this.shortLoop(x)
         if x then
@@ -21,5 +29,13 @@ class Main is
             end
         end
         x.TerminateExecution()
+        
+        n : Number := 3.Print()
+        addRes : Number := n.Plus(2).Print()
+        multRes : Number := n.Mult(1).Print()
+        subRes : Number := n.Minus(13).Print()
+        subRes.Print()
+
+        this.f1(true, false)
     end
 end

@@ -1,19 +1,36 @@
+class Other is
+    this() is
+        false.TerminateExecution()
+    end
+end
+
 class Main is
     var x : Bool
     var n : Number
     var addRes : Number
     var multRes : Number
     var subRes : Number
+
+    method f1(a: Bool, b: Bool) : Bool is
+        this.f2(a, b)
+    end
     
-    this() is
-        x : Bool := false
+    method f2(b: Bool, a: Bool) : Bool is
+        this.f3(b, a)
+    end
+    
+    method f3(a: Bool, b: Bool) : Bool is
+        a.And(x).TerminateExecution()
     end
 
-    this(n : Number) is
+    this() is
         x : Bool := false
+        n : Number := 3.Print()
         addRes : Number := n.Plus(2).Print()
         multRes : Number := n.Mult(1).Print()
         subRes : Number := n.Minus(13).Print()
         subRes.Print()
+
+        this.f1(true, false)
     end
 end

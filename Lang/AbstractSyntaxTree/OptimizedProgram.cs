@@ -97,7 +97,9 @@ public class OptimizedProgram
                         .Aggregate(
                             ImmutableList<string>.Empty,
                             (acc, cur) => acc.AddRange(WithoutUnusedVariables(cur).Item1))
-                        .AddRange(WithoutUnusedVariables(constructor.Body()).Item1),
+                        .AddRange(WithoutUnusedVariables(constructor.Body()).Item1)
+                        .RemoveRange(constructor.Parameters().GetParameters()
+                            .Select(parameter => parameter.Name())),
                     new TypesAwareConstructor(
                         new TypesAwareParameters(
                             constructor.Parameters().GetParameters()

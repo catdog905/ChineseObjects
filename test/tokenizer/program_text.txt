@@ -1,5 +1,62 @@
-class Main is
-    this() is
-        3.Less(2).And(2.Equal(2)).TerminateExecution()
+
+class Fibonacci is
+    var prev : Number
+    var curr : Number
+    var sum : Number
+    
+    this () is
+        this.reset()
     end
+    
+    this (n1 : Number, n2 : Number) is
+        this.reset(n1, n2)
+    end
+    
+    method reset() : Fibonacci is
+        return this.reset(0, 1)
+    end
+    
+    method reset(n1 : Number, n2 : Number): Fibonacci is
+        prev : Number := n1
+        curr : Number := n2
+        return this
+    end
+    
+    method get_curr() : Number is
+        return curr
+    end
+    
+    method go_next(): Number is
+        sum : Number := prev.Plus(curr)
+        prev : Number := curr
+        curr : Number := sum
+        return sum
+    end
+    
+    method go_beyond_limit(lim : Number): Number is
+        return this.go_beyond_limit(lim, false)
+    end
+
+    method go_beyond_limit(lim : Number, verbose : Bool): Number is
+        while curr.Less(lim) loop
+            this.go_next()
+            if verbose then
+                curr.Print()
+            end
+        end
+        return curr
+    end
+
+end
+
+class Main is
+    var fib : Fibonacci
+    var i : Number
+    
+    this() is
+        i : Number := 60
+        fib : Fibonacci := new Fibonacci()
+        fib.go_beyond_limit(i, true)
+    end
+    
 end
